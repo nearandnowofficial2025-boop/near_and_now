@@ -28,15 +28,14 @@ const HomePage = () => {
         ]);
         setAllProducts(products);
         
-        // Filter categories: only show categories that have products and remove duplicates
+        // Filter categories: remove duplicates. When we have products, only show categories that have products; when no products, show all so the section isn't empty.
         const productCategories = new Set(products.map(p => p.category).filter(Boolean));
         const uniqueCategories = categoriesData.filter((category, index, self) => {
           // Remove duplicates by name (case-insensitive)
           const isUnique = index === self.findIndex(c => 
             c.name.toLowerCase() === category.name.toLowerCase()
           );
-          // Only include categories that have products
-          const hasProducts = productCategories.has(category.name);
+          const hasProducts = products.length === 0 || productCategories.has(category.name);
           return isUnique && hasProducts;
         });
         

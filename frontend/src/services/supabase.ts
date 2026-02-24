@@ -67,30 +67,23 @@ function getLocationFromStorage(): ProductFetchOptions | undefined {
   return undefined;
 }
 
-// Get master_product IDs available in stores near (lat, lng). When no location, returns null (no filter).
-// Calls ensure_stores_near_location first - creates 5-6 dummy stores on-demand for any location.
-// On RPC failure or no stores, returns null so we fall back to showing all products.
-async function getNearbyMasterProductIds(
-  lat?: number,
-  lng?: number,
-  _radiusKm = 100
-): Promise<string[] | null> {
-  if (lat == null || lng == null) return null;
+// Get store IDs from the stores table within radius of (lat, lng). No mock/dummy stores.
+// On RPC failure or no stores, returns empty array.
+async function getNearbyStoreIds(
+  lat: number,
+  lng: number,
+  radiusKm = 50
+): Promise<string[]> {
   try {
-    const { data: storeIds, error: ensureError } = await supabaseAdmin.rpc('ensure_stores_near_location', {
-      p_lat: lat,
-      p_lng: lng
+    const { data: storeIds, error } = await supabaseAdmin.rpc('get_nearby_store_ids', {
+      cust_lat: lat,
+      cust_lng: lng,
+      radius_km: radiusKm
     });
-    if (ensureError || !storeIds?.length) return null; // fallback to all products
-    const { data: products } = await supabaseAdmin
-      .from('products')
-      .select('master_product_id')
-      .in('store_id', storeIds)
-      .eq('is_active', true);
-    const ids = [...new Set((products || []).map((p) => p.master_product_id))];
-    return ids.length ? ids : null;
+    if (error || !storeIds?.length) return [];
+    return storeIds as string[];
   } catch {
-    return null;
+    return [];
   }
 }
 
@@ -104,181 +97,168 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
-// Get all products (optionally filtered by customer location - stores near lat/lng)
+// Row from products table joined with master_products (Supabase returns nested master_products)
+interface ProductRow {
+  id: string;
+  store_id: string;
+  master_product_id: string;
+  quantity: number;
+  is_active: boolean;
+  master_products?: {
+    id: string;
+    name: string;
+    category: string;
+    base_price: number;
+    discounted_price: number;
+    unit: string;
+    image_url?: string;
+    description?: string;
+    is_loose?: boolean;
+    is_active: boolean;
+    created_at?: string;
+    [key: string]: unknown;
+  } | null;
+}
+
+// Fetch product rows (products joined with master_products), optionally filtered by store IDs
+async function fetchProductRows(storeIds: string[] | null): Promise<ProductRow[]> {
+  const allRows: ProductRow[] = [];
+
+  if (storeIds != null && storeIds.length > 0) {
+    const storeChunks = chunk(storeIds, IN_FILTER_CHUNK_SIZE);
+    for (const ids of storeChunks) {
+      const { data, error } = await supabaseAdmin
+        .from('products')
+        .select('id, store_id, master_product_id, quantity, is_active, master_products(*)')
+        .eq('is_active', true)
+        .in('store_id', ids);
+      if (error) throw new Error(`Database error: ${error.message}`);
+      if (data?.length) allRows.push(...(data as ProductRow[]));
+    }
+    return allRows;
+  }
+
+  let from = 0;
+  const batchSize = 500;
+  let hasMore = true;
+  while (hasMore) {
+    const { data, error } = await supabaseAdmin
+      .from('products')
+      .select('id, store_id, master_product_id, quantity, is_active, master_products(*)')
+      .eq('is_active', true)
+      .range(from, from + batchSize - 1);
+    if (error) throw new Error(`Database error: ${error.message}`);
+    if (data && data.length > 0) {
+      allRows.push(...(data as ProductRow[]));
+      from += batchSize;
+      hasMore = data.length === batchSize;
+    } else {
+      hasMore = false;
+    }
+  }
+  return allRows;
+}
+
+// Dedupe product rows by master_product_id (keep one per master product, prefer higher quantity) and transform to Product[]
+function productRowsToProducts(rows: ProductRow[]): Product[] {
+  const byMaster = new Map<string, ProductRow>();
+  for (const row of rows) {
+    const mp = row.master_products;
+    if (!mp || !mp.is_active) continue;
+    const existing = byMaster.get(row.master_product_id);
+    const q = typeof row.quantity === 'number' ? row.quantity : parseFloat(String(row.quantity)) || 0;
+    if (!existing || (typeof existing.quantity === 'number' ? existing.quantity : 0) < q) {
+      byMaster.set(row.master_product_id, row);
+    }
+  }
+  return Array.from(byMaster.values()).map((row) => transformProductRowToProduct(row));
+}
+
+function transformProductRowToProduct(row: ProductRow): Product {
+  const mp = row.master_products!;
+  const price = mp.discounted_price != null
+    ? (typeof mp.discounted_price === 'string' ? parseFloat(mp.discounted_price) : mp.discounted_price)
+    : 0;
+  const originalPrice = mp.base_price != null
+    ? (typeof mp.base_price === 'string' ? parseFloat(mp.base_price) : mp.base_price)
+    : undefined;
+  const q = typeof row.quantity === 'number' ? row.quantity : parseFloat(String(row.quantity)) || 0;
+  return {
+    id: mp.id,
+    name: mp.name,
+    category: mp.category,
+    price,
+    original_price: originalPrice,
+    image_url: mp.image_url,
+    image: mp.image_url,
+    description: mp.description,
+    in_stock: row.is_active && q > 0,
+    unit: mp.unit ?? 'piece',
+    isLoose: mp.is_loose ?? false,
+    created_at: mp.created_at,
+    updated_at: (mp as { updated_at?: string }).updated_at
+  };
+}
+
+// Get all products from products table (joined with master_products). Optionally filtered by stores near lat/lng.
 export async function getAllProducts(options?: ProductFetchOptions): Promise<Product[]> {
   try {
     const opts = options ?? getLocationFromStorage();
-    const { lat, lng, radiusKm = 100 } = opts || {};
-    const nearbyIds = await getNearbyMasterProductIds(lat, lng, radiusKm);
+    const { lat, lng, radiusKm = 50 } = opts || {};
+    const nearbyStoreIds = (lat != null && lng != null)
+      ? await getNearbyStoreIds(lat, lng, radiusKm)
+      : null;
 
-    let allProducts: any[] = [];
+    const storeIdsToUse = (nearbyStoreIds != null && nearbyStoreIds.length > 0) ? nearbyStoreIds : null;
+    const rows = await fetchProductRows(storeIdsToUse);
+    const products = productRowsToProducts(rows);
 
-    if (nearbyIds == null || nearbyIds.length === 0) {
-      // No location filter: fetch all with pagination
-      const batchSize = 1000;
-      let from = 0;
-      let hasMore = true;
-      while (hasMore) {
-        const { data, error } = await supabaseAdmin
-          .from('master_products')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: false })
-          .range(from, from + batchSize - 1);
-
-        if (error) {
-          console.error('❌ Supabase error:', error);
-          throw new Error(`Database error: ${error.message}`);
-        }
-        if (data && data.length > 0) {
-          allProducts = [...allProducts, ...data];
-          from += batchSize;
-          hasMore = data.length === batchSize;
-        } else {
-          hasMore = false;
-        }
-      }
-    } else {
-      // Location filter: batch .in() to avoid URL length limits
-      const idChunks = chunk(nearbyIds, IN_FILTER_CHUNK_SIZE);
-      for (const ids of idChunks) {
-        const { data, error } = await supabaseAdmin
-          .from('master_products')
-          .select('*')
-          .eq('is_active', true)
-          .in('id', ids)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('❌ Supabase error:', error);
-          throw new Error(`Database error: ${error.message}`);
-        }
-        if (data && data.length > 0) allProducts = [...allProducts, ...data];
-      }
-      // Dedupe and sort by created_at desc
-      const seen = new Set<string>();
-      allProducts = allProducts
-        .filter((p) => { if (seen.has(p.id)) return false; seen.add(p.id); return true; })
-        .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
-    }
-
-    console.log(`✅ Successfully fetched ${allProducts.length} products` + (nearbyIds !== null ? ' (location-filtered)' : ''));
-    return transformSupabaseProducts(allProducts);
+    console.log(`✅ Fetched ${products.length} products from products table` + (storeIdsToUse ? ' (nearby stores)' : ''));
+    return products;
   } catch (error) {
     console.error('❌ Error in getAllProducts:', error);
     throw error;
   }
 }
 
-// Get products by category (optionally filtered by customer location)
+// Get products by category from products table (joined with master_products), optionally filtered by nearby stores
 export async function getProductsByCategory(
   categoryName: string,
   options?: ProductFetchOptions
 ): Promise<Product[]> {
   try {
     const opts = options ?? getLocationFromStorage();
-    const { lat, lng, radiusKm = 100 } = opts || {};
-    const nearbyIds = await getNearbyMasterProductIds(lat, lng, radiusKm);
+    const { lat, lng, radiusKm = 50 } = opts || {};
+    const nearbyStoreIds = (lat != null && lng != null)
+      ? await getNearbyStoreIds(lat, lng, radiusKm)
+      : null;
+    const storeIdsToUse = (nearbyStoreIds != null && nearbyStoreIds.length > 0) ? nearbyStoreIds : null;
 
-    let allProducts: any[] = [];
-
-    if (nearbyIds == null || nearbyIds.length === 0) {
-      const batchSize = 1000;
-      let from = 0;
-      let hasMore = true;
-      while (hasMore) {
-        const { data, error } = await supabaseAdmin
-          .from('master_products')
-          .select('*')
-          .eq('category', categoryName)
-          .eq('is_active', true)
-          .order('rating', { ascending: false })
-          .range(from, from + batchSize - 1);
-
-        if (error) {
-          console.error('❌ Error fetching products by category:', error);
-          return [];
-        }
-        if (data && data.length > 0) {
-          allProducts = [...allProducts, ...data];
-          from += batchSize;
-          hasMore = data.length === batchSize;
-        } else {
-          hasMore = false;
-        }
-      }
-    } else {
-      const idChunks = chunk(nearbyIds, IN_FILTER_CHUNK_SIZE);
-      for (const ids of idChunks) {
-        const { data, error } = await supabaseAdmin
-          .from('master_products')
-          .select('*')
-          .eq('category', categoryName)
-          .eq('is_active', true)
-          .in('id', ids)
-          .order('rating', { ascending: false });
-
-        if (error) {
-          console.error('❌ Error fetching products by category:', error);
-          return [];
-        }
-        if (data && data.length > 0) allProducts = [...allProducts, ...data];
-      }
-      const seen = new Set<string>();
-      allProducts = allProducts
-        .filter((p) => { if (seen.has(p.id)) return false; seen.add(p.id); return true; })
-        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-    }
-
-    return transformSupabaseProducts(allProducts);
+    const rows = await fetchProductRows(storeIdsToUse);
+    const rowsInCategory = rows.filter((r) => r.master_products?.category === categoryName);
+    return productRowsToProducts(rowsInCategory);
   } catch (error) {
     console.error('Error in getProductsByCategory:', error);
     return [];
   }
 }
 
-// Search products (optionally filtered by customer location)
+// Search products from products table (joined with master_products), optionally filtered by nearby stores
 export async function searchProducts(query: string, options?: ProductFetchOptions): Promise<Product[]> {
   try {
     const opts = options ?? getLocationFromStorage();
-    const { lat, lng, radiusKm = 100 } = opts || {};
-    const nearbyIds = await getNearbyMasterProductIds(lat, lng, radiusKm);
+    const { lat, lng, radiusKm = 50 } = opts || {};
+    const nearbyStoreIds = (lat != null && lng != null)
+      ? await getNearbyStoreIds(lat, lng, radiusKm)
+      : null;
+    const storeIdsToUse = (nearbyStoreIds != null && nearbyStoreIds.length > 0) ? nearbyStoreIds : null;
 
-    let allProducts: any[] = [];
-
-    if (nearbyIds == null || nearbyIds.length === 0) {
-      const { data, error } = await supabaseAdmin
-        .from('master_products')
-        .select('*')
-        .eq('is_active', true)
-        .ilike('name', `%${query}%`);
-
-      if (error) {
-        console.error('Error searching products:', error);
-        return [];
-      }
-      allProducts = data || [];
-    } else {
-      const idChunks = chunk(nearbyIds, IN_FILTER_CHUNK_SIZE);
-      for (const ids of idChunks) {
-        const { data, error } = await supabaseAdmin
-          .from('master_products')
-          .select('*')
-          .eq('is_active', true)
-          .ilike('name', `%${query}%`)
-          .in('id', ids);
-
-        if (error) {
-          console.error('Error searching products:', error);
-          return [];
-        }
-        if (data && data.length > 0) allProducts = [...allProducts, ...data];
-      }
-      const seen = new Set<string>();
-      allProducts = allProducts.filter((p) => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
-    }
-
-    return transformSupabaseProducts(allProducts);
+    const rows = await fetchProductRows(storeIdsToUse);
+    const q = query.trim().toLowerCase();
+    const matching = q
+      ? rows.filter((r) => r.master_products?.name?.toLowerCase().includes(q))
+      : rows;
+    return productRowsToProducts(matching);
   } catch (error) {
     console.error('Error in searchProducts:', error);
     return [];
@@ -500,28 +480,74 @@ export async function createOrder(orderData: CreateOrderData): Promise<Order> {
     const orderCode = await generateOrderNumber();
     console.log('📝 Generated order code:', orderCode);
 
-    // Ensure stores exist near delivery address (creates 5-6 on-demand)
-    const { data: storeIds, error: ensureErr } = await supabaseAdmin.rpc('ensure_stores_near_location', {
-      p_lat: geocoded.lat,
-      p_lng: geocoded.lng
-    });
-    if (ensureErr || !storeIds?.length) {
+    // Get real stores near delivery address (from stores table, no mock data)
+    const storeIds = await getNearbyStoreIds(geocoded.lat, geocoded.lng, 50);
+    if (!storeIds.length) {
       throw new Error('No store available for your delivery address. Please contact support.');
     }
 
-    // Demo rule: >6 items = split across 2 stores (multi delivery partner); ≤6 = single store
     const items = orderData.items;
-    const useMultiStore = items.length > 6;
-    const storesToUse: string[] = useMultiStore && storeIds.length >= 2
-      ? [storeIds[0], storeIds[1]]
-      : [storeIds[0]];
+    const masterProductIds = [...new Set(items.map((it) => it.product_id || it.id).filter((id): id is string => id != null && id !== ''))];
+    if (masterProductIds.length === 0) {
+      throw new Error('No valid products in order');
+    }
 
-    const itemChunks: typeof items[] = useMultiStore && storesToUse.length >= 2
-      ? [
-          items.slice(0, Math.ceil(items.length / 2)),
-          items.slice(Math.ceil(items.length / 2))
-        ]
-      : [items];
+    // Which stores have which of our products (from products table)
+    const { data: productRows } = await supabaseAdmin
+      .from('products')
+      .select('id, store_id, master_product_id')
+      .in('store_id', storeIds)
+      .in('master_product_id', masterProductIds)
+      .eq('is_active', true);
+    const byMaster: Map<string, Array<{ store_id: string; product_id: string }>> = new Map();
+    for (const row of productRows || []) {
+      const list = byMaster.get(row.master_product_id) || [];
+      list.push({ store_id: row.store_id, product_id: row.id });
+      byMaster.set(row.master_product_id, list);
+    }
+
+    // Assign each item to a store that has it (greedy: minimize number of stores)
+    const storeToItems = new Map<string, typeof items>();
+    const assigned = new Set<number>();
+    while (assigned.size < items.length) {
+      let bestStore: string | null = null;
+      let bestCount = 0;
+      for (const storeId of storeIds) {
+        let count = 0;
+        for (const it of items) {
+          const idx = items.indexOf(it);
+          if (assigned.has(idx)) continue;
+          const mid = it.product_id || it.id;
+          const options = mid ? byMaster.get(mid) : [];
+          if (options.some((o) => o.store_id === storeId)) count++;
+        }
+        if (count > bestCount) {
+          bestCount = count;
+          bestStore = storeId;
+        }
+      }
+      if (!bestStore || bestCount === 0) break;
+      const chunk: typeof items = [];
+      for (let i = 0; i < items.length; i++) {
+        if (assigned.has(i)) continue;
+        const it = items[i];
+        const mid = it.product_id || it.id;
+        const options = mid ? byMaster.get(mid) : [];
+        if (options.some((o) => o.store_id === bestStore)) {
+          chunk.push(it);
+          assigned.add(i);
+        }
+      }
+      const existing = storeToItems.get(bestStore) || [];
+      storeToItems.set(bestStore, [...existing, ...chunk]);
+    }
+    const unassigned = items.filter((_, i) => !assigned.has(i));
+    if (unassigned.length > 0) {
+      throw new Error(`Product(s) not available from any store near you: ${unassigned.map((u) => u.name).join(', ')}`);
+    }
+
+    const storeIdsToUse = Array.from(storeToItems.keys());
+    const itemChunks = storeIdsToUse.map((sid) => storeToItems.get(sid)!);
 
     // Map display names to DB enum (payment_method_type: cash_on_delivery, upi, credit_card, etc.)
     const paymentMethodEnum =
@@ -557,8 +583,8 @@ export async function createOrder(orderData: CreateOrderData): Promise<Order> {
 
     for (let i = 0; i < itemChunks.length; i++) {
       const chunk = itemChunks[i];
-      const storeId = storesToUse[i];
-      if (!chunk.length || !storeId) continue;
+      const storeId = storeIdsToUse[i];
+      if (!chunk?.length || !storeId) continue;
 
       const chunkSubtotal = chunk.reduce((sum, it) => sum + it.price * it.quantity, 0);
       const chunkDeliveryFee = itemChunks.length > 1 ? orderData.delivery_fee / itemChunks.length : orderData.delivery_fee;
