@@ -12,6 +12,11 @@ function extractErrorMessage(err: any, fallback: string): string {
   return fallback;
 }
 
+/** Normalize phone to digits only for consistent lookup (e.g. +919876543210 -> 919876543210) */
+function normalizePhone(phone: string): string {
+  return String(phone).replace(/\D/g, '');
+}
+
 // Twilio configuration
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -70,16 +75,17 @@ export class AuthController {
     }
   }
 
-  // Verify OTP and login/register customer
+  // Verify OTP and login/register customer or store owner (Twilio Verify)
   async verifyOTP(req: Request, res: Response) {
     try {
-      const { phone, otp, name } = req.body;
+      const { phone, otp, name, role: requestRole } = req.body;
 
       if (!phone || !otp) {
         return res.status(400).json({ error: 'Phone number and OTP are required' });
       }
 
-      console.log('🔐 Verifying OTP for:', phone);
+      const isStoreOwnerFlow = requestRole === 'store_owner';
+      console.log('🔐 Verifying OTP for:', phone, isStoreOwnerFlow ? '(store owner)' : '');
 
       // Check if Twilio is configured
       if (!client) {
@@ -107,7 +113,50 @@ export class AuthController {
 
       console.log('✅ OTP verified successfully');
 
-      // Check if customer exists
+      // Store owner flow: look up by phone (any role); return login or signup
+      if (isStoreOwnerFlow) {
+        // Try exact phone first, then normalized (digits only) so +91... and 91... both match
+        let existingUser: any = null;
+        const { data: byExact } = await supabaseAdmin
+          .from('app_users')
+          .select('*')
+          .eq('phone', phone)
+          .maybeSingle();
+        if (byExact) {
+          existingUser = byExact;
+        } else {
+          const normalized = normalizePhone(phone);
+          if (normalized) {
+            const { data: byNormalized } = await supabaseAdmin
+              .from('app_users')
+              .select('*')
+              .eq('phone', normalized)
+              .maybeSingle();
+            if (byNormalized) existingUser = byNormalized;
+          }
+        }
+
+        if (existingUser && (existingUser.role === 'shopkeeper' || existingUser.role === 'store_owner')) {
+          const token = crypto.randomUUID();
+          const { password_hash: _, ...userWithoutPassword } = existingUser;
+          console.log('👤 Existing store owner, logging in:', existingUser.id);
+          return res.json({
+            success: true,
+            message: 'OTP verified successfully',
+            mode: 'login',
+            user: userWithoutPassword,
+            token
+          });
+        }
+        // No store owner account → app will show signup
+        return res.json({
+          success: true,
+          message: 'OTP verified; complete signup',
+          mode: 'signup'
+        });
+      }
+
+      // Customer flow: check if customer exists
       const { data: existingUser } = await supabaseAdmin
         .from('app_users')
         .select('*')

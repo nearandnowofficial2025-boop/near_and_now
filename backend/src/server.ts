@@ -11,6 +11,7 @@ import ordersRoutes from './routes/orders.routes.js';
 import customersRoutes from './routes/customers.routes.js';
 import couponsRoutes from './routes/coupons.routes.js';
 import authRoutes from './routes/auth.routes.js';
+import storeOwnerRoutes from './routes/storeOwner.routes.js';
 import placesRoutes from './routes/places.routes.js';
 import deliveryRoutes from './routes/delivery.routes.js';
 import trackingRoutes from './routes/tracking.routes.js';
@@ -29,6 +30,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
+app.use('/store-owner', storeOwnerRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/customers', customersRoutes);
@@ -43,5 +45,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// For Vercel deployment, export the app
+// For local dev: listen so phone/device can reach API (Vercel uses api/index.ts, no listen)
+if (!process.env.VERCEL) {
+  const port = Number(PORT) || 3000;
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running at http://0.0.0.0:${port} (and http://localhost:${port})`);
+  });
+}
+
 export default app;
