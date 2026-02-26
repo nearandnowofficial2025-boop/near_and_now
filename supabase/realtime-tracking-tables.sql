@@ -17,6 +17,11 @@ ALTER PUBLICATION supabase_realtime ADD TABLE store_orders;
 ALTER PUBLICATION supabase_realtime ADD TABLE order_status_history;
 ALTER PUBLICATION supabase_realtime ADD TABLE driver_locations;
 
+-- Products and catalog (for store inventory / catalog realtime updates)
+-- Also applied in supabase/products-populate-and-realtime.sql
+ALTER PUBLICATION supabase_realtime ADD TABLE products;
+ALTER PUBLICATION supabase_realtime ADD TABLE master_products;
+
 -- =====================================================
 -- NOTE: If you get "relation already in publication" error,
 -- that table is already enabled. You can safely ignore it.
