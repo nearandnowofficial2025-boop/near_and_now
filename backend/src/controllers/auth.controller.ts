@@ -43,6 +43,18 @@ export class AuthController {
 
       console.log('📱 Sending OTP to:', phone);
 
+      // DEV MODE: Bypass Twilio in development (use OTP: 123456)
+      if (process.env.NODE_ENV === 'development' || process.env.DEV_BYPASS_OTP === 'true') {
+        console.log('🛠️ DEV MODE: Skipping Twilio, use OTP: 123456');
+        return res.json({
+          success: true,
+          message: 'OTP sent successfully (dev mode)',
+          status: 'pending',
+          devMode: true,
+          devOtp: '123456'
+        });
+      }
+
       // Check if Twilio is configured
       if (!client) {
         return res.status(503).json({
@@ -84,62 +96,99 @@ export class AuthController {
         return res.status(400).json({ error: 'Phone number and OTP are required' });
       }
 
-      const isStoreOwnerFlow = requestRole === 'store_owner';
-      console.log('🔐 Verifying OTP for:', phone, isStoreOwnerFlow ? '(store owner)' : '');
+      const isStoreOwnerFlow = requestRole === 'store_owner' || requestRole === 'shopkeeper';
+      console.log('🔐 Verifying OTP for:', phone, isStoreOwnerFlow ? `(${requestRole})` : '(customer)');
 
-      // Check if Twilio is configured
-      if (!client) {
-        return res.status(503).json({
-          error: 'OTP service not configured',
-          message: 'SMS OTP verification is currently unavailable.'
-        });
+      // DEV MODE: Bypass Twilio verification (accept any OTP in dev, or 123456)
+      const devBypass = process.env.NODE_ENV === 'development' || process.env.DEV_BYPASS_OTP === 'true';
+      let otpVerified = false;
+
+      if (devBypass) {
+        // In dev mode, accept OTP: 123456 or any 6-digit code
+        if (otp === '123456' || /^\d{6}$/.test(String(otp))) {
+          console.log('🛠️ DEV MODE: OTP verification bypassed');
+          otpVerified = true;
+        } else {
+          console.log('❌ DEV MODE: Invalid OTP format (need 6 digits)');
+          return res.status(400).json({
+            error: 'Invalid OTP',
+            message: 'In dev mode, use OTP: 123456 or any 6-digit code'
+          });
+        }
+      } else {
+        // Production: Use Twilio verification
+        // Check if Twilio is configured
+        if (!client) {
+          return res.status(503).json({
+            error: 'OTP service not configured',
+            message: 'SMS OTP verification is currently unavailable.'
+          });
+        }
+
+        // Verify OTP via Twilio
+        const verificationCheck = await client.verify.v2
+          .services(serviceSid!)
+          .verificationChecks.create({
+            to: String(phone),
+            code: String(otp)
+          });
+
+        if (verificationCheck.status !== 'approved') {
+          console.log('❌ Invalid OTP');
+          return res.status(400).json({
+            error: 'Invalid OTP',
+            status: verificationCheck.status
+          });
+        }
+        otpVerified = true;
       }
 
-      // Verify OTP via Twilio
-      const verificationCheck = await client.verify.v2
-        .services(serviceSid!)
-        .verificationChecks.create({
-          to: String(phone),
-          code: String(otp)
-        });
-
-      if (verificationCheck.status !== 'approved') {
-        console.log('❌ Invalid OTP');
-        return res.status(400).json({
-          error: 'Invalid OTP',
-          status: verificationCheck.status
-        });
+      if (!otpVerified) {
+        return res.status(400).json({ error: 'OTP verification failed' });
       }
 
       console.log('✅ OTP verified successfully');
 
-      // Store owner flow: look up by phone (any role); return login or signup
+      // Store owner flow: look up by phone AND role (shopkeeper)
       if (isStoreOwnerFlow) {
-        // Try exact phone first, then normalized (digits only) so +91... and 91... both match
+        console.log('🏪 Store owner flow: looking for shopkeeper account');
+        
+        // CRITICAL: Must filter by BOTH phone AND role
+        // Same phone can have multiple users with different roles
         let existingUser: any = null;
+        
+        // Try exact phone with role filter
         const { data: byExact } = await supabaseAdmin
           .from('app_users')
           .select('*')
           .eq('phone', phone)
+          .in('role', ['shopkeeper', 'store_owner'])  // ← Filter by shopkeeper role!
           .maybeSingle();
+          
         if (byExact) {
           existingUser = byExact;
+          console.log(`✅ Found shopkeeper account: ${byExact.name} (${byExact.role})`);
         } else {
+          // Try normalized phone with role filter
           const normalized = normalizePhone(phone);
           if (normalized) {
             const { data: byNormalized } = await supabaseAdmin
               .from('app_users')
               .select('*')
               .eq('phone', normalized)
+              .in('role', ['shopkeeper', 'store_owner'])  // ← Filter by shopkeeper role!
               .maybeSingle();
-            if (byNormalized) existingUser = byNormalized;
+            if (byNormalized) {
+              existingUser = byNormalized;
+              console.log(`✅ Found shopkeeper account (normalized): ${byNormalized.name} (${byNormalized.role})`);
+            }
           }
         }
 
         if (existingUser && (existingUser.role === 'shopkeeper' || existingUser.role === 'store_owner')) {
           const token = crypto.randomUUID();
           const { password_hash: _, ...userWithoutPassword } = existingUser;
-          console.log('👤 Existing store owner, logging in:', existingUser.id);
+          console.log('👤 Existing shopkeeper, logging in:', existingUser.id, existingUser.name);
           return res.json({
             success: true,
             message: 'OTP verified successfully',
@@ -148,7 +197,9 @@ export class AuthController {
             token
           });
         }
-        // No store owner account → app will show signup
+        
+        // No shopkeeper account found (customer may exist, but we need shopkeeper)
+        console.log('📝 No shopkeeper account found, need signup');
         return res.json({
           success: true,
           message: 'OTP verified; complete signup',
