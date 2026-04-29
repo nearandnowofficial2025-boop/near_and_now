@@ -342,6 +342,9 @@ export class DatabaseService {
     image_url?: string;
     unit_price: number;
     quantity: number;
+    customer_order_id?: string;
+    assigned_store_id?: string;
+    item_status?: string;
   }>) {
     const { data, error } = await supabaseAdmin
       .from('order_items')

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { databaseService } from '../services/database.service.js';
+import { supabaseAdmin } from '../config/database.js';
 
 export class OrdersController {
   /** Checkout flow from web app — uses service role on server (RLS-safe). */
@@ -59,6 +60,7 @@ export class OrdersController {
       }
 
       const storeOrders = [];
+      let seqNum = 1;
 
       for (const [storeId, items] of storeOrdersMap) {
         const subtotal = items.reduce((sum: number, item: any) =>
@@ -72,17 +74,38 @@ export class OrdersController {
           delivery_fee: 20
         });
 
+        // Include customer_order_id and assigned_store_id so getPickupSequence
+        // can join items to their store allocation.
         const orderItems = await databaseService.createOrderItems(
           items.map((item: any) => ({
             store_order_id: storeOrder.id,
+            customer_order_id: customerOrder.id,
             product_id: item.product_id,
             product_name: item.product_name,
             unit: item.unit,
             image_url: item.image_url,
             unit_price: item.unit_price,
-            quantity: item.quantity
+            quantity: item.quantity,
+            assigned_store_id: storeId,
+            item_status: 'pending',
           }))
         );
+
+        // Create the allocation so the shopkeeper sees it and can accept it,
+        // which in turn triggers broadcastToNearbyDrivers → rider gets the offer.
+        const pickupCode = String(Math.floor(Math.random() * 9000) + 1000);
+        const { error: allocErr } = await supabaseAdmin
+          .from('order_store_allocations')
+          .insert({
+            order_id: customerOrder.id,
+            store_id: storeId,
+            sequence_number: seqNum++,
+            pickup_code: pickupCode,
+            status: 'pending_acceptance',
+          });
+        if (allocErr) {
+          console.error('[createOrder] allocation insert failed (non-fatal):', allocErr.message);
+        }
 
         storeOrders.push({ ...storeOrder, items: orderItems });
       }
