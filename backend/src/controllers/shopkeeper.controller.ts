@@ -16,7 +16,7 @@ function pickupCode(): string {
   return String((randomBytes(2).readUInt16BE(0) % 9000) + 1000);
 }
 
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+export function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371, toR = (d: number) => (d * Math.PI) / 180;
   const dL = toR(lat2 - lat1), dG = toR(lng2 - lng1);
   const a = Math.sin(dL / 2) ** 2 + Math.cos(toR(lat1)) * Math.cos(toR(lat2)) * Math.sin(dG / 2) ** 2;
@@ -423,6 +423,72 @@ async function reallocateMissingItems(orderId: string, itemIds: string[]) {
   }
 }
 
+// Called when a driver comes online — catches any ready_for_pickup orders they missed
+export async function dispatchReadyOrdersToDriver(driverId: string) {
+  try {
+    const { data: locRow } = await supabaseAdmin
+      .from('driver_locations')
+      .select('latitude, longitude, updated_at')
+      .eq('delivery_partner_id', driverId)
+      .maybeSingle();
+
+    if (!locRow) return; // No location on record, can't determine distance
+
+    const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+    if (locRow.updated_at < thirtyMinsAgo) return; // Location too stale to be meaningful
+
+    const { data: readyOrders } = await supabaseAdmin
+      .from('customer_orders')
+      .select('id, delivery_latitude, delivery_longitude')
+      .eq('status', 'ready_for_pickup');
+
+    if (!readyOrders?.length) return;
+
+    const nearby = readyOrders.filter(
+      (o: any) => o.delivery_latitude &&
+        haversineKm(locRow.latitude, locRow.longitude, o.delivery_latitude, o.delivery_longitude) <= 10
+    );
+    if (!nearby.length) return;
+
+    const orderIds = nearby.map((o: any) => o.id);
+    const { data: existing } = await supabaseAdmin
+      .from('driver_order_offers')
+      .select('order_id')
+      .eq('driver_id', driverId)
+      .in('order_id', orderIds);
+
+    const alreadyHas = new Set((existing || []).map((e: any) => e.order_id));
+    const newOrderIds = nearby.filter((o: any) => !alreadyHas.has(o.id));
+    if (!newOrderIds.length) return;
+
+    await supabaseAdmin.from('driver_order_offers').insert(
+      newOrderIds.map((o: any) => ({ order_id: o.id, driver_id: driverId, status: 'pending' }))
+    );
+
+    const { data: partner } = await supabaseAdmin
+      .from('delivery_partners')
+      .select('expo_push_token')
+      .eq('user_id', driverId)
+      .maybeSingle();
+
+    if ((partner as any)?.expo_push_token) {
+      fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([{
+          to: (partner as any).expo_push_token,
+          sound: 'default',
+          title: '🛵 New Delivery Request',
+          body: `${newOrderIds.length} order${newOrderIds.length > 1 ? 's' : ''} available near you!`,
+          data: { type: 'new_order_offer' },
+        }]),
+      }).catch(console.error);
+    }
+  } catch (err) {
+    console.error('dispatchReadyOrdersToDriver error:', err);
+  }
+}
+
 async function broadcastToNearbyDrivers(orderId: string) {
   const { data: order } = await supabaseAdmin
     .from('customer_orders')
@@ -436,9 +502,9 @@ async function broadcastToNearbyDrivers(orderId: string) {
     .from('driver_locations')
     .select('delivery_partner_id, latitude, longitude, updated_at');
 
-  const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
   const nearbyIds = (locations || [])
-    .filter((l: any) => l.updated_at >= tenMinsAgo && haversineKm(order.delivery_latitude, order.delivery_longitude, l.latitude, l.longitude) <= 10)
+    .filter((l: any) => l.updated_at >= thirtyMinsAgo && haversineKm(order.delivery_latitude, order.delivery_longitude, l.latitude, l.longitude) <= 10)
     .map((l: any) => l.delivery_partner_id);
 
   if (!nearbyIds.length) return;

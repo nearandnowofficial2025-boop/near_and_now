@@ -1,6 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import { supabaseAdmin } from '../config/database.js';
 import { notificationService } from '../services/notification.service.js';
+import { dispatchReadyOrdersToDriver } from './shopkeeper.controller.js';
+
+// Throttle: check for missed orders at most once per 5 minutes per driver
+const lastDispatchCheck = new Map<string, number>();
+function shouldCheckDispatch(driverId: string): boolean {
+  const last = lastDispatchCheck.get(driverId) ?? 0;
+  if (Date.now() - last < 5 * 60 * 1000) return false;
+  lastDispatchCheck.set(driverId, Date.now());
+  return true;
+}
 
 // Extend Request to carry the authenticated rider's ID
 declare module 'express' {
@@ -118,6 +128,12 @@ export class DeliveryPartnerController {
       if (error) throw error;
 
       res.json({ success: true, is_online });
+
+      // When going online, check for any ready_for_pickup orders this driver missed
+      if (is_online) {
+        lastDispatchCheck.set(req.riderId!, Date.now());
+        dispatchReadyOrdersToDriver(req.riderId!).catch(console.error);
+      }
     } catch (err) {
       console.error('updateStatus error:', err);
       res.status(500).json({ error: 'Failed to update status' });
@@ -152,6 +168,11 @@ export class DeliveryPartnerController {
         .eq('user_id', req.riderId!);
 
       res.json({ success: true });
+
+      // Throttled: if this driver just came into range of a ready order they missed, offer it to them
+      if (shouldCheckDispatch(req.riderId!)) {
+        dispatchReadyOrdersToDriver(req.riderId!).catch(console.error);
+      }
     } catch (err) {
       console.error('updateLocation error:', err);
       res.status(500).json({ error: 'Failed to update location' });
