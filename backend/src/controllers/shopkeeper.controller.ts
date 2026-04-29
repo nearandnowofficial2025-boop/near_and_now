@@ -5,7 +5,8 @@ import { supabaseAdmin } from '../config/database.js';
 declare module 'express' {
   interface Request {
     shopkeeperId?: string;
-    shopkeeperStoreId?: string;
+    shopkeeperStoreId?: string;   // first store (kept for compat)
+    shopkeeperStoreIds?: string[]; // all stores owned by this shopkeeper
   }
 }
 
@@ -38,16 +39,16 @@ export async function requireShopkeeper(req: Request, res: Response, next: NextF
 
   if (error || !user) return res.status(401).json({ error: 'Invalid or expired token' });
 
-  const { data: store } = await supabaseAdmin
+  const { data: stores } = await supabaseAdmin
     .from('stores')
     .select('id')
-    .eq('owner_id', user.id)
-    .maybeSingle();
+    .eq('owner_id', user.id);
 
-  if (!store) return res.status(403).json({ error: 'No store found for this account' });
+  if (!stores?.length) return res.status(403).json({ error: 'No store found for this account' });
 
   req.shopkeeperId = user.id;
-  req.shopkeeperStoreId = store.id;
+  req.shopkeeperStoreIds = stores.map((s: any) => s.id);
+  req.shopkeeperStoreId = stores[0].id; // primary store for backward compat
   next();
 }
 
@@ -76,7 +77,7 @@ export class ShopkeeperController {
   // no param      → all statuses (used by the tabbed UI)
   async getIncomingOrders(req: Request, res: Response) {
     try {
-      const storeId = req.shopkeeperStoreId!;
+      const storeIds = req.shopkeeperStoreIds!;
       const { active, history } = req.query as { active?: string; history?: string };
 
       let statuses: string[];
@@ -88,13 +89,12 @@ export class ShopkeeperController {
         statuses = ['pending_acceptance', 'accepted', 'picked_up', 'rejected'];
       }
 
-      // Limit to last 7 days
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
       const { data: allocations, error } = await supabaseAdmin
         .from('order_store_allocations')
-        .select('id, order_id, sequence_number, pickup_code, status, accepted_item_ids, accepted_at, created_at')
-        .eq('store_id', storeId)
+        .select('id, order_id, store_id, sequence_number, pickup_code, status, accepted_item_ids, accepted_at, created_at')
+        .in('store_id', storeIds)
         .in('status', statuses)
         .gte('created_at', sevenDaysAgo)
         .order('created_at', { ascending: false });
@@ -105,33 +105,38 @@ export class ShopkeeperController {
       }
       if (!allocations?.length) return res.json({ success: true, orders: [] });
 
-      const orderIds = allocations.map((a: any) => a.order_id);
+      const orderIds = [...new Set(allocations.map((a: any) => a.order_id))];
 
-      const [{ data: orders }, { data: items }, { data: storeRow }] = await Promise.all([
+      const [{ data: orders }, { data: items }, { data: storeRows }] = await Promise.all([
         supabaseAdmin.from('customer_orders')
           .select('id, order_code, status, total_amount, delivery_address, delivery_latitude, delivery_longitude, placed_at')
           .in('id', orderIds),
         supabaseAdmin.from('order_items')
           .select('id, customer_order_id, product_name, quantity, unit, unit_price, image_url, item_status, assigned_store_id')
           .in('customer_order_id', orderIds)
-          .eq('assigned_store_id', storeId),
-        supabaseAdmin.from('stores').select('latitude, longitude').eq('id', storeId).single(),
+          .in('assigned_store_id', storeIds),
+        supabaseAdmin.from('stores')
+          .select('id, latitude, longitude')
+          .in('id', storeIds),
       ]);
 
       const orderMap: Record<string, any> = {};
       (orders || []).forEach((o: any) => { orderMap[o.id] = o; });
 
-      const itemsByOrder: Record<string, any[]> = {};
+      // Items keyed by order+store so each allocation only sees its own items
+      const itemsByOrderAndStore: Record<string, any[]> = {};
       (items || []).forEach((item: any) => {
-        const oid = item.customer_order_id;
-        if (!itemsByOrder[oid]) itemsByOrder[oid] = [];
-        itemsByOrder[oid].push(item);
+        const key = `${item.customer_order_id}:${item.assigned_store_id}`;
+        if (!itemsByOrderAndStore[key]) itemsByOrderAndStore[key] = [];
+        itemsByOrderAndStore[key].push(item);
       });
 
-      const storeCoords = storeRow as { latitude: number; longitude: number } | null;
+      const storeCoordsMap: Record<string, { latitude: number; longitude: number }> = {};
+      (storeRows || []).forEach((s: any) => { storeCoordsMap[s.id] = s; });
 
       const result = allocations.map((alloc: any) => {
         const order = orderMap[alloc.order_id] || {};
+        const storeCoords = storeCoordsMap[alloc.store_id];
         let distance: string | null = null;
         if (storeCoords && order.delivery_latitude) {
           const d = haversineKm(storeCoords.latitude, storeCoords.longitude, order.delivery_latitude, order.delivery_longitude);
@@ -140,16 +145,16 @@ export class ShopkeeperController {
         return {
           allocation_id: alloc.id,
           order_id: alloc.order_id,
+          store_id: alloc.store_id,
           order_code: order.order_code,
           alloc_status: alloc.status,
           sequence_number: alloc.sequence_number,
-          // Only reveal the code after acceptance
           pickup_code: alloc.status === 'accepted' ? alloc.pickup_code : null,
           accepted_item_ids: alloc.accepted_item_ids || [],
           customer_area: order.delivery_address,
           customer_distance: distance,
           placed_at: order.placed_at,
-          items: itemsByOrder[alloc.order_id] || [],
+          items: itemsByOrderAndStore[`${alloc.order_id}:${alloc.store_id}`] || [],
           accepted_at: alloc.accepted_at,
         };
       });
@@ -176,7 +181,7 @@ export class ShopkeeperController {
         .from('order_store_allocations')
         .select('id, order_id, store_id, status')
         .eq('id', allocationId)
-        .eq('store_id', req.shopkeeperStoreId!)
+        .in('store_id', req.shopkeeperStoreIds!)
         .maybeSingle();
 
       if (!alloc) return res.status(404).json({ error: 'Allocation not found' });
@@ -257,7 +262,7 @@ export class ShopkeeperController {
         .from('order_store_allocations')
         .select('id, order_id, store_id, status')
         .eq('id', allocationId)
-        .eq('store_id', req.shopkeeperStoreId!)
+        .in('store_id', req.shopkeeperStoreIds!)
         .maybeSingle();
 
       if (!alloc) return res.status(404).json({ error: 'Allocation not found' });
@@ -307,7 +312,7 @@ export class ShopkeeperController {
         .from('order_store_allocations')
         .select('id, order_id, store_id, status')
         .eq('id', allocationId)
-        .eq('store_id', req.shopkeeperStoreId!)
+        .in('store_id', req.shopkeeperStoreIds!)
         .maybeSingle();
 
       if (!alloc) return res.status(404).json({ error: 'Allocation not found' });

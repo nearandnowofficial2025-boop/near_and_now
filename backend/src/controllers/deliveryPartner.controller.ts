@@ -36,15 +36,19 @@ export async function requireRider(req: Request, res: Response, next: NextFuncti
 
 const ACTIVE_DB_STATUSES = [
   'delivery_partner_assigned',
+  'ready_for_pickup',
   'en_route_delivery',
   'order_picked_up',
+  'in_transit',
 ];
 
 function mapDbStatusToRider(dbStatus: string): string {
   switch (dbStatus) {
     case 'delivery_partner_assigned': return 'rider_assigned';
+    case 'ready_for_pickup':          return 'rider_assigned';
     case 'en_route_delivery':         return 'en_route_delivery';
     case 'order_picked_up':           return 'picked_up';
+    case 'in_transit':                return 'picked_up';
     case 'order_delivered':           return 'completed';
     default:                          return dbStatus;
   }
@@ -523,6 +527,7 @@ export class DeliveryPartnerController {
         supabaseAdmin.from('order_store_allocations')
           .select('order_id, store_id, sequence_number')
           .in('order_id', orderIds)
+          .in('status', ['pending_acceptance', 'accepted', 'picked_up'])
           .order('sequence_number', { ascending: true }),
       ]);
 
@@ -587,7 +592,27 @@ export class DeliveryPartnerController {
       if (result === 'accepted') {
         const { data: offer } = await supabaseAdmin
           .from('driver_order_offers').select('order_id').eq('id', offerId).single();
-        return res.json({ success: true, result: 'accepted', order_id: offer?.order_id });
+        const orderId = offer?.order_id;
+
+        if (orderId) {
+          // Ensure customer_orders has assigned_driver_id + correct status.
+          // The accept_driver_offer RPC may not write these columns.
+          await supabaseAdmin.from('customer_orders').update({
+            assigned_driver_id: req.riderId!,
+            status: 'delivery_partner_assigned',
+            updated_at: new Date().toISOString(),
+          }).eq('id', orderId);
+
+          // Ensure every store_order for this order has delivery_partner_id set
+          // so getOrders() (which joins via store_orders) can find the order.
+          await supabaseAdmin.from('store_orders').update({
+            delivery_partner_id: req.riderId!,
+            status: 'delivery_partner_assigned',
+            assigned_at: new Date().toISOString(),
+          }).eq('customer_order_id', orderId).is('delivery_partner_id', null);
+        }
+
+        return res.json({ success: true, result: 'accepted', order_id: orderId });
       }
       if (result === 'already_taken') {
         return res.status(409).json({ success: false, result: 'already_taken', error: 'Another driver accepted first' });

@@ -776,11 +776,24 @@ export class DatabaseService {
       storeToItems.set(bestStore, [...existing, ...chunk]);
     }
 
-    const unassigned = items.filter((_, i) => !assigned.has(i));
-    if (unassigned.length > 0) {
-      throw new Error(
-        `Product(s) not available from any store near you: ${unassigned.map((u) => u.name).join(', ')}`
-      );
+    const unassignedIndices = items.map((_, i) => i).filter((i) => !assigned.has(i));
+    if (unassignedIndices.length > 0) {
+      // Fallback: assign unmatched items to the first available store so the
+      // order can still be placed. The shopkeeper can mark them unavailable.
+      const fallbackStore = storeIds[0];
+      if (fallbackStore) {
+        const fallbackList = storeToItems.get(fallbackStore) || [];
+        storeToItems.set(fallbackStore, [...fallbackList, ...unassignedIndices.map((i) => items[i])]);
+        unassignedIndices.forEach((i) => assigned.add(i));
+        console.warn(
+          `[placeCheckoutOrder] ${unassignedIndices.length} item(s) had no master_product_id match — assigned to fallback store ${fallbackStore}:`,
+          unassignedIndices.map((i) => items[i].name)
+        );
+      } else {
+        throw new Error(
+          `Product(s) not available from any store near you: ${unassignedIndices.map((i) => items[i].name).join(', ')}`
+        );
+      }
     }
 
     const storeIdsToUse = Array.from(storeToItems.keys());
@@ -863,7 +876,9 @@ export class DatabaseService {
 
       const orderItemsPayload = chunk.map((item) => {
         const masterId = item.product_id || item.id;
-        const productId = masterId ? masterToProduct.get(masterId) : null;
+        // Prefer the store-specific product ID resolved via master_product_id;
+        // fall back to the raw product_id the frontend sent (may already be the store product id).
+        const productId = (masterId ? masterToProduct.get(masterId) : null) ?? masterId ?? null;
         if (!productId) {
           throw new Error(`Product "${item.name}" is not available from the store.`);
         }
