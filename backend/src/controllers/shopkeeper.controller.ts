@@ -428,14 +428,11 @@ export async function dispatchReadyOrdersToDriver(driverId: string) {
   try {
     const { data: locRow } = await supabaseAdmin
       .from('driver_locations')
-      .select('latitude, longitude, updated_at')
+      .select('latitude, longitude')
       .eq('delivery_partner_id', driverId)
       .maybeSingle();
 
     if (!locRow) return; // No location on record, can't determine distance
-
-    const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
-    if (locRow.updated_at < thirtyMinsAgo) return; // Location too stale to be meaningful
 
     const { data: readyOrders } = await supabaseAdmin
       .from('customer_orders')
@@ -500,11 +497,10 @@ async function broadcastToNearbyDrivers(orderId: string) {
 
   const { data: locations } = await supabaseAdmin
     .from('driver_locations')
-    .select('delivery_partner_id, latitude, longitude, updated_at');
+    .select('delivery_partner_id, latitude, longitude');
 
-  const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
   const nearbyIds = (locations || [])
-    .filter((l: any) => l.updated_at >= thirtyMinsAgo && haversineKm(order.delivery_latitude, order.delivery_longitude, l.latitude, l.longitude) <= 10)
+    .filter((l: any) => haversineKm(order.delivery_latitude, order.delivery_longitude, l.latitude, l.longitude) <= 10)
     .map((l: any) => l.delivery_partner_id);
 
   if (!nearbyIds.length) return;
