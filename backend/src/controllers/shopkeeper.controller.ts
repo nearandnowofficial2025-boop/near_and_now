@@ -380,9 +380,9 @@ async function broadcastToNearbyDrivers(orderId: string) {
     .from('driver_locations')
     .select('delivery_partner_id, latitude, longitude, updated_at');
 
-  const twoMinsAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+  const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
   const nearbyIds = (locations || [])
-    .filter((l: any) => l.updated_at >= twoMinsAgo && haversineKm(order.delivery_latitude, order.delivery_longitude, l.latitude, l.longitude) <= 10)
+    .filter((l: any) => l.updated_at >= tenMinsAgo && haversineKm(order.delivery_latitude, order.delivery_longitude, l.latitude, l.longitude) <= 10)
     .map((l: any) => l.delivery_partner_id);
 
   if (!nearbyIds.length) return;

@@ -207,9 +207,9 @@ export class DeliveryController {
       };
 
       const o = order as any;
-      const twoMinsAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+      const tenMinsAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
       const nearbyIds = (locations || [])
-        .filter((l: any) => l.updated_at >= twoMinsAgo && haversine(o.delivery_latitude, o.delivery_longitude, l.latitude, l.longitude) <= 10)
+        .filter((l: any) => l.updated_at >= tenMinsAgo && haversine(o.delivery_latitude, o.delivery_longitude, l.latitude, l.longitude) <= 10)
         .map((l: any) => l.delivery_partner_id);
 
       if (!nearbyIds.length) return res.json({ success: true, broadcast_count: 0, message: 'No drivers online nearby' });

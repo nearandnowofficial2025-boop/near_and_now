@@ -334,11 +334,17 @@ export async function runDeliverySimulation(orderId: string): Promise<void> {
     }).eq('id', (so as any).id);
   }
 
-  // Also create / accept a driver_order_offer so the DriverApp can see the order
+  // Create a pending offer first so the rider app shows the offer card,
+  // then immediately accept it (mirrors what happens in the real dispatch flow).
   await supabaseAdmin.from('driver_order_offers').upsert(
-    [{ order_id: orderId, driver_id: driverId, status: 'accepted', responded_at: new Date().toISOString() }],
-    { onConflict: 'order_id,driver_id' }
+    [{ order_id: orderId, driver_id: driverId, status: 'pending' }],
+    { onConflict: 'order_id,driver_id', ignoreDuplicates: false }
   );
+  // Small pause so the rider app can poll and see the pending offer
+  await sleep(2_000);
+  await supabaseAdmin.from('driver_order_offers').update({
+    status: 'accepted', responded_at: new Date().toISOString(),
+  }).eq('order_id', orderId).eq('driver_id', driverId);
 
   // 7. Build ordered stops
   const storeIds = [...new Set(storeOrders.map((so: any) => so.store_id))];
