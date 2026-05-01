@@ -101,13 +101,10 @@ async function getNearbyStoreIds(
   }
 }
 
-/** Uses STORE_SEARCH_RADIUS_STEPS_KM: smallest radius that returns any store, else []. */
+/** Returns all store IDs within the max configured radius (4 km). */
 async function getNearbyStoreIdsExpanding(lat: number, lng: number): Promise<string[]> {
-  for (const radiusKm of STORE_SEARCH_RADIUS_STEPS_KM) {
-    const ids = await getNearbyStoreIds(lat, lng, radiusKm);
-    if (ids.length > 0) return ids;
-  }
-  return [];
+  const maxRadius = STORE_SEARCH_RADIUS_STEPS_KM[STORE_SEARCH_RADIUS_STEPS_KM.length - 1];
+  return getNearbyStoreIds(lat, lng, maxRadius);
 }
 
 // PostgREST encodes .in() filters in the URL. Large ID lists exceed URL limits and cause Bad Request.
