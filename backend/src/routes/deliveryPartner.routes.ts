@@ -24,6 +24,7 @@ router.get('/orders',                                             ctrl.getOrders
 router.get('/orders/:orderId',                                    ctrl.getOrderById.bind(ctrl));
 router.get('/orders/:orderId/pickup-sequence',                    ctrl.getPickupSequence.bind(ctrl));
 router.post('/orders/:orderId/stores/:allocationId/verify-code', ctrl.verifyPickupCode.bind(ctrl));
+router.post('/orders/:orderId/verify-delivery-otp',               ctrl.verifyDeliveryOTP.bind(ctrl));
 router.post('/orders/:orderId/accept',                            ctrl.acceptOrder.bind(ctrl));
 router.post('/orders/:orderId/reject',                            ctrl.rejectOrder.bind(ctrl));
 router.post('/orders/:orderId/picked-up',                         ctrl.markPickedUp.bind(ctrl));

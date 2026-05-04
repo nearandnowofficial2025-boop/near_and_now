@@ -303,7 +303,8 @@ export class DatabaseService {
         subtotal_amount: 0,
         delivery_fee: 0,
         discount_amount: 0,
-        total_amount: 0
+        total_amount: 0,
+        delivery_otp: String(Math.floor(1000 + Math.random() * 9000)),
       })
       .select()
       .single();
@@ -818,7 +819,8 @@ export class DatabaseService {
         delivery_address: fullAddress,
         delivery_latitude: geocoded.lat,
         delivery_longitude: geocoded.lng,
-        notes: null
+        notes: null,
+        delivery_otp: String(Math.floor(1000 + Math.random() * 9000)),
       })
       .select()
       .single();
@@ -902,15 +904,14 @@ export class DatabaseService {
         throw new Error(itemsError.message || 'Failed to create order items');
       }
 
-      // Create order_store_allocation for this store so shopkeeper can see & accept it
-      const allocationCode = String(Math.floor(Math.random() * 9000) + 1000);
+      // Create order_store_allocation for this store so shopkeeper can see & accept it.
       const { error: allocErr } = await supabaseAdmin.from('order_store_allocations').insert({
         order_id: customerOrder.id,
         store_id: storeId,
         sequence_number: i + 1,
-        pickup_code: allocationCode,
         status: 'pending_acceptance',
       });
+      // Note: pickup_code is set when shopkeeper accepts, not at creation time.
       if (allocErr) {
         console.error('[order placement] Failed to create store allocation (non-fatal):', allocErr.message);
       }

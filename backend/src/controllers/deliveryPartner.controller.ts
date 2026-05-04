@@ -444,6 +444,41 @@ export class DeliveryPartnerController {
     }
   }
 
+  // POST /delivery-partner/orders/:orderId/verify-delivery-otp
+  // Body: { otp: "1234" }
+  // Rider enters the OTP the customer reads aloud to confirm the right order is being handed over.
+  async verifyDeliveryOTP(req: Request, res: Response) {
+    try {
+      const { orderId } = req.params;
+      const { otp } = req.body as { otp?: string };
+
+      if (!otp || !/^\d{4}$/.test(otp)) {
+        return res.status(400).json({ error: 'A 4-digit OTP is required' });
+      }
+
+      const { data: order } = await supabaseAdmin
+        .from('customer_orders')
+        .select('id, delivery_otp, status')
+        .eq('id', orderId)
+        .eq('assigned_driver_id', req.riderId!)
+        .maybeSingle();
+
+      if (!order) return res.status(403).json({ error: 'Not authorized for this order' });
+      if ((order as any).status === 'order_delivered') {
+        return res.json({ success: true, already_done: true });
+      }
+
+      if ((order as any).delivery_otp !== otp) {
+        return res.status(400).json({ success: false, error: 'Incorrect OTP. Ask customer to check their app.' });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error('verifyDeliveryOTP error:', err);
+      res.status(500).json({ error: 'Failed to verify OTP' });
+    }
+  }
+
   async updateProfile(req: Request, res: Response) {
     try {
       const { name, email, address } = req.body as { name?: string; email?: string; address?: string };

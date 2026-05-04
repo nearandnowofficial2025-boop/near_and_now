@@ -93,14 +93,13 @@ export class OrdersController {
 
         // Create the allocation so the shopkeeper sees it and can accept it,
         // which in turn triggers broadcastToNearbyDrivers → rider gets the offer.
-        const pickupCode = String(Math.floor(Math.random() * 9000) + 1000);
+        // pickup_code is set when shopkeeper accepts, not at creation time.
         const { error: allocErr } = await supabaseAdmin
           .from('order_store_allocations')
           .insert({
             order_id: customerOrder.id,
             store_id: storeId,
             sequence_number: seqNum++,
-            pickup_code: pickupCode,
             status: 'pending_acceptance',
           });
         if (allocErr) {

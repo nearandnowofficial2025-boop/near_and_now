@@ -12,7 +12,7 @@ declare module 'express' {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-function pickupCode(): string {
+function randomFourDigit(): string {
   return String((randomBytes(2).readUInt16BE(0) % 9000) + 1000);
 }
 
@@ -189,8 +189,6 @@ export class ShopkeeperController {
         return res.status(409).json({ error: `Already responded: ${alloc.status}` });
       }
 
-      const code = pickupCode();
-
       // Get all items assigned to this store for this order
       const { data: allItems } = await supabaseAdmin
         .from('order_items')
@@ -200,6 +198,8 @@ export class ShopkeeperController {
 
       const allItemIds = (allItems || []).map((i: any) => i.id);
       const unavailableIds = allItemIds.filter((id: string) => !accepted_item_ids.includes(id));
+
+      const code = randomFourDigit();
 
       // Confirm accepted items, unassign unavailable ones for reallocation
       await supabaseAdmin.from('order_store_allocations').update({
@@ -401,11 +401,10 @@ async function reallocateMissingItems(orderId: string, itemIds: string[]) {
     if (!assignable.length) continue;
 
     maxSeq += 1;
-    const code = pickupCode();
 
     const { data: newAlloc } = await supabaseAdmin
       .from('order_store_allocations')
-      .insert({ order_id: orderId, store_id: store.id, sequence_number: maxSeq, pickup_code: code, status: 'pending_acceptance' })
+      .insert({ order_id: orderId, store_id: store.id, sequence_number: maxSeq, pickup_code: randomFourDigit(), status: 'pending_acceptance' })
       .select('id').single();
 
     if (newAlloc) {
