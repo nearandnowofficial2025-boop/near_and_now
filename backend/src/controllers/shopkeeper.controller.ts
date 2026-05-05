@@ -278,7 +278,7 @@ export class ShopkeeperController {
       // Mark store_orders row as delivered
       await supabaseAdmin
         .from('store_orders')
-        .update({ status: 'delivered' })
+        .update({ status: 'order_delivered' })
         .eq('customer_order_id', alloc.order_id)
         .eq('store_id', alloc.store_id);
 
@@ -292,7 +292,7 @@ export class ShopkeeperController {
       if (!remaining?.length) {
         await supabaseAdmin
           .from('customer_orders')
-          .update({ status: 'delivered' })
+          .update({ status: 'order_delivered' })
           .eq('id', alloc.order_id);
       }
 

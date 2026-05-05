@@ -47,7 +47,7 @@ export async function requireRider(req: Request, res: Response, next: NextFuncti
 const ACTIVE_DB_STATUSES = [
   'delivery_partner_assigned',
   'ready_for_pickup',
-  'en_route_delivery',
+  'picking_up',
   'order_picked_up',
   'in_transit',
 ];
@@ -56,7 +56,7 @@ function mapDbStatusToRider(dbStatus: string): string {
   switch (dbStatus) {
     case 'delivery_partner_assigned': return 'rider_assigned';
     case 'ready_for_pickup':          return 'rider_assigned';
-    case 'en_route_delivery':         return 'en_route_delivery';
+    case 'picking_up':                return 'picking_up';
     case 'order_picked_up':           return 'picked_up';
     case 'in_transit':                return 'picked_up';
     case 'order_delivered':           return 'completed';
@@ -324,19 +324,19 @@ export class DeliveryPartnerController {
 
       const { error } = await supabaseAdmin
         .from('customer_orders')
-        .update({ status: 'en_route_delivery', updated_at: new Date().toISOString() })
+        .update({ status: 'in_transit', updated_at: new Date().toISOString() })
         .eq('id', orderId);
 
       if (error) throw error;
 
       await supabaseAdmin
         .from('store_orders')
-        .update({ status: 'en_route_delivery' })
+        .update({ status: 'in_transit' })
         .eq('customer_order_id', orderId);
 
       await supabaseAdmin.from('order_status_history').insert({
         customer_order_id: orderId,
-        status: 'en_route_delivery',
+        status: 'in_transit',
         notes: 'Rider accepted order',
       });
 
@@ -795,16 +795,38 @@ export class DeliveryPartnerController {
         status: 'picked_up', picked_up_at: new Date().toISOString(),
       }).eq('id', allocationId);
 
-      // Check if all stores are now picked up
+      // Check remaining (not yet picked up) allocations, ordered by sequence so we know what's next
       const { data: remaining } = await supabaseAdmin
         .from('order_store_allocations')
-        .select('id').eq('order_id', orderId).not('status', 'eq', 'picked_up');
+        .select('id, store_id, sequence_number')
+        .eq('order_id', orderId)
+        .not('status', 'eq', 'picked_up')
+        .order('sequence_number', { ascending: true });
 
       if (!remaining?.length) {
+        // All stores done — driver heading to customer
         await Promise.all([
           supabaseAdmin.from('customer_orders').update({ status: 'order_picked_up' }).eq('id', orderId),
           supabaseAdmin.from('store_orders').update({ status: 'order_picked_up', picked_up_at: new Date().toISOString() }).eq('customer_order_id', orderId),
           supabaseAdmin.from('order_status_history').insert({ customer_order_id: orderId, status: 'order_picked_up', notes: 'All stores picked up — driver en route to customer' }),
+        ]);
+      } else {
+        // Partial pickup — driver has more stops to visit
+        const nextStoreId = (remaining[0] as any).store_id;
+        const [{ data: nextStore }, { data: allAllocs }] = await Promise.all([
+          supabaseAdmin.from('stores').select('name').eq('id', nextStoreId).maybeSingle(),
+          supabaseAdmin.from('order_store_allocations').select('id').eq('order_id', orderId),
+        ]);
+        const totalStores = allAllocs?.length ?? 0;
+        const doneCount = totalStores - remaining.length;
+        const nextStoreName = (nextStore as any)?.name || 'next stop';
+        await Promise.all([
+          supabaseAdmin.from('customer_orders').update({ status: 'picking_up' }).eq('id', orderId),
+          supabaseAdmin.from('order_status_history').insert({
+            customer_order_id: orderId,
+            status: 'picking_up',
+            notes: `Picked up from stop ${doneCount} of ${totalStores} · heading to ${nextStoreName}`,
+          }),
         ]);
       }
 

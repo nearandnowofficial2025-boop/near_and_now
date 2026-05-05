@@ -1583,16 +1583,20 @@ export class DatabaseService {
 
     const deliveryAgents: Record<string, { id: string; name: string; phone: string; vehicle_number?: string }> = {};
     if (partnerIds.length > 0) {
-      const { data: partners } = await supabaseAdmin
-        .from('app_users')
-        .select('id, name, phone, vehicle_number')
-        .in('id', partnerIds);
-      for (const partner of partners || []) {
-        deliveryAgents[partner.id] = {
-          id: partner.id,
-          name: partner.name || 'Delivery Partner',
-          phone: partner.phone || '',
-          vehicle_number: partner.vehicle_number || undefined,
+      const [{ data: users }, { data: profiles }] = await Promise.all([
+        supabaseAdmin.from('app_users').select('id, name, phone').in('id', partnerIds),
+        supabaseAdmin.from('delivery_partners').select('user_id, vehicle_number').in('user_id', partnerIds),
+      ]);
+      const vehicleByUserId: Record<string, string> = {};
+      (profiles || []).forEach((p: any) => {
+        if (p.vehicle_number) vehicleByUserId[p.user_id] = p.vehicle_number;
+      });
+      for (const user of users || []) {
+        deliveryAgents[user.id] = {
+          id: user.id,
+          name: user.name || 'Delivery Partner',
+          phone: user.phone || '',
+          vehicle_number: vehicleByUserId[user.id],
         };
       }
     }

@@ -122,6 +122,61 @@ export async function updateStoreStatus(req: Request, res: Response) {
 }
 
 /**
+ * Delete a product from a store's inventory (removes the products row).
+ * Uses service-role key to bypass RLS. Verifies the product belongs to the
+ * requesting shopkeeper's store before deleting.
+ */
+export async function deleteStoreProduct(req: Request, res: Response) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    const token = authHeader.slice(7);
+    const { data: user } = await supabaseAdmin
+      .from('app_users')
+      .select('id')
+      .eq('session_token', token)
+      .maybeSingle();
+
+    if (!user) return res.status(401).json({ success: false, error: 'Invalid token' });
+
+    const productId = req.params.productId;
+
+    // Verify this product row belongs to one of the shopkeeper's stores
+    const { data: stores } = await supabaseAdmin
+      .from('stores')
+      .select('id')
+      .eq('owner_id', user.id);
+
+    const storeIds = (stores || []).map((s: any) => s.id);
+    if (!storeIds.length) {
+      return res.status(403).json({ success: false, error: 'No store found for this account' });
+    }
+
+    const { data: product } = await supabaseAdmin
+      .from('products')
+      .select('id, store_id')
+      .eq('id', productId)
+      .in('store_id', storeIds)
+      .maybeSingle();
+
+    if (!product) {
+      return res.status(404).json({ success: false, error: 'Product not found or not owned by you' });
+    }
+
+    const { error } = await supabaseAdmin.from('products').delete().eq('id', productId);
+    if (error) throw error;
+
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error('deleteStoreProduct error:', error);
+    res.status(500).json({ success: false, error: error?.message || 'Failed to delete product' });
+  }
+}
+
+/**
  * Update product quantity
  */
 export async function updateProductQuantity(req: Request, res: Response) {
