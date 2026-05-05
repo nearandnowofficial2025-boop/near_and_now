@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ProductGrid from '../components/products/ProductGrid';
-import { getAllProducts, Product } from '../services/supabase';
+import { getAllProducts, hasNearbyStores, Product } from '../services/supabase';
+import { useLocation } from '../context/LocationContext';
 import { useNotification } from '../context/NotificationContext';
 import { formatCategoryName } from '../utils/formatters';
-import { Search, SlidersHorizontal, X, ChevronDown, Package } from 'lucide-react';
+import { Search, SlidersHorizontal, X, ChevronDown, Package, MapPin } from 'lucide-react';
 
 const ShopPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [noStoresNearby, setNoStoresNearby] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('default');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
@@ -17,9 +19,10 @@ const ShopPage = () => {
   const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [maxPrice, setMaxPrice] = useState(1000);
 
+  const { userLocation } = useLocation();
   const { showNotification } = useNotification();
+  const lastLocationKeyRef = useRef<string | null>(null);
 
-  // Shuffle array function for randomization
   const shuffleArray = <T,>(array: T[]): T[] => {
     const newArray = [...array];
     for (let i = newArray.length - 1; i > 0; i--) {
@@ -29,54 +32,72 @@ const ShopPage = () => {
     return newArray;
   };
 
-  // Fetch products on mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const allProducts = await getAllProducts();
-        // Randomize products for variety
-        const randomizedProducts = shuffleArray(allProducts);
-        setProducts(randomizedProducts);
-        setFilteredProducts(randomizedProducts);
+  const fetchProducts = async (lat?: number, lng?: number) => {
+    try {
+      setLoading(true);
+      setNoStoresNearby(false);
 
-        // Extract unique categories and sort alphabetically
-        const uniqueCategories = Array.from(
-          new Set(allProducts.map(product => product.category))
-        ).filter(Boolean).sort((a, b) => a.localeCompare(b));
-        setCategories(uniqueCategories);
-
-        // Find max price for range slider
-        const calculatedMaxPrice = Math.max(...allProducts.map(product => product.price), 1000);
-        setMaxPrice(calculatedMaxPrice);
-        setPriceRange([0, calculatedMaxPrice]);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        showNotification('Failed to load products. Please try again.', 'error');
-      } finally {
-        setLoading(false);
+      // If we have a location, check whether any stores are nearby first.
+      if (lat != null && lng != null) {
+        const storesExist = await hasNearbyStores(lat, lng);
+        if (!storesExist) {
+          setNoStoresNearby(true);
+          setProducts([]);
+          setFilteredProducts([]);
+          setCategories([]);
+          return;
+        }
       }
-    };
 
-    fetchProducts();
+      const opts = lat != null && lng != null ? { lat, lng } : undefined;
+      const allProducts = await getAllProducts(opts);
+      const randomizedProducts = shuffleArray(allProducts);
+      setProducts(randomizedProducts);
+      setFilteredProducts(randomizedProducts);
+
+      const uniqueCategories = Array.from(
+        new Set(allProducts.map(product => product.category))
+      ).filter(Boolean).sort((a, b) => a.localeCompare(b));
+      setCategories(uniqueCategories);
+
+      const calculatedMaxPrice = Math.max(...allProducts.map(product => product.price), 1000);
+      setMaxPrice(calculatedMaxPrice);
+      setPriceRange([0, calculatedMaxPrice]);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      showNotification('Failed to load products. Please try again.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Re-fetch whenever user location changes (rounded to ~110 m grid to avoid GPS jitter).
+  useEffect(() => {
+    const lat = userLocation?.latitude;
+    const lng = userLocation?.longitude;
+    const key = lat != null && lng != null
+      ? `${lat.toFixed(3)},${lng.toFixed(3)}`
+      : 'no-location';
+
+    if (lastLocationKeyRef.current === key) return;
+    lastLocationKeyRef.current = key;
+
+    fetchProducts(lat, lng);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userLocation?.latitude, userLocation?.longitude]);
 
-  // Apply filters and sorting
+  // Apply filters and sorting whenever products or filter state changes.
   useEffect(() => {
     let result = [...products];
 
-    // Apply category filter
     if (selectedCategory !== 'all') {
       result = result.filter(product => product.category === selectedCategory);
     }
 
-    // Apply price range filter
     result = result.filter(
       product => product.price >= priceRange[0] && product.price <= priceRange[1]
     );
 
-    // Apply search query
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(
@@ -85,40 +106,20 @@ const ShopPage = () => {
       );
     }
 
-    // Apply sorting
     switch (sortBy) {
-      case 'price-asc':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-desc':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case 'name-asc':
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case 'name-desc':
-        result.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      default:
-        // Default sorting keeps the randomized order from initial load
-        // No additional sorting needed
-        break;
+      case 'price-asc': result.sort((a, b) => a.price - b.price); break;
+      case 'price-desc': result.sort((a, b) => b.price - a.price); break;
+      case 'name-asc': result.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case 'name-desc': result.sort((a, b) => b.name.localeCompare(a.name)); break;
     }
 
     setFilteredProducts(result);
   }, [products, selectedCategory, sortBy, priceRange, searchQuery]);
 
-  // Handle category change
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-  };
+  const handleCategoryChange = (category: string) => setSelectedCategory(category);
 
-  // Handle sort change
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortBy(e.target.value);
-  };
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value);
 
-  // Handle price range change
   const handlePriceRangeChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const value = parseInt(e.target.value);
     setPriceRange(prev => {
@@ -128,12 +129,8 @@ const ShopPage = () => {
     });
   };
 
-  // Handle search
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value);
 
-  // Clear all filters
   const clearFilters = () => {
     setSelectedCategory('all');
     setSortBy('default');
@@ -142,7 +139,6 @@ const ShopPage = () => {
     showNotification('Filters cleared', 'success');
   };
 
-  // Check if any filters are active
   const hasActiveFilters = selectedCategory !== 'all' ||
     priceRange[0] !== 0 ||
     priceRange[1] !== maxPrice ||
@@ -151,10 +147,13 @@ const ShopPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 py-8">
-        {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Shop All Products</h1>
-          <p className="text-gray-600">Discover our complete collection of quality products</p>
+          <p className="text-gray-600">
+            {userLocation
+              ? 'Products available from stores near you'
+              : 'Discover our complete collection of quality products'}
+          </p>
         </div>
 
         {/* Mobile Filter Button */}
@@ -175,7 +174,6 @@ const ShopPage = () => {
           {/* Sidebar Filters */}
           <div className={`lg:w-1/4 ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24 border border-gray-100">
-              {/* Filter Header */}
               <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <SlidersHorizontal className="w-5 h-5 text-primary" />
@@ -192,7 +190,6 @@ const ShopPage = () => {
                 )}
               </div>
 
-              {/* Search */}
               <div className="mb-6">
                 <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                   <Search className="w-4 h-4" />
@@ -217,7 +214,6 @@ const ShopPage = () => {
                 </div>
               </div>
 
-              {/* Categories Dropdown */}
               <div className="mb-6">
                 <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                   <Package className="w-4 h-4" />
@@ -251,7 +247,6 @@ const ShopPage = () => {
                 )}
               </div>
 
-              {/* Price Range */}
               <div className="mb-6">
                 <label className="text-sm font-semibold text-gray-700 mb-3 block">
                   Price Range
@@ -262,8 +257,6 @@ const ShopPage = () => {
                     <span className="text-xs text-gray-500">to</span>
                     <span className="text-sm font-medium text-gray-700">₹{priceRange[1]}</span>
                   </div>
-
-                  {/* Dual Range Slider */}
                   <div className="relative h-2 bg-gray-200 rounded-full">
                     <div
                       className="absolute h-full bg-gradient-to-r from-primary to-secondary rounded-full"
@@ -271,42 +264,31 @@ const ShopPage = () => {
                         left: `${(priceRange[0] / maxPrice) * 100}%`,
                         right: `${100 - (priceRange[1] / maxPrice) * 100}%`
                       }}
-                    ></div>
+                    />
                     <input
-                      type="range"
-                      min={0}
-                      max={maxPrice}
-                      value={priceRange[0]}
+                      type="range" min={0} max={maxPrice} value={priceRange[0]}
                       onChange={(e) => handlePriceRangeChange(e, 0)}
                       className="absolute w-full h-2 bg-transparent appearance-none pointer-events-auto cursor-pointer"
                       style={{ zIndex: priceRange[0] > maxPrice - 100 ? 5 : 3 }}
                     />
                     <input
-                      type="range"
-                      min={0}
-                      max={maxPrice}
-                      value={priceRange[1]}
+                      type="range" min={0} max={maxPrice} value={priceRange[1]}
                       onChange={(e) => handlePriceRangeChange(e, 1)}
                       className="absolute w-full h-2 bg-transparent appearance-none pointer-events-auto cursor-pointer"
                       style={{ zIndex: 4 }}
                     />
                   </div>
-
                   <div className="flex gap-3">
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1 font-medium">Min Price</label>
-                      <input
-                        type="number"
-                        value={priceRange[0]}
+                      <input type="number" value={priceRange[0]}
                         onChange={(e) => handlePriceRangeChange(e, 0)}
                         className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary text-sm"
                       />
                     </div>
                     <div className="flex-1">
                       <label className="block text-xs text-gray-500 mb-1 font-medium">Max Price</label>
-                      <input
-                        type="number"
-                        value={priceRange[1]}
+                      <input type="number" value={priceRange[1]}
                         onChange={(e) => handlePriceRangeChange(e, 1)}
                         className="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-primary text-sm"
                       />
@@ -315,7 +297,6 @@ const ShopPage = () => {
                 </div>
               </div>
 
-              {/* Active Filters Summary */}
               {hasActiveFilters && (
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -333,20 +314,14 @@ const ShopPage = () => {
 
           {/* Product Grid */}
           <div className="lg:w-3/4">
-            {/* Sort Bar */}
             <div className="flex items-center justify-between mb-6">
               <div className="text-gray-600 font-medium">
                 Showing <span className="text-primary font-bold">{filteredProducts.length}</span> products
               </div>
-
               <div className="flex items-center gap-2">
-                <label htmlFor="sort-by" className="text-gray-600 font-medium whitespace-nowrap">
-                  Sort:
-                </label>
+                <label htmlFor="sort-by" className="text-gray-600 font-medium whitespace-nowrap">Sort:</label>
                 <select
-                  id="sort-by"
-                  value={sortBy}
-                  onChange={handleSortChange}
+                  id="sort-by" value={sortBy} onChange={handleSortChange}
                   className="border-2 border-gray-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 font-medium text-gray-700 cursor-pointer bg-white"
                 >
                   <option value="default">Random</option>
@@ -358,16 +333,27 @@ const ShopPage = () => {
               </div>
             </div>
 
-            {/* No Results Message */}
-            {!loading && filteredProducts.length === 0 && (
+            {/* No stores nearby state */}
+            {!loading && noStoresNearby && (
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+                <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-10 h-10 text-amber-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">No Stores Near You</h3>
+                <p className="text-gray-600 mb-6">
+                  We don't have a delivery store within 4 km of your location yet. Try a different address.
+                </p>
+              </div>
+            )}
+
+            {/* No results from active filters */}
+            {!loading && !noStoresNearby && filteredProducts.length === 0 && products.length > 0 && (
               <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
                 <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Package className="w-10 h-10 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">No Products Found</h3>
-                <p className="text-gray-600 mb-6">
-                  Try adjusting your filters or search terms
-                </p>
+                <p className="text-gray-600 mb-6">Try adjusting your filters or search terms</p>
                 <button
                   onClick={clearFilters}
                   className="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-xl font-medium transition-all duration-300 transform hover:scale-105"
@@ -377,7 +363,17 @@ const ShopPage = () => {
               </div>
             )}
 
-            {/* Products Grid */}
+            {/* No products at all (no location, empty catalog) */}
+            {!loading && !noStoresNearby && products.length === 0 && !userLocation && (
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+                <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-10 h-10 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Set Your Location</h3>
+                <p className="text-gray-600">Share your location to see what's available near you.</p>
+              </div>
+            )}
+
             {filteredProducts.length > 0 && (
               <ProductGrid products={filteredProducts} loading={loading} />
             )}

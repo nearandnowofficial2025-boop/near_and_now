@@ -68,11 +68,12 @@ export interface ProductFetchOptions {
 
 function getLocationFromStorage(): ProductFetchOptions | undefined {
   try {
-    const s = localStorage.getItem('currentLocation');
+    // LocationContext persists under 'userLocation' with latitude/longitude fields.
+    const s = localStorage.getItem('userLocation');
     if (!s) return undefined;
-    const loc = JSON.parse(s) as { lat?: number; lng?: number };
-    if (typeof loc.lat === 'number' && typeof loc.lng === 'number') {
-      return { lat: loc.lat, lng: loc.lng };
+    const loc = JSON.parse(s) as { latitude?: number; longitude?: number };
+    if (typeof loc.latitude === 'number' && typeof loc.longitude === 'number') {
+      return { lat: loc.latitude, lng: loc.longitude };
     }
   } catch {}
   return undefined;
@@ -105,6 +106,15 @@ async function getNearbyStoreIds(
 async function getNearbyStoreIdsExpanding(lat: number, lng: number): Promise<string[]> {
   const maxRadius = STORE_SEARCH_RADIUS_STEPS_KM[STORE_SEARCH_RADIUS_STEPS_KM.length - 1];
   return getNearbyStoreIds(lat, lng, maxRadius);
+}
+
+/**
+ * Returns true if at least one active store exists within 4 km of the given coordinates.
+ * Use this to determine whether to show the "no stores near you" empty state.
+ */
+export async function hasNearbyStores(lat: number, lng: number): Promise<boolean> {
+  const ids = await getNearbyStoreIdsExpanding(lat, lng);
+  return ids.length > 0;
 }
 
 // PostgREST encodes .in() filters in the URL. Large ID lists exceed URL limits and cause Bad Request.
