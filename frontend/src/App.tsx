@@ -6,7 +6,6 @@ import { NotificationProvider, useNotification } from './context/NotificationCon
 import { GoogleMapsProvider } from './context/GoogleMapsContext';
 import { LocationProvider } from './context/LocationContext';
 import Layout from './components/layout/Layout';
-import AdminLoginPage from './pages/admin/AdminLoginPage';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Import actual page components
@@ -33,8 +32,6 @@ import ShippingPolicyPage from './pages/policies/ShippingPolicyPage';
 import PrivacyPolicyPage from './pages/policies/PrivacyPolicyPage';
 import RefundPolicyPage from './pages/policies/RefundPolicyPage';
 
-// Admin routes
-import AdminRoutes from './routes/AdminRoutes';
 
 // AppContent component to access context values
 const AppContent: React.FC = () => {
@@ -46,10 +43,6 @@ const AppContent: React.FC = () => {
 
   return (
     <Routes>
-      {/* Admin Routes - Outside of main Layout */}
-      <Route path="/admin/login" element={<AdminLoginPage />} />
-      <Route path="/admin/*" element={<AdminRoutes />} />
-
       {/* Frontend Routes - With Layout */}
       <Route path="/*" element={
         <Layout notifications={notifications} removeNotification={removeNotification}>

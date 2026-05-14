@@ -5,7 +5,17 @@
       "Read(//Users/tiasmondal166/project/near-and-now-store-owner/**)",
       "Read(//Users/tiasmondal166/project/**)",
       "Read(//Users/tiasmondal166/projects/NAT_Near_now_rider/**)",
-      "Read(//Users/tiasmondal166/projects/**)"
+      "Read(//Users/tiasmondal166/projects/**)",
+      "Bash(sed -e 's|to=\"/admin/products/add\"|to=\"/products/add\"|g' -e 's|to={`/admin/products/edit/${product.id}`}|to={`/products/edit/${product.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/ProductsPage.tsx)",
+      "Bash(sed -e 's|navigate\\('\\\\''/admin/products'\\\\''\\)|navigate\\('\\\\''/products'\\\\''\\)|g' -e 's|to=\"/admin/products/add\"|to=\"/products/add\"|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/AddProductPage.tsx)",
+      "Bash(sed -e 's|navigate\\('\\\\''/admin/products'\\\\''\\)|navigate\\('\\\\''/products'\\\\''\\)|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/EditProductPage.tsx)",
+      "Bash(sed -e 's|to=\"/admin/categories/add\"|to=\"/categories/add\"|g' -e 's|to={`/admin/categories/edit/${category.id}`}|to={`/categories/edit/${category.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/CategoriesPage.tsx)",
+      "Bash(sed -e 's|navigate\\('\\\\''/admin/categories'\\\\''\\)|navigate\\('\\\\''/categories'\\\\''\\)|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/AddCategoryPage.tsx)",
+      "Bash(sed -e 's|navigate\\('\\\\''/admin/categories'\\\\''\\)|navigate\\('\\\\''/categories'\\\\''\\)|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/EditCategoryPage.tsx)",
+      "Bash(sed -e 's|to={`/admin/orders/${order.id}`}|to={`/orders/${order.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/OrdersPage.tsx)",
+      "Bash(sed -e 's|navigate\\('\\\\''/admin/orders'\\\\''\\)|navigate\\('\\\\''/orders'\\\\''\\)|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/OrderDetailPage.tsx)",
+      "Bash(sed -e 's|to={`/admin/customers/${customer.id}`}|to={`/customers/${customer.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/CustomersPage.tsx)",
+      "Bash(sed -e 's|to=\"/admin/customers\"|to=\"/customers\"|g' -e 's|to={`/admin/orders/${order.id}`}|to={`/orders/${order.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/CustomerDetailPage.tsx)"
     ]
   }
 }
