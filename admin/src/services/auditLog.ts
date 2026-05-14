@@ -29,6 +29,7 @@ export async function logAdminAction(entry: AuditLogEntry): Promise<void> {
       user_id: entry.user_id || null,
       action: entry.action,
       resource_type: entry.resource_type,
+      // resource_id is UUID in DB — only pass valid UUIDs, never plain strings
       resource_id: entry.resource_id || null,
       old_values: entry.old_values || null,
       new_values: entry.new_values || null,
@@ -36,7 +37,6 @@ export async function logAdminAction(entry: AuditLogEntry): Promise<void> {
       user_agent: entry.user_agent || navigator.userAgent,
       status: entry.status || 'success',
       error_message: entry.error_message || null,
-      created_at: new Date().toISOString()
     });
   } catch (error) {
     console.error('Failed to log audit entry:', error);
@@ -59,9 +59,7 @@ export async function logSecurityEvent(
       severity,
       description,
       metadata: metadata || null,
-      ip_address: null, // Would need server-side to get real IP
       user_agent: navigator.userAgent,
-      created_at: new Date().toISOString()
     });
   } catch (error) {
     console.error('Failed to log security event:', error);
@@ -75,9 +73,9 @@ export async function logFailedLogin(email: string): Promise<void> {
   try {
     await supabaseAdmin.from('failed_login_attempts').insert({
       email: email.toLowerCase().trim(),
-      ip_address: null, // Would need server-side to get real IP
+      // ip_address column is inet — omit entirely so DB uses its default/null
+      // (migration sets it nullable; browsers cannot provide real IPs)
       user_agent: navigator.userAgent,
-      attempted_at: new Date().toISOString()
     });
   } catch (error) {
     console.error('Failed to log failed login:', error);

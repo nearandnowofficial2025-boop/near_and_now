@@ -14,6 +14,7 @@ import {
   Users
 } from 'lucide-react';
 import AdminLayout from '../../components/admin/layout/AdminLayout';
+import { supabase } from '../../services/supabase';
 
 interface StoreData {
   id: string;
@@ -36,12 +37,6 @@ const StoresPage = () => {
     try {
       setLoading(true);
       setError(null);
-      // Use admin Supabase directly since store route requires shopkeeper auth
-      const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(
-        import.meta.env.VITE_SUPABASE_URL,
-        import.meta.env.VITE_SUPABASE_ANON_KEY
-      );
       const { data, error: sbError } = await supabase
         .from('stores')
         .select('*')

@@ -1,5 +1,6 @@
 import { supabaseAdmin } from './supabase';
 import bcrypt from 'bcryptjs';
+import { logAdminAction, logSecurityEvent, logFailedLogin } from './auditLog';
 
 // Admin types
 export interface Admin {
@@ -82,49 +83,64 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 // Authenticate admin
 export async function authenticateAdmin(email: string, password: string): Promise<AuthenticatedAdmin | null> {
+  const normalizedEmail = email.toLowerCase().trim();
   try {
-    console.log('🔐 Authenticating admin:', email);
+    console.log('🔐 Authenticating admin:', normalizedEmail);
 
-    // Fetch admin by email from new schema
     const { data: admin, error } = await supabaseAdmin
       .from('admins')
       .select('*')
-      .eq('email', email.toLowerCase().trim())
+      .eq('email', normalizedEmail)
       .eq('status', 'active')
       .single();
 
     if (error || !admin) {
       console.error('❌ Admin not found or error:', error);
+      await logFailedLogin(normalizedEmail);
+      await logSecurityEvent('FAILED_LOGIN', 'medium', `Admin login failed — account not found: ${normalizedEmail}`);
       return null;
     }
 
-    // Verify password
     const isValidPassword = await verifyPassword(password, admin.password_hash);
     if (!isValidPassword) {
-      console.error('❌ Invalid password');
+      console.error('❌ Invalid password for:', normalizedEmail);
+      await logFailedLogin(normalizedEmail);
+      await logSecurityEvent('FAILED_LOGIN', 'medium', `Admin login failed — wrong password: ${normalizedEmail}`);
       return null;
     }
 
-    // Update last login time
+    const token = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString();
+
+    // Record session
+    await supabaseAdmin.from('admin_sessions').insert({
+      admin_id: admin.id,
+      session_token: token,
+      user_agent: navigator.userAgent,
+      expires_at: expiresAt
+    });
+
+    // Update last login timestamp
     await supabaseAdmin
       .from('admins')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', admin.id);
 
-    // Generate session token (simple UUID for now)
-    const token = crypto.randomUUID();
+    await logAdminAction({
+      admin_id: admin.id,
+      action: 'LOGIN',
+      resource_type: 'admin_session',
+      status: 'success',
+      new_values: { email: normalizedEmail, role: admin.role }
+    });
 
-    console.log('✅ Admin authenticated successfully');
+    console.log('✅ Admin authenticated:', normalizedEmail, '| role:', admin.role);
 
-    // Remove password_hash from response
     const { password_hash, ...adminData } = admin;
-
-    return {
-      admin: adminData as Admin,
-      token
-    };
+    return { admin: adminData as Admin, token };
   } catch (error) {
     console.error('❌ Error authenticating admin:', error);
+    await logSecurityEvent('AUTH_ERROR', 'high', `Unexpected error during admin login for ${normalizedEmail}`);
     return null;
   }
 }

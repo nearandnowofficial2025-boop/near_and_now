@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { authenticateAdmin } from '../../services/adminAuthService';
 import { checkRateLimit } from '../../utils/rateLimit';
+import logoUrl from '../../../../near_now_image.png';
 
 const AdminLoginPage = () => {
   const [email, setEmail] = useState('');
@@ -67,7 +68,7 @@ const AdminLoginPage = () => {
         <div className="bg-white rounded-2xl shadow-2xl p-8 transform hover:scale-[1.02] transition-all duration-300">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <img src="/Logo.png" alt="Near & Now" className="h-16 w-16" />
+            <img src={logoUrl} alt="Near & Now" className="h-16 w-16 object-contain" />
           </div>
 
           <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">Admin Login</h1>
