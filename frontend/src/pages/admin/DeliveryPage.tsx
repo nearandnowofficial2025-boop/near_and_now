@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, MapPin, Phone, Mail, User, CheckCircle, XCircle, Map } from 'lucide-react';
 import { useNotification } from '../../context/NotificationContext';
+import AdminLayout from '../../components/admin/layout/AdminLayout';
 
 interface DeliveryPartner {
   id: string;
@@ -178,13 +179,16 @@ const DeliveryPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-10 h-10 border-2 border-primary border-t-transparent rounded-full" />
-      </div>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin w-10 h-10 border-2 border-primary border-t-transparent rounded-full" />
+        </div>
+      </AdminLayout>
     );
   }
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -469,6 +473,7 @@ const DeliveryPage = () => {
         </div>
       )}
     </div>
+    </AdminLayout>
   );
 };
 

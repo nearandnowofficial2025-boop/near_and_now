@@ -1,4 +1,5 @@
 import { HelpCircle, Book, MessageCircle, FileText, Video, Mail } from 'lucide-react';
+import AdminLayout from '../../components/admin/layout/AdminLayout';
 
 const faqs = [
   {
@@ -74,6 +75,7 @@ const HelpPage = () => {
   ];
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       {/* Header */}
       <div>
@@ -147,6 +149,7 @@ const HelpPage = () => {
         </div>
       </div>
     </div>
+    </AdminLayout>
   );
 };
 

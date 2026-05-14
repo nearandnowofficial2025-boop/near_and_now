@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Bell, Check, Filter, Search } from 'lucide-react';
+import AdminLayout from '../../components/admin/layout/AdminLayout';
 
 const NotificationsPage = () => {
   const [filter, setFilter] = useState('all');
@@ -44,6 +45,7 @@ const NotificationsPage = () => {
   });
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -117,6 +119,7 @@ const NotificationsPage = () => {
         </div>
       </div>
     </div>
+    </AdminLayout>
   );
 };
 

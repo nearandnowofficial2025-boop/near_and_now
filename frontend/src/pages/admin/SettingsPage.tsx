@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Settings, Store, Mail, CreditCard, Truck as TruckIcon, Bell } from 'lucide-react';
+import AdminLayout from '../../components/admin/layout/AdminLayout';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -14,6 +15,7 @@ const SettingsPage = () => {
   ];
 
   return (
+    <AdminLayout>
     <div className="space-y-6">
       {/* Header */}
       <div>
@@ -69,6 +71,7 @@ const SettingsPage = () => {
         </div>
       </div>
     </div>
+    </AdminLayout>
   );
 };
 

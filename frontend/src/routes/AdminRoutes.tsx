@@ -21,6 +21,7 @@ import SettingsPage from '../pages/admin/SettingsPage';
 import ProfilePage from '../pages/admin/ProfilePage';
 import HelpPage from '../pages/admin/HelpPage';
 import NotificationsPage from '../pages/admin/NotificationsPage';
+import StoresPage from '../pages/admin/StoresPage';
 import { isAdminAuthenticated } from '../services/secureAdminAuth';
 
 // Secure admin authentication guard using JWT tokens
@@ -217,6 +218,14 @@ const AdminRoutes = () => {
         element={
           <AdminAuthGuard>
             <NotificationsPage />
+          </AdminAuthGuard>
+        }
+      />
+      <Route
+        path="/stores"
+        element={
+          <AdminAuthGuard>
+            <StoresPage />
           </AdminAuthGuard>
         }
       />
