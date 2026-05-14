@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase';
+import { getAdminClient } from './supabase';
 import { Product } from './supabase';
 
 // Image Upload Constants
@@ -14,7 +14,7 @@ export async function uploadProductImage(file: File): Promise<string | null> {
     const filePath = `products/${fileName}`;
 
     // Upload to Supabase Storage
-    const { data, error } = await supabaseAdmin.storage
+    const { data, error } = await getAdminClient().storage
       .from(STORAGE_BUCKET)
       .upload(filePath, file, {
         cacheControl: '3600',
@@ -26,13 +26,13 @@ export async function uploadProductImage(file: File): Promise<string | null> {
       // If bucket doesn't exist, try to create it
       if (error.message.includes('Bucket not found')) {
         console.log('Creating storage bucket...');
-        await supabaseAdmin.storage.createBucket(STORAGE_BUCKET, {
+        await getAdminClient().storage.createBucket(STORAGE_BUCKET, {
           public: true,
           fileSizeLimit: 5242880, // 5MB
           allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
         });
         // Retry upload
-        const { data: retryData, error: retryError } = await supabaseAdmin.storage
+        const { data: retryData, error: retryError } = await getAdminClient().storage
           .from(STORAGE_BUCKET)
           .upload(filePath, file, {
             cacheControl: '3600',
@@ -63,7 +63,7 @@ export async function deleteProductImage(imageUrl: string): Promise<boolean> {
 
     const filePath = urlParts[1];
 
-    const { error } = await supabaseAdmin.storage
+    const { error } = await getAdminClient().storage
       .from(STORAGE_BUCKET)
       .remove([filePath]);
 
@@ -148,7 +148,7 @@ export async function getAdminProducts(): Promise<Product[]> {
     let hasMore = true;
 
     while (hasMore) {
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await getAdminClient()
         .from('master_products')
         .select('*')
         .order('created_at', { ascending: false })
@@ -177,7 +177,7 @@ export async function getAdminProducts(): Promise<Product[]> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('master_products')
       .select('*')
       .eq('id', id)
@@ -228,7 +228,7 @@ function transformMasterProductToProduct(row: any): Product {
 export async function createProduct(product: Omit<Product, 'id'>): Promise<Product | null> {
   try {
     const row = toMasterProduct(product);
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('master_products')
       .insert([row])
       .select()
@@ -261,7 +261,7 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
     if (u.is_loose !== undefined || u.isLoose !== undefined) row.is_loose = u.is_loose ?? u.isLoose;
     if (u.is_active !== undefined || u.in_stock !== undefined) row.is_active = u.is_active ?? u.in_stock;
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('master_products')
       .update(row)
       .eq('id', id)
@@ -282,7 +282,7 @@ export async function updateProduct(id: string, updates: Partial<Product>): Prom
 
 export async function deleteProduct(id: string): Promise<boolean> {
   try {
-    const { error } = await supabaseAdmin
+    const { error } = await getAdminClient()
       .from('master_products')
       .delete()
       .eq('id', id);
@@ -302,7 +302,7 @@ export async function deleteProduct(id: string): Promise<boolean> {
 // Categories Management
 export async function getCategories(): Promise<Category[]> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('categories')
       .select('*')
       .order('name');
@@ -321,7 +321,7 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getCategoryById(id: string): Promise<Category | null> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('categories')
       .select('*')
       .eq('id', id)
@@ -341,7 +341,7 @@ export async function getCategoryById(id: string): Promise<Category | null> {
 
 export async function createCategory(category: Omit<Category, 'id'>): Promise<Category | null> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('categories')
       .insert([category])
       .select()
@@ -361,7 +361,7 @@ export async function createCategory(category: Omit<Category, 'id'>): Promise<Ca
 
 export async function updateCategory(id: string, updates: Partial<Category>): Promise<Category | null> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('categories')
       .update(updates)
       .eq('id', id)
@@ -382,7 +382,7 @@ export async function updateCategory(id: string, updates: Partial<Category>): Pr
 
 export async function deleteCategory(id: string): Promise<boolean> {
   try {
-    const { error } = await supabaseAdmin
+    const { error } = await getAdminClient()
       .from('categories')
       .delete()
       .eq('id', id);
@@ -409,7 +409,7 @@ export async function getProductCountsByCategory(): Promise<Record<string, numbe
     let hasMore = true;
 
     while (hasMore) {
-      const { data: batchData, error: batchError } = await supabaseAdmin
+      const { data: batchData, error: batchError } = await getAdminClient()
         .from('master_products')
         .select('category')
         .range(from, from + batchSize - 1);
@@ -457,7 +457,7 @@ function mapDbStatusToFrontend(dbStatus: string): Order['order_status'] {
 export async function getOrders(): Promise<Order[]> {
   try {
     // Fetch customer_orders with related store_orders and order_items
-    const { data: customerOrders, error } = await supabaseAdmin
+    const { data: customerOrders, error } = await getAdminClient()
       .from('customer_orders')
       .select(`
         *,
@@ -493,7 +493,7 @@ export async function getOrders(): Promise<Order[]> {
     const customerIds = [...new Set(customerOrders.map(co => co.customer_id).filter(Boolean))];
     
     // Fetch customer info for all orders in one query
-    const { data: customers } = await supabaseAdmin
+    const { data: customers } = await getAdminClient()
       .from('app_users')
       .select('id, name, email, phone')
       .in('id', customerIds);
@@ -566,7 +566,7 @@ export async function getOrders(): Promise<Order[]> {
 
 export async function getOrderById(id: string): Promise<Order | null> {
   try {
-    const { data: customerOrder, error } = await supabaseAdmin
+    const { data: customerOrder, error } = await getAdminClient()
       .from('customer_orders')
       .select(`
         *,
@@ -609,7 +609,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
     });
 
     // Get customer info from app_users
-    const { data: customer } = await supabaseAdmin
+    const { data: customer } = await getAdminClient()
       .from('app_users')
       .select('id, name, email, phone')
       .eq('id', customerOrder.customer_id)
@@ -669,7 +669,7 @@ export async function updateOrderStatus(id: string, status: Order['order_status'
 
     const dbStatus = statusMap[status] || status;
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('customer_orders')
       .update({ status: dbStatus, updated_at: new Date().toISOString() })
       .eq('id', id)
@@ -700,7 +700,7 @@ export async function updateOrderStatus(id: string, status: Order['order_status'
 export async function getCustomers(): Promise<Customer[]> {
   try {
     // Fetch all app_users
-    const { data: users, error: usersError } = await supabaseAdmin
+    const { data: users, error: usersError } = await getAdminClient()
       .from('app_users')
       .select('id, name, email, phone, created_at')
       .order('created_at', { ascending: false });
@@ -711,7 +711,7 @@ export async function getCustomers(): Promise<Customer[]> {
     }
 
     // Fetch all customer_orders to aggregate order counts and totals
-    const { data: orders, error: ordersError } = await supabaseAdmin
+    const { data: orders, error: ordersError } = await getAdminClient()
       .from('customer_orders')
       .select('customer_id, total_amount, placed_at')
       .order('placed_at', { ascending: false });
@@ -759,7 +759,7 @@ export async function getCustomers(): Promise<Customer[]> {
 export async function getCustomerById(id: string): Promise<Customer | null> {
   try {
     // Fetch user from app_users
-    const { data: user, error: userError } = await supabaseAdmin
+    const { data: user, error: userError } = await getAdminClient()
       .from('app_users')
       .select('id, name, email, phone, created_at')
       .eq('id', id)
@@ -771,7 +771,7 @@ export async function getCustomerById(id: string): Promise<Customer | null> {
     }
 
     // Fetch customer orders
-    const { data: orders, error: ordersError } = await supabaseAdmin
+    const { data: orders, error: ordersError } = await getAdminClient()
       .from('customer_orders')
       .select('total_amount, placed_at')
       .eq('customer_id', id)
@@ -820,7 +820,7 @@ export async function getDashboardStats() {
     let hasMore = true;
 
     while (hasMore) {
-      const { data, error } = await supabaseAdmin
+      const { data, error } = await getAdminClient()
         .from('master_products')
         .select('id, category')
         .range(from, from + batchSize - 1);
@@ -848,7 +848,7 @@ export async function getDashboardStats() {
     const totalCategories = uniqueCategories.size;
 
     // Get total orders from customer_orders
-    const { data: orders, error: ordersError } = await supabaseAdmin
+    const { data: orders, error: ordersError } = await getAdminClient()
       .from('customer_orders')
       .select('id, status, total_amount, customer_id');
 

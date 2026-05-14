@@ -1,4 +1,4 @@
-import { supabaseAdmin } from './supabase';
+import { getAdminClient } from './supabase';
 import bcrypt from 'bcryptjs';
 import { logAdminAction, logSecurityEvent, logFailedLogin } from './auditLog';
 
@@ -87,7 +87,7 @@ export async function authenticateAdmin(email: string, password: string): Promis
   try {
     console.log('🔐 Authenticating admin:', normalizedEmail);
 
-    const { data: admin, error } = await supabaseAdmin
+    const { data: admin, error } = await getAdminClient()
       .from('admins')
       .select('*')
       .eq('email', normalizedEmail)
@@ -113,7 +113,7 @@ export async function authenticateAdmin(email: string, password: string): Promis
     const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString();
 
     // Record session
-    await supabaseAdmin.from('admin_sessions').insert({
+    await getAdminClient().from('admin_sessions').insert({
       admin_id: admin.id,
       session_token: token,
       user_agent: navigator.userAgent,
@@ -121,7 +121,7 @@ export async function authenticateAdmin(email: string, password: string): Promis
     });
 
     // Update last login timestamp
-    await supabaseAdmin
+    await getAdminClient()
       .from('admins')
       .update({ last_login_at: new Date().toISOString() })
       .eq('id', admin.id);
@@ -148,7 +148,7 @@ export async function authenticateAdmin(email: string, password: string): Promis
 // Get all admins (super_admin only)
 export async function getAdmins(): Promise<Admin[]> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('admins')
       .select('id, email, full_name, role, permissions, created_by, status, last_login_at, created_at, updated_at')
       .order('created_at', { ascending: false });
@@ -168,7 +168,7 @@ export async function getAdmins(): Promise<Admin[]> {
 // Get admin by ID
 export async function getAdminById(id: string): Promise<Admin | null> {
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('admins')
       .select('id, email, full_name, role, permissions, created_by, status, last_login_at, created_at, updated_at')
       .eq('id', id)
@@ -197,7 +197,7 @@ export async function createAdmin(adminData: CreateAdminData): Promise<Admin | n
     // Get default permissions for role if not provided
     const permissions = adminData.permissions || ROLE_PERMISSIONS[adminData.role];
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('admins')
       .insert([
         {
@@ -246,7 +246,7 @@ export async function updateAdmin(id: string, updates: UpdateAdminData): Promise
       updateData.password_hash = await hashPassword(updates.password);
     }
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await getAdminClient()
       .from('admins')
       .update(updateData)
       .eq('id', id)
@@ -271,7 +271,7 @@ export async function deleteAdmin(id: string): Promise<boolean> {
   try {
     console.log('🗑️ Deleting admin:', id);
 
-    const { error } = await supabaseAdmin
+    const { error } = await getAdminClient()
       .from('admins')
       .delete()
       .eq('id', id);

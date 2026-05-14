@@ -38,6 +38,22 @@ export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   }
 });
 
+/**
+ * Returns a Supabase client that includes the admin session token in the
+ * x-admin-token header. PostgREST passes this header into the DB session so
+ * is_admin_authenticated() can validate it via admin_sessions, bypassing RLS.
+ */
+export function getAdminClient() {
+  const token = sessionStorage.getItem('adminToken') || '';
+  if (!token) return supabaseAdmin;
+  return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    global: {
+      headers: { 'x-admin-token': token }
+    },
+    auth: { autoRefreshToken: false, persistSession: false }
+  });
+}
+
 // Product types
 export interface Product {
   unit: string;
