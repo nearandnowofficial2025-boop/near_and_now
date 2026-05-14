@@ -15,7 +15,9 @@
       "Bash(sed -e 's|to={`/admin/orders/${order.id}`}|to={`/orders/${order.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/OrdersPage.tsx)",
       "Bash(sed -e 's|navigate\\('\\\\''/admin/orders'\\\\''\\)|navigate\\('\\\\''/orders'\\\\''\\)|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/OrderDetailPage.tsx)",
       "Bash(sed -e 's|to={`/admin/customers/${customer.id}`}|to={`/customers/${customer.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/CustomersPage.tsx)",
-      "Bash(sed -e 's|to=\"/admin/customers\"|to=\"/customers\"|g' -e 's|to={`/admin/orders/${order.id}`}|to={`/orders/${order.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/CustomerDetailPage.tsx)"
+      "Bash(sed -e 's|to=\"/admin/customers\"|to=\"/customers\"|g' -e 's|to={`/admin/orders/${order.id}`}|to={`/orders/${order.id}`}|g' /Users/tiasmondal166/projects/near-and-now/frontend/src/pages/admin/CustomerDetailPage.tsx)",
+      "Bash(rm fix-addresses.js fix-database-constraint.js build.bat start.bat test.bat index.html fix-instructions.html app.json)",
+      "Bash(rm -rf supabase/schema scripts thunder-tests)"
     ]
   }
 }
