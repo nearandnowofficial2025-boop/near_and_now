@@ -316,7 +316,7 @@ function buildInvoiceData(raw: Awaited<ReturnType<typeof fetchOrderData>>): Invo
 
   // Calculate subtotal before GST (items taxable + fees base + delivery)
   // This represents the amount before final GST calculation
-  const subtotalBeforeFees = itemsTaxableAmount;
+  const _subtotalBeforeFees = itemsTaxableAmount;
 
   // Subtotal with fees (items + platform fee + handling fee + delivery - discount)
   const subtotal = round2(itemsSubtotal + platformFeeWithGst + handlingFeeWithGst + deliveryFee - discountAmount);
@@ -325,7 +325,7 @@ function buildInvoiceData(raw: Awaited<ReturnType<typeof fetchOrderData>>): Invo
   const taxableAmount = round2(itemsTaxableAmount + platformFeeBase + handlingFeeBase);
 
   // Total GST (items GST + platform fee GST + handling fee GST)
-  const totalGstAmount = round2(itemsCgstTotal + itemsSgstTotal + itemsIgstTotal + platformFeeGst + handlingFeeGst);
+  const _totalGstAmount = round2(itemsCgstTotal + itemsSgstTotal + itemsIgstTotal + platformFeeGst + handlingFeeGst);
 
   // Split fee GST into CGST/SGST for intra-state
   const feeCgst = round2((platformFeeGst + handlingFeeGst) / 2);
