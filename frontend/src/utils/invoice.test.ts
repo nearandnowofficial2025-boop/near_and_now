@@ -8,6 +8,7 @@ describe('invoice downloads', () => {
   });
 
   it('downloads customer invoice as html file', () => {
+    vi.useFakeTimers();
     const clickSpy = vi.fn();
     const createElementSpy = vi.spyOn(document, 'createElement').mockImplementation(() => {
       return {
@@ -32,7 +33,16 @@ describe('invoice downloads', () => {
     expect(createElementSpy).toHaveBeenCalled();
     expect(appendSpy).toHaveBeenCalled();
     expect(clickSpy).toHaveBeenCalled();
+
+    // revokeObjectURL is deferred via setTimeout (see invoice.ts) to avoid a
+    // React DOM conflict — advance the fake clock past that delay before
+    // asserting, instead of checking immediately (which always ran before
+    // the callback fired, failing regardless of whether cleanup actually
+    // happens correctly in real usage).
+    vi.advanceTimersByTime(200);
     expect(revokeSpy).toHaveBeenCalled();
+
+    vi.useRealTimers();
   });
 
   it('downloads shopkeeper invoice as html file', () => {
