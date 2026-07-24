@@ -419,6 +419,9 @@ export interface CreateOrderData {
   split_cash_amount?: number;
   split_upi_amount?: number;
   coupon_id?: string;
+  /** Free-text delivery note — the only field the backend actually persists for
+   * things like GSTIN/receiver-for-someone-else info (see placeCheckoutOrder). */
+  notes?: string;
 }
 
 export interface Order {
@@ -468,7 +471,8 @@ export async function createOrder(orderData: CreateOrderData): Promise<Order> {
           shipping_address: orderData.shipping_address,
           ...(orderData.split_upi_amount != null && { split_upi_amount: orderData.split_upi_amount }),
           ...(orderData.split_cash_amount != null && { split_cash_amount: orderData.split_cash_amount }),
-          ...(orderData.coupon_id != null && { coupon_id: orderData.coupon_id })
+          ...(orderData.coupon_id != null && { coupon_id: orderData.coupon_id }),
+          ...(orderData.notes != null && { notes: orderData.notes })
         })
       });
       if (!res.ok) {

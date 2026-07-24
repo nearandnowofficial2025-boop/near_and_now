@@ -486,6 +486,25 @@ const CheckoutPage = () => {
         paymentMethodLabel = `Split — Cash ₹${Math.round(cashAmt)} + UPI ₹${Math.round(upiAmt)}`;
       }
 
+      // The backend only persists a single free-text `notes` field (see
+      // placeCheckoutOrder) — there's no dedicated gstin/receiver-info column
+      // on customer_orders. GSTIN and "order for someone else" receiver details
+      // were previously only saved when the address itself got saved to the
+      // address book, never actually attached to the real order. Fold them into
+      // notes instead, matching the customer mobile app's already-working
+      // equivalent (nearandnowcustomerapp/app/support/checkout.tsx).
+      const notesParts: string[] = [];
+      if (gstinEnabled && gstin.trim()) {
+        notesParts.push(`GSTIN: ${gstin.trim()}${businessName.trim() ? ` (Name: ${businessName.trim()})` : ''}`);
+      }
+      if (orderForOthers) {
+        const rxParts: string[] = [];
+        if (receiverName.trim()) rxParts.push(receiverName.trim());
+        if (receiverPhone.trim()) rxParts.push(receiverPhone.trim());
+        if (receiverAddress.trim()) rxParts.push(receiverAddress.trim());
+        if (rxParts.length) notesParts.push(`Deliver to: ${rxParts.join(' | ')}`);
+      }
+
       const orderData: CreateOrderData = {
         user_id: user?.id,
         customer_name: formData.name,
@@ -498,6 +517,7 @@ const CheckoutPage = () => {
         subtotal: totals.itemsTaxableValue,
         delivery_fee: totals.deliveryFee,
         coupon_id: appliedCoupon?.id,
+        notes: notesParts.length ? notesParts.join(' | ') : undefined,
         items: orderItems,
         shipping_address: {
           address: formData.address,
