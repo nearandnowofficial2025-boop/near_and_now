@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { formatPrice } from '../utils/formatters';
 import { Order, OrderItem } from '../services/supabase';
 import { apiUrl } from '../utils/apiBase';
-import { getAuthHeaders } from '../utils/authHeader';
+import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 
 const THANK_YOU_DISPLAY_SEC = 3;
 
@@ -56,7 +56,7 @@ const ThankYouPage = () => {
 
     const checkDeliveryPartner = async () => {
       try {
-        const res = await fetch(apiUrl(`/api/orders/${orderId}`), { headers: getAuthHeaders() });
+        const res = await authedFetch(apiUrl(`/api/orders/${orderId}`), { headers: getAuthHeaders() });
         if (!res.ok) throw new Error(`Failed: ${res.status}`);
         const data = await res.json();
 
@@ -84,7 +84,7 @@ const ThankYouPage = () => {
     setCancelError('');
 
     try {
-      const res = await fetch(apiUrl(`/api/orders/${orderId}/cancel`), {
+      const res = await authedFetch(apiUrl(`/api/orders/${orderId}/cancel`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() }
       });

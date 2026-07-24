@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { parseGstRatePercent, priceWithGst } from '../utils/priceGst';
 import { apiUrl, shouldUseBackendApi } from '../utils/apiBase';
-import { getAuthHeaders } from '../utils/authHeader';
+import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 
 async function readApiErrorMessage(res: Response): Promise<string> {
   const text = await res.text();
@@ -451,7 +451,7 @@ export async function createOrder(orderData: CreateOrderData): Promise<Order> {
     }
 
     if (shouldUseBackendApi()) {
-      const res = await fetch(apiUrl('/api/orders/place'), {
+      const res = await authedFetch(apiUrl('/api/orders/place'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({
@@ -805,7 +805,7 @@ export async function getUserAddresses(
       params.set('userId', userId);
       if (userPhone?.trim()) params.set('phone', userPhone.trim());
       if (customerPhone?.trim()) params.set('customerPhone', customerPhone.trim());
-      const res = await fetch(apiUrl(`/api/customers/addresses/resolved?${params.toString()}`), {
+      const res = await authedFetch(apiUrl(`/api/customers/addresses/resolved?${params.toString()}`), {
         headers: getAuthHeaders()
       });
       if (!res.ok) {
@@ -893,7 +893,7 @@ export async function createAddress(addressData: CreateAddressData): Promise<Add
     };
 
     if (shouldUseBackendApi()) {
-      const res = await fetch(
+      const res = await authedFetch(
         apiUrl(`/api/customers/${encodeURIComponent(addressData.user_id)}/addresses`),
         {
           method: 'POST',
@@ -955,7 +955,7 @@ export async function updateAddress(addressId: string, _userId: string, updateDa
     if (updateData.landmark != null) payload.landmark = updateData.landmark;
     if (updateData.delivery_instructions != null) payload.delivery_instructions = updateData.delivery_instructions;
 
-    const res = await fetch(apiUrl(`/api/customers/addresses/${encodeURIComponent(addressId)}`), {
+    const res = await authedFetch(apiUrl(`/api/customers/addresses/${encodeURIComponent(addressId)}`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify(payload),
@@ -971,7 +971,7 @@ export async function updateAddress(addressId: string, _userId: string, updateDa
 // Delete an address (soft delete by setting is_active = false)
 export async function deleteAddress(addressId: string, _userId: string): Promise<void> {
   try {
-    const res = await fetch(apiUrl(`/api/customers/addresses/${encodeURIComponent(addressId)}`), {
+    const res = await authedFetch(apiUrl(`/api/customers/addresses/${encodeURIComponent(addressId)}`), {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });
@@ -985,7 +985,7 @@ export async function deleteAddress(addressId: string, _userId: string): Promise
 // Set an address as default
 export async function setDefaultAddress(addressId: string, _userId: string): Promise<Address> {
   try {
-    const res = await fetch(apiUrl(`/api/customers/addresses/${encodeURIComponent(addressId)}`), {
+    const res = await authedFetch(apiUrl(`/api/customers/addresses/${encodeURIComponent(addressId)}`), {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({ is_default: true }),

@@ -1,5 +1,5 @@
 import { Order } from './supabase';
-import { getAuthHeaders } from '../utils/authHeader';
+import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 
 const getApiBase = () => {
   let base = (import.meta.env.VITE_API_URL || import.meta.env.EXPO_PUBLIC_API_BASE_URL || '')
@@ -46,7 +46,7 @@ export async function fetchCustomerOrders(customerId: string): Promise<Order[]> 
     
     console.log('📦 Fetching customer orders from:', url);
     
-    const response = await fetch(url, {
+    const response = await authedFetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export async function fetchOrderById(orderId: string): Promise<CustomerOrderResp
     const apiBase = getApiBase();
     const url = `${apiBase}/api/orders/${orderId}`;
     
-    const response = await fetch(url, {
+    const response = await authedFetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export async function cancelOrder(orderId: string): Promise<{ success: boolean; 
     const apiBase = getApiBase();
     const url = `${apiBase}/api/orders/${orderId}/cancel`;
     
-    const response = await fetch(url, {
+    const response = await authedFetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 import { supabase, supabaseAdmin } from './supabase';
 import { apiUrl } from '../utils/apiBase';
-import { getAuthHeaders } from '../utils/authHeader';
+import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 
 export interface AppUser {
   id: string;
@@ -265,7 +265,7 @@ export async function updateCustomerProfile(userId: string, updates: {
 }
 
 async function postJson(path: string, body?: Record<string, unknown>): Promise<any> {
-  const response = await fetch(apiUrl(path), {
+  const response = await authedFetch(apiUrl(path), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
     body: JSON.stringify(body || {})

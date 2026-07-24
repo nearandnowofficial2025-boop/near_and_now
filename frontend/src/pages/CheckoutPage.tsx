@@ -10,7 +10,7 @@ import { ShoppingBag, CreditCard, Truck, Shield, CheckCircle, MapPin, Lock, Plus
 import LocationPicker from '../components/location/LocationPicker';
 import { calculateCheckoutTotals } from '../utils/checkoutCalculations';
 import { apiUrl } from '../utils/apiBase';
-import { getAuthHeaders } from '../utils/authHeader';
+import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 
 /* ─────────────────────────────────────────────
    Tiny reusable components
@@ -623,7 +623,7 @@ const CheckoutPage = () => {
     setCouponLoading(true);
     setCouponError(null);
     try {
-      const res = await fetch(apiUrl('/api/coupons/validate'), {
+      const res = await authedFetch(apiUrl('/api/coupons/validate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ code, customerId: user.id, orderTotal: cartTotal })

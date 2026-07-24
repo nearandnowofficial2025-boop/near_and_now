@@ -5,7 +5,7 @@ import { formatPrice } from '../utils/formatters';
 import { Order } from '../services/supabase';
 import { fetchCustomerOrders } from '../services/orderService';
 import { apiUrl } from '../utils/apiBase';
-import { getAuthHeaders } from '../utils/authHeader';
+import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 
 /* ─────────────────────────────────────────────
    Styles
@@ -250,7 +250,7 @@ const OrdersPage = () => {
     if (!user?.id) return;
     setInvoiceLoading(order.id);
     try {
-      const res = await fetch(apiUrl(`/api/invoices/order/${order.id}/customer`), {
+      const res = await authedFetch(apiUrl(`/api/invoices/order/${order.id}/customer`), {
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error('Failed to fetch invoice');
