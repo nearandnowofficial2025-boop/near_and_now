@@ -181,6 +181,12 @@ export class ReviewsController {
         .eq('id', req.customerId!)
         .maybeSingle();
 
+      // Reviews go live on submit: the purchase is already proven above, so
+      // there is no approval queue. is_approved must be sent explicitly (the
+      // column defaults to false). The insert fires
+      // trg_recompute_master_product_rating_ins_upd, which updates the
+      // product's rating and rating_count straight away. Admins can still hide
+      // a review (PATCH approve: false) or delete it from the Reviews page.
       const { data: review, error } = await supabaseAdmin
         .from('product_reviews')
         .insert({
@@ -192,6 +198,7 @@ export class ReviewsController {
           title: title?.trim() || null,
           review_text: reviewText?.trim() || null,
           is_verified: true, // purchase already proven above
+          is_approved: true,
         })
         .select('id, rating, title, review_text, is_approved, created_at')
         .single();
@@ -234,6 +241,8 @@ export class ReviewsController {
   }
 
   // GET /api/admin/reviews?status=pending|approved|all
+  // Since reviews auto-publish, 'pending' (is_approved = false) holds only
+  // reviews an admin hid; the admin page labels that tab "Hidden".
   async adminListReviews(req: Request, res: Response) {
     try {
       const status = (req.query.status as string) || 'pending';

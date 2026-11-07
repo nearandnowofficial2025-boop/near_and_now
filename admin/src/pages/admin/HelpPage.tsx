@@ -81,7 +81,7 @@ const faqs: Faq[] = [
   {
     section: 'Catalog',
     q: 'How do customer reviews get published?',
-    a: 'Reviews submitted from delivered orders are listed under Products → Reviews, with Pending and Approved tabs. Approve a review to publish it; only approved reviews are shown to customers.',
+    a: 'Customers can review products from their delivered orders, and each review is published as soon as it is submitted and counts toward the product rating. They are listed under Products → Reviews. Hide a review to take it down (it moves to the Hidden tab and can be published again), or delete it permanently.',
     to: '/products/reviews',
     linkLabel: 'Open Reviews',
   },

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, CheckCircle, Trash2, RefreshCw, BadgeCheck, ChevronDown } from 'lucide-react';
+import { Star, CheckCircle, EyeOff, Trash2, RefreshCw, BadgeCheck, ChevronDown } from 'lucide-react';
 import { getAdminToken } from '../../services/adminSession';
 import { getCurrentAdmin } from '../../services/secureAdminAuth';
 import { hasPermission } from '../../services/adminAuthService';
@@ -116,22 +116,24 @@ interface Review {
 }
 
 // Exact status vocabulary the backend understands: anything else is treated
-// as 'pending', and 'all' means no filter.
+// as 'pending', and 'all' means no filter. Since 2026-11-08 reviews publish
+// on submit (is_approved = true), so 'pending' (is_approved = false) only
+// holds reviews an admin hid; the tabs say Published / Hidden accordingly.
 type Tab = 'pending' | 'approved' | 'all';
 const TABS: TabItem<Tab>[] = [
-  { value: 'pending', label: 'Pending' },
-  { value: 'approved', label: 'Approved' },
   { value: 'all', label: 'All' },
+  { value: 'approved', label: 'Published' },
+  { value: 'pending', label: 'Hidden' },
 ];
 
 const EMPTY_COPY: Record<Tab, { title: string; description: string }> = {
   pending: {
-    title: 'No pending reviews',
-    description: 'Reviews submitted by customers after delivery will appear here for approval.',
+    title: 'No hidden reviews',
+    description: 'Reviews you hide are listed here. Hidden reviews are not shown to customers and do not count toward the product rating.',
   },
   approved: {
-    title: 'No approved reviews',
-    description: 'Reviews will show up here once submitted and approved.',
+    title: 'No published reviews',
+    description: 'Reviews customers submit after delivery are published right away and listed here.',
   },
   all: {
     title: 'No reviews yet',
@@ -147,7 +149,7 @@ const REVIEW_PREVIEW_CHARS = 160;
 const LOAD_ERROR_TITLE = 'Could not load reviews';
 const LOAD_MORE_ERROR_TITLE = 'Could not load more reviews';
 
-type ActionKind = 'approve' | 'delete';
+type ActionKind = 'publish' | 'hide' | 'delete';
 
 const ReviewsPage = () => {
   const currentAdmin = getCurrentAdmin();
@@ -155,7 +157,7 @@ const ReviewsPage = () => {
   const confirm = useConfirm();
   const { showToast } = useToast();
 
-  const [tab, setTab] = useState<Tab>('pending');
+  const [tab, setTab] = useState<Tab>('all');
   const [reviews, setReviews] = useState<Review[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -296,32 +298,41 @@ const ReviewsPage = () => {
     });
   };
 
-  // Approve/delete update the list locally (remove or flip the row, adjust
+  // Publish/hide/delete update the list locally (remove or flip the row, adjust
   // `total`) — that bookkeeping is what keeps the next `offset=reviews.length`
   // correct, so never refetch from zero after an action.
-  const approve = async (id: string) => {
-    if (!beginAction(id, 'approve')) return;
+  const setPublished = async (id: string, publish: boolean) => {
+    const kind: ActionKind = publish ? 'publish' : 'hide';
+    const failure = publish ? 'Failed to publish review' : 'Failed to hide review';
+    if (!beginAction(id, kind)) return;
     try {
       const res = await fetch(apiUrl(`/api/admin/reviews/${id}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', ...adminAuthHeaders() },
-        body: JSON.stringify({ approve: true }),
+        body: JSON.stringify({ approve: publish }),
       });
       const json = await parseJson(res);
-      if (!res.ok || !json.success) throw new Error(responseError(res, json, 'Failed to approve review'));
+      if (!res.ok || !json.success) throw new Error(responseError(res, json, failure));
       if (!mountedRef.current) return;
       const stillListed = reviewsRef.current.some((r) => r.id === id);
-      if (tabRef.current === 'pending') {
+      // The row leaves a tab whose filter it no longer matches; on "All" it flips in place.
+      const leavesTab = tabRef.current === (publish ? 'pending' : 'approved');
+      if (leavesTab) {
         if (stillListed) {
           setReviews((prev) => prev.filter((r) => r.id !== id));
           setTotal((prev) => Math.max(0, prev - 1));
         }
       } else {
-        setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, isApproved: true } : r)));
+        setReviews((prev) => prev.map((r) => (r.id === id ? { ...r, isApproved: publish } : r)));
       }
-      showToast('Review approved. It is now public and counts toward the product rating.', 'success');
+      showToast(
+        publish
+          ? 'Review published. Customers can see it and it counts toward the product rating.'
+          : 'Review hidden. Customers no longer see it and it no longer counts toward the product rating.',
+        'success',
+      );
     } catch (err) {
-      if (mountedRef.current) showToast(errorMessage(err, 'Failed to approve review'), 'error');
+      if (mountedRef.current) showToast(errorMessage(err, failure), 'error');
     } finally {
       endAction(id);
     }
@@ -372,7 +383,7 @@ const ReviewsPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Reviews"
-        description="Customer reviews from delivered orders; approving a review makes it public and counts it toward the product's rating."
+        description="Customer reviews from delivered orders. Reviews are published as soon as they are submitted and count toward the product's rating; hide or delete any that should not be shown."
         actions={
           <Button
             variant="secondary"
@@ -434,13 +445,6 @@ const ReviewsPage = () => {
                         icon={Star}
                         title={emptyCopy.title}
                         description={emptyCopy.description}
-                        action={
-                          tab === 'approved' ? (
-                            <Button variant="secondary" size="sm" onClick={() => setTab('pending')}>
-                              View pending reviews
-                            </Button>
-                          ) : undefined
-                        }
                       />
                     </TableEmptyRow>
                   ) : (
@@ -516,21 +520,35 @@ const ReviewsPage = () => {
                             {formatDateTime(r.createdAt)}
                           </Td>
                           <Td nowrap>
-                            <StatusBadge kind="verification" value={r.isApproved ? 'approved' : 'pending'} />
+                            <StatusBadge kind="generic" value={r.isApproved ? 'published' : 'hidden'} />
                           </Td>
                           {canEditReviews && (
                             <Td align="right" nowrap>
                               <div className="flex items-center justify-end gap-1">
-                                {!r.isApproved && (
-                                  <Tooltip content="Approve">
+                                {r.isApproved ? (
+                                  <Tooltip content="Hide">
                                     <IconButton
-                                      aria-label={`Approve review of ${productLabel}`}
+                                      aria-label={`Hide review of ${productLabel}`}
                                       variant="ghost"
                                       size="sm"
-                                      loading={action === 'approve'}
+                                      loading={action === 'hide'}
+                                      disabled={Boolean(action)}
+                                      className="text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                                      onClick={() => setPublished(r.id, false)}
+                                    >
+                                      <EyeOff />
+                                    </IconButton>
+                                  </Tooltip>
+                                ) : (
+                                  <Tooltip content="Publish">
+                                    <IconButton
+                                      aria-label={`Publish review of ${productLabel}`}
+                                      variant="ghost"
+                                      size="sm"
+                                      loading={action === 'publish'}
                                       disabled={Boolean(action)}
                                       className="text-brand-700 hover:bg-brand-50 hover:text-brand-800"
-                                      onClick={() => approve(r.id)}
+                                      onClick={() => setPublished(r.id, true)}
                                     >
                                       <CheckCircle />
                                     </IconButton>
