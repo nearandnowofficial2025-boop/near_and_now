@@ -1,0 +1,2 @@
+order_code,payment_row_id,field,before,after,reason
+NN20261004-0010,c99c3a3e-f02f-4d75-9e3c-86ba43b73202,status,paid,refunded,Order was cancelled and fully refunded (₹504)

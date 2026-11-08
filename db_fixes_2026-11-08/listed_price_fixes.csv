@@ -1,0 +1,47 @@
+﻿decision,name,unit,current_mrp,current_selling_price,new_mrp,new_selling_price,source_or_reason (searched 8 Nov 2026),product_id
+keep,100% Natural Fruit Gulal (Green) by Standard,80 g,100.0,94.0,,,Gulal 80 g sells for ~₹50–125; ₹100 MRP is real,99b64eb4-f855-48e9-9a90-b85c3a1f1ca3
+keep,100% Natural Fruit Gulal (Orange) by Standard,80 g,100.0,83.0,,,as above,db77baa5-20f1-4d4a-b372-b295b3d57bd3
+keep,100% Natural Fruit Gulal (Pink) by Standard,80 g,100.0,90.0,,,as above,225e384f-577e-44ed-a5cb-2f651c0b3a28
+keep,100% Natural Holi Gulal (Yellow) by Standard,80 g,100.0,86.0,,,as above,3b716291-643e-44cd-a5f3-181c834897b6
+keep,10on Face Tissue (2 Ply),100 pulls,100.0,81.0,,,10on 100 pulls MRP ~₹99 on BigBasket; ₹100 is real,ac1a7208-b026-4d7d-aa98-b3a10386144b
+keep,10on Lite Soft Napkins (1 Ply),100 pulls,100.0,80.0,,,as above,86581ede-27c8-4ce6-b6fe-d7525b6374fe
+keep,10on Lite Super Cocktail Napkins (1 Ply),100 pulls,100.0,94.0,,,as above,9482d0a6-e41e-40f5-99f6-40b9b342ff1c
+keep,10on Soft Face Tissue (2 Ply),100 pulls,100.0,87.0,,,as above,5004f0ab-d47f-4c1c-83c7-2fbc0d0a1afb
+fix,1950 origins Assam Whole Leaf Tea,80 g,1950.0,1755.0,480,451,Amazon via pricehistory.app / thesecretoftea.com,a36923f8-945c-433f-b9d7-32008b4bce1e
+fix,1950 origins Assam-Darjeeling Black Tea,150 g,1950.0,1794.0,680,680,"Closest match Regal Harmony 150 g, thesecretoftea.com",c2428ab5-d09f-4abc-9aef-1bdd9696b884
+fix,24 Mantra Organic Brown Sugar,500 g,500.0,485.0,90,77,BigBasket / Instamart,ea052403-b767-4fc8-83ab-620c6e2afbba
+fix,24 Mantra Organic Turmeric Powder,200 g,200.0,176.0,75,75,BigBasket product page,38badc66-b530-432f-833f-2c62662832a7
+fix,3 in 1 Chikki by Chheda's,100 g,100.0,81.0,60,60,Chheda's 100 g chikki on BigBasket (exact item not found),c0a29538-f554-42f8-a3a4-df94333dc64c
+fix,7UP Soft Drink,750 ml,750.0,645.0,40,38,BigBasket,0ee35f6b-7364-4644-9fec-80e1282598b1
+fix,Aashirvaad Chat Masala,100 g,100.0,75.0,90,77,BigBasket,c518468f-76ac-458f-b546-1d877c8cb856
+fix,Aashirvaad Malai Paneer,200 g,200.0,166.0,91,91,BigBasket,583948f2-884c-40ac-86de-5cce127f6f36
+off,Aashirvaad Mango Lassi,160 ml,160.0,128.0,,,Not found; ₹128 vs ₹10–25 for lassi,6bdf4c32-4b72-484f-8155-6c4d7c6bed94
+off,Aashirvaad Svasti Mango Lassi,130 ml,130.0,120.0,,,Not found; ₹120 vs ₹10–25 for lassi,173298a3-e6a4-4ac8-96a2-c798c57f15fb
+keep,Abzorbzap Moisture Absorber with Activated Charcoal,280 g,280.0,210.0,,,Not found in India; ₹210 within range of similar absorbers,daeeda53-38f4-4375-808c-0c311631a9af
+fix,Adya Organics Date Palm Organic Jaggery Powder,400 g,400.0,348.0,399,348,Flipkart / Smytten MRP ₹399,8641c5a8-e111-478d-9ed1-b81a9cd4e30c
+fix,American Garden Baked Beans in Tomato Sauce,420 g,420.0,357.0,155,155,BigBasket MRP,4986194a-733f-49ce-990b-c98887f820c6
+fix,Amul Gold Fruit N Nut Fantasy Ice Cream Cup,125 ml,125.0,114.0,50,50,BigBasket,a9999587-2247-46b9-a36a-9efd5d6d0161
+off,Apis Multifloral Honey Squeezy,400 g,400.0,368.0,,,Not found; ₹368 vs Apis 500 g MRP ₹260,a2be1e6a-df0b-4e62-9ec3-dfd3f1ff4658
+fix,Bambino Chifferi Regate Daily Pasta (No Maida),500 g,500.0,465.0,150,87,Bambino Daily 500 g on BigBasket (approximate),7ff09540-623c-4811-88b7-704476f8bc0d
+fix,Bambino Durum Wheat Premium All season Fusilli Pasta,400 g,400.0,336.0,99,99,BigBasket MRP,210f9cd4-1e56-4294-be72-99bb45360b8b
+fix,Bambino Durum Wheat Premium All season Penne Pasta,400 g,400.0,316.0,125,58,BigBasket,d4a79587-8e4a-4dfe-b26e-a13c1a8fbcd0
+fix,Bambino Premium Penne 100% Durum Wheat Domestic Pasta,500 g,500.0,435.0,150,87,Bambino Daily 500 g on BigBasket (approximate),6578aeb1-f784-4931-b64a-608370bd9e81
+fix,Bebe Desi Khand,400 g,400.0,304.0,80,76,BigBasket,3dd4ea46-245c-4c89-8e41-740403dceac0
+fix,Bebe Jaggery Powder (Gur Gura),400 g,400.0,344.0,70,63,BigBasket,7dbdcf8b-bcf3-44d5-a41c-f24dad68509d
+off,Biswa Bangla Taal Jaggery Powder,400 g,400.0,344.0,,,Not found; ₹344 vs ~₹63–83 for 400 g jaggery powder,b2271209-d6f7-47bf-9ce6-74610f62e2cf
+fix,Catch Sprinklers - Black Salt (Kaalo Nuun),200 g,200.0,180.0,49,47,BigBasket / Zepto,0b36d92b-7aa4-4ff6-8c77-de0e5301cd1d
+keep,Ching's Secret Red Chilli Sauce + Ching's Secret Green Chilli Sauce + Ching's Secret Superior Dark Soy Sauce Combo,190 g + 200 g + 210 g,190.0,162.0,,,Combo of 3 sauces at ~₹50–56 each; ₹162 in range,cb3c2dd6-25f2-4d28-8feb-6ff3998c098e
+fix,"Ching's Secret Red Chilli Sauce, Bold, Fiery & Aromatic",200 g,200.0,158.0,56,52,BigBasket,ec5b0bd5-0450-4036-970d-5100f5c86724
+fix,Conscious Food Cold Pressed Mustard Oil,500 ml,500.0,440.0,240,195,Amazon via price-history.in,417446b6-6e75-4304-8b03-548fd1c50497
+keep,Daishik Idli Podi Chutney,80 g,80.0,70.0,,,Not found; ₹70 for 80 g within idli podi range,8a91f357-5994-4ae3-a79d-865bc7e956c3
+fix,Dalda Physically Refined Rice Bran Oil (Chaaler Bhurir Tel),840 g,840.0,764.0,200,155,Flipkart,1490ae67-18f9-4bb6-9a30-3d358f793c30
+fix,Del Monte Food Craft Spirali Domestic Pasta,400 g,400.0,352.0,89,75,Del Monte Foodcraft 400 g on BigBasket (approximate),0ba5c014-64af-41f0-95d5-62ecac19923b
+fix,JK Jeera Powder / Cumin Powder (Jeera Gura),100 g,100.0,87.0,78,68,BigBasket,dbe8042d-e239-47a3-89d5-839ba456d983
+fix,Maggi Hot & Sweet Tomato Chilli Ketchup 200 g,200 g,200.0,172.0,80,74,BigBasket,835c02df-a53b-47e6-94db-5b03fb83f6f0
+fix,Maggi Masala-ae-Magic Sabzi Masala (20 Sachets) (Sabji Masala),120 g,120.0,94.0,100,94,BigBasket,65060317-1e2a-4c81-b78d-2a1cc00870be
+fix,Maggi Pazzta Cheese Macaroni Instant Pasta,75 g,75.0,56.0,35,30,BigBasket,c7214a07-cee6-4b36-940d-0526ec04fc11
+fix,Maggi Pazzta Cheesy Tomato Twist Instant Pasta,68.5 g,68.5,56.0,35,30,BigBasket,ac9e1630-6661-4136-9001-d209fb8b118f
+fix,Maggi Pazzta Masala Penne Instant Pasta,69.5 g,69.5,49.0,35,30,BigBasket,84c738cc-b5f4-48e9-8d11-6c81caf1e250
+fix,Maggi Pazzta Mushroom Penne Instant Pasta,68.5 g,68.5,59.0,35,32,BigBasket / Zepto,139e31e1-e9fd-4bc4-922a-4b7239707e86
+fix,Maggi Rich Tomato Ketchup,190 g,190.0,143.0,70,67,BigBasket,61d4c883-5130-4e58-a7b1-e7eac19265c3
+fix,Maggi Rich Tomato Ketchup 960 g,960 g,960.0,902.0,159,143,BigBasket,57e750c9-c8a4-4cb3-bb9e-54681d1e26c9

@@ -1,0 +1,614 @@
+﻿product_id,name,category,gst_before,gst_after,hsn_before,hsn_after,hsn_description_after,reason
+42d296fa-719b-4118-af2f-fdc0cc019b51,Fast&Up Reload Energy & Electrolyte Drink (Cola),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+f385ef17-d7d8-4d7c-8ab4-8ebe2b8c1132,Colgate Dental Cream Toothpaste - 100 Gm,Personal Care,18.0,5.0,3304,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+cc36ef80-e06d-4b02-b333-fc32193ec0e1,Aquawhite Ultra Soft Sensitive Toothbrush - Pack Of 4,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+d482ff78-9784-4b87-b11b-31ea333dad88,Colgate Zig Zag Charcoal Medium Bristle Toothbrush - Pack Of 4,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+87e6b108-8e93-4f02-a780-2c8523a2a773,Liquid IV Hydration Multiplier Electrolyte Drink Mix - Lemon Lime,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+65b829cf-41f8-4f24-be5f-e27f1b3c2dc7,Fast&Up Reload Zero Sugar Electrolyte Drink Mix (Orange),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+bcc9b4a4-1640-40e2-970c-8e56daa86750,Colgate Herbal Toothpaste - 200 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+4d4d6a27-bcb8-4195-94bf-89548642dcff,Boldfit Sweat Sports Gym Head Band,Sports,5.0,5.0,61,6117,"Clothing accessories (headbands), knitted",HSN corrected (was plastics/cosmetics/2-digit)
+341f6789-29ac-4a9f-bd4a-a7fd5d2e951e,Fast&Up Reload Energy & Electrolyte Drink (Blueberry),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+f47ec47f-060f-49bb-a1fb-7e7861581655,Buy Clinic Plus Shampoo - 650 Ml & Free Dove Soap - 50 Gm,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+59798816-b6dc-40bf-af2b-f209a19eb781,Crax Fritts Cream & Onion - 78 Gm,Snacks,18.0,5.0,3304,2106,Food preparations not elsewhere specified,HSN corrected (was plastics/cosmetics/2-digit)
+d5d78faf-1aa7-4162-b1ff-0e8b468978ab,Gillette Lime Shaving Cream - 70 Gm,Personal Care,18.0,5.0,3304,3307,"Beauty, make-up, skincare preparations - face wash, moisturiser, sunscreen, kajal, nail colour",Shaving cream 5% (GST Sept 2025)
+636c6101-345d-4976-82b6-943c471bb099,Colgate Dental Cream Strong Teeth Toothpaste - 500 Gm,Personal Care,18.0,5.0,3304,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+05c04666-3fc5-46be-b2d6-cccdac0d9f1b,Super Saver (Almond - 500 Gm + Cashew - 500 Gm) Combo Pack,Dry Fruits,18.0,5.0,3926,0802,"Nuts (almonds, cashews)",HSN corrected (was plastics/cosmetics/2-digit)
+2ba6de8d-d8e8-4c10-8e8d-b55461de96b3,Rage Coffee Silk Blend Creamy Hazelnut - 60 Gm,Beverages,18.0,5.0,3304,2101,Coffee extracts and preparations,HSN corrected (was plastics/cosmetics/2-digit)
+15f156e3-94a1-4ec4-b927-eb0fc66a9927,Colgate Vedshakti Toothpaste - 400 Gm (Buy 1 Get 1 Free),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+e9e5cb46-e82f-47d5-9bb5-3fcd20941ca4,Continental This Creamy 3 In 1 (sachets) 18 Gm (pack Of 10) - 180 Gm,Beverages,18.0,5.0,3304,2101,Coffee extracts and preparations,HSN corrected (was plastics/cosmetics/2-digit)
+68df3f4c-da6c-4cc3-8ca9-37f86d85d703,Shree Ram Spices Combo (Turmeric - 500 Gm + Chilli - 500 Gm + Coriander - 500 Gm),Spices,18.0,5.0,3926,0910,"Spices (turmeric, chilli and others)",HSN corrected (was plastics/cosmetics/2-digit)
+432450e1-b28d-4516-91c9-70020b426b0b,Colgate Charcoal Clean Bamboo & Mint Toothpaste - 240 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+3c0329f1-541d-4ab8-b855-90351b76797c,Topcan Essentials Soda Water,Beverages,40.0,18.0,2202,2201,"Waters, unsweetened and unflavoured (incl. soda water)",Plain soda water is not in the 40% slab
+239b9f2b-1183-411d-8d41-f4a4c3f801c8,Sober & Co Zero Sugar Soda Water,Beverages,40.0,18.0,2202,2201,"Waters, unsweetened and unflavoured (incl. soda water)",Plain soda water is not in the 40% slab
+8b39f05b-79c2-4367-9c69-fec1790d11d3,Oral B Sensitive And Gums Toothbrush - 4 Pieces,Personal Care,5.0,5.0,1704,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+7ce28997-4dfe-4312-8207-03fcb78c1bf9,Closeup Ever Fresh Red Hot Gmel Toothpaste (Pack of 2) - 150 Gm x 2,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+66aa8d70-7a01-4265-bcdc-23332de88233,Sober Monkey Original Soda Water,Beverages,40.0,18.0,2202,2201,"Waters, unsweetened and unflavoured (incl. soda water)",Plain soda water is not in the 40% slab
+3cc33e62-9a1c-431f-8976-140a66937fa3,Colgate Max Fresh Red Gel Toothpaste - 300 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2904df56-4dd7-4d2f-a0bc-ec1bd5ce8073,Zandu Dantveer Toothpaste - 300 Gm ( Buy 1 Get 1 Free),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+47f98752-db39-4f89-9f66-4018233b408e,Crax Fritts Cream & Onion - 78 Gm (Buy 1 Get 1 Free),Snacks,18.0,5.0,3304,2106,Food preparations not elsewhere specified,HSN corrected (was plastics/cosmetics/2-digit)
+3abc8c33-1500-4dbe-95cd-a53e7d36d88e,Amul Desi Organic Kala Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+f2f4777b-b121-4a6c-94d0-969fe273d8c3,Amul Organic Arhar Dal / Toor Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5268609b-e5c2-4915-be9f-25b33023ea22,Amul Organic Chana Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+4f089a2d-fa8b-47ff-b04f-c1fb6cce4ad8,Amul Organic Kabuli Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1d9c370f-a0b9-4f86-a485-07df99c9d62e,Amul Organic Moong Sabut (Green),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+350da72a-9d4e-4c59-a4c7-8e929f4e28cb,Amul Organic Rajma Chitra,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7c0c1269-c871-4da4-bd1c-71115b0e1063,Amul Organic Red Rajma,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+a872fe8d-860d-4c04-b642-276bea41d678,Amul Organic White Poha,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+f0ecb43c-1094-4f3b-b8c8-36332715e30f,Conscious Food Organic Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+29e152e8-57e5-4b51-8ab5-2265e0e049b1,Conscious Food Urad Dal (Chilka) Split White,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+81342cd4-b452-46ae-ae69-ca1c13786686,Dehaat Honest Farms Pesticide-Free Moong Dal (Dhuli) Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+65176599-8402-4429-8705-cda8f6376667,Fortune Malka Masoor Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+c8480ab0-e80f-475b-bece-288567578d19,Fortune Malka Masoor Unpolished (Desi),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+b8c5aef1-c6b3-4bcb-9c75-ad2abc74a0c9,Fortune Moong Dal (Dhuli) Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+42d32ad4-1e6c-43a5-a8b0-869e033a2308,Fortune Sona Moong Dal Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+a5793cf1-5249-4d26-8c68-0b43c0a30766,JK Sabudana/Badadana/Sago (Boro Sabudana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+55656d8b-e3a6-4cb5-a53c-36edcaa97fbf,Natureland Organic Chana Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+232ffc68-97cc-4986-9b56-46a57e1d7cd7,Natureland Organic Moong Dal (Dhuli) Washed Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+324c5774-cdd1-4d30-8f09-f487274b9927,Natureland Organic Moong Sabut,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+f689d65c-52b2-48f7-82e0-68b0e7419df3,Organic India - Organic Masoor Dal Whole,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+3cef1d0f-642a-4940-943b-e81ac974a5cb,Organic Tattva - Organic Rajma Chitra,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5fadb597-efbb-41a4-a7ac-8e1e9b84ca5c,Organic Tattva Organic Arhar Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ea74cab3-25b4-43ed-afee-4781c1bb505c,Organic Tattva Organic Masoor Dal Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+85fd4be0-4396-4778-9253-946a66d357a1,Organic Tattva Organic Masoor Sabut Whole,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+92c999d0-08db-4094-82d0-8fc47b857331,Organic Tattva Organic Mix Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+63d21efd-7aa2-444d-a82d-d34c9bc46a7f,Organic Tattva Organic Moong Dal (Chilka) Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+a6c749ce-8354-448c-a96b-81d9002455a3,Organic Tattva Organic Moong Dal (Dhuli) Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+9e1798f2-44ce-4a8a-8ffe-9176933b6793,Organic Tattva Organic Moong Sabut,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+0b44b1ed-b23f-4a04-8137-c6e6735553c0,Organic Tattva Organic Urad (Sabut),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7f4997e6-95a5-4711-99ca-001c0f79e5b3,Organic Tattva Organic Urad Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+43c9cf61-8ed7-400a-b18e-d44c86806040,Praakritik Organic Arhar Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8b23bc3a-e0d5-4ac3-89ef-2e824410214d,Praakritik Organic Masoor Dal,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+636c56e8-cab9-4ad3-a7e6-0c280da0fa11,Safe Harvest Kashmiri Pesticide-Free Red Rajma,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+12cd1167-642e-4b25-8c74-a9152443d3b9,Safe Harvest Pesticide-Free Chana Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+cbbe0a50-7d22-4c1e-81e2-9a3ccb462026,Tata Sampann Organic Arhar Dal Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+27c5afd0-8453-4947-8611-b1cb10173b4d,Tata Sampann Organic Chana Dal Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+e3f456fe-2b7f-43e1-ba81-8dc884f383cc,Tata Sampann Organic Kabuli Chana Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+d8fe058d-21a3-4923-9315-3f5ba1238fb7,Tata Sampann Organic Masoor Dal Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+0f253611-7953-403a-abcd-424de6c6e32a,Tata Sampann Organic Moong Dal (Chilka) Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+1a0e160c-7699-4847-a9c9-a493716cfbe9,Tata Sampann Organic Moong Dal (Dhuli) Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+06494b25-0fae-4cc0-94ec-0b12fa14ca78,Tata Sampann Unpolished Green Moong (Sabut) Whole,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+74a8d776-824a-4d90-b59b-75c805009663,Tata Sampann Unpolished Green Moong Dal (Chilka),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+fc518fd0-d431-40c3-bccb-f6d1580bf295,Tata Sampann Unpolished Organic Rajma (Red),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+cdf6aeb3-8fd2-4ad1-96ec-ab3d5efe8cff,Tata Sampann Unpolished Yellow Moong Dal (Dhuli) Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+0ee4b8e2-c779-40be-a83b-d06220d22af4,True Story Organic Sattu,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+bee15650-708d-4210-b010-94945b9c961d,Whole Farm Grocery Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+8ecc48b4-0d3c-4b42-9318-6f05938343de,Whole Farm Grocery Sona Moong Dal,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+6ad65179-882b-4e8c-b4ef-8e309a750415,Whole Farm Premium Black Masoor Dal (Kaalo Masoor Dal),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+1e0cfd44-4abf-4e22-a742-a321b806a8ef,Whole Farm Premium Jowar/Sorghum Millets,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+4f357d5b-758b-41b1-ab59-1049e8d4727b,Whole Farm Premium Kutki/Little Millet/Samai,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+08309ddc-e68e-497e-ab8c-92ddf4ae95f9,Whole Farm Premium Makki Atta (Maize Flour) (Makki Atta (Makai Gura)),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+ea9d1820-2c09-4c64-9a9f-63fa0d8f8b59,Whole Farm Premium Malka Masoor,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+38cc97df-abac-4182-9bf0-3a6dd38223b2,Whole Farm Premium Masoor Chatti (Small),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+5416533c-283e-42fe-915e-5e28fc8cdefa,Whole Farm Premium Masoor Dal,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+b2d50444-7849-4854-9c07-b5d4526a6063,Whole Farm Premium Masoor Dal Bhanga / Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+06b87318-2678-4f57-84d5-d3f82e829ad4,Whole Farm Premium Moong Dal (Dhuli) Yellow,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+36f1a086-0c09-482e-8d49-60a74b547c71,Whole Farm Premium Motidana Sabudana/ Sago (Chhoto Sabudana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+115508d5-9e10-4350-8262-a71a866add58,Whole Farm Premium Sabudana Sago (Boro Sabudana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+d36f9d76-fd9a-4013-b02c-d3eb4d7a435b,Whole Farm Premium Samak/Barnyard Millet/Oodhalu,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+1ace80e1-2af6-4082-b31b-31006bd07258,Aashirvaad 100% Organic Arhar Dal /Tur Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+9394a0a8-827b-40a5-a38e-ade9ec478412,Adya Organics 100% Pure Chana Organic Sattu Powder,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+da4f2554-afb4-4c8e-afdb-4ee08796d200,Amul Organic Masoor Dal,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+6d353548-b830-43a4-b637-23993f872aea,Basic Malka Masoor,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+e605f45b-9346-4b00-9220-768f53508094,Basic Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+e7456edf-0058-4383-946d-1138a1e8ac9e,Fortune Malka Masoor Unpolished (Desi),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+5d09fbff-e13b-4133-a491-baa6a691f997,Just Organik Black Organic Urad (Sabut),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+bfe2d5b1-a324-489b-b9ac-4a0531ff2f64,Just Organik Organic Urad Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+f6a1e6c7-5599-4791-ba18-e9a9927d32cc,Organic Tattva Organic Masoor Dal Malka Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+3e304078-eaf2-4f69-b114-8ddb86108f5d,Pro Nature Organic Kabuli Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+178c8436-f2fc-4dbe-bbbf-b4e9d29719e3,Safe Harvest Pesticide-Free Arhar Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+fe78f2db-ec80-4845-9d49-865d8fda6bd0,Tata Sampann Masoor Dal Unpolished,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+ac03641d-0933-4900-a4c1-5ed0b22f2a64,Tata Sampann Unpolished Black Masoor Dal,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+7753f1a9-e25e-4ef6-a3a2-39737581273a,Tata Sampann Unpolished Moong Dal (Dhuli) Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+99f62455-cd34-482b-b222-72e255fe0d87,Tata Sampann Unpolished Organic Moong Sabut,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+6792ceb6-0b6e-4228-bf7e-123d360b793c,True Elements 100% Wholegrain Premium Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+17e77b53-0a1c-4874-b07e-40f137a77348,True Elements Wholegrain Premium Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+0d681887-c6c5-46be-94f5-a19e9d46a871,Whole Farm Premium Whole Ragi/Finger Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+c007ebd1-d990-4c15-87d9-51e9bb84ef9a,Whole Farm Premium Whole Wheat Grains (Gahu Dana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+5a77be2f-3faf-4734-8516-baa91e889065,Daawat Pulav Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+6403116a-1a79-421f-87bf-0da45933aa6a,Daawat Pulav Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1eced8af-d7bd-4b1e-a35d-35a1308a8ad7,Oral B Pro Health Crisscross Sensitive extra Soft Toothbrush 2+1 On Pack,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+4a953cef-0efa-4c72-92ed-b1091930e645,Colgate Sensitive Care Ultra Soft Toothbrush - Pack Of 5 (Buy 1 Get 1 Free),Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+95a74fcb-3f38-4e92-8c52-0ac21718dc80,Aquawhite Soft & Shine Toothbrush With Cap - Pack Of 3,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+9ffaf8cc-e49c-42d8-b8dd-3baa8fdc25c5,Oral B Cavity Defence 123 Soft Toothbrush - Pack Of 6,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+ab12b4c0-f54d-41c1-9da7-3b8a9c401db5,Colgate Sensitive Care Ultra Soft Toothbrush - Pack Of 5,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+c6e6bcce-3803-4301-bfb5-c31558fd92dc,Colgate Zigzag Charcoal Soft Bristle Toothbrush - Pack Of 4,Personal Care,5.0,5.0,96032100,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+6d1d60f6-d63f-4d05-9b15-12583c8b212d,24 Mantra Organic Sonamasuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8fc62ccc-f2d7-4b79-b2d7-2d39adc7b840,24 Mantra Organic Idli Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8b4de1d4-820f-4832-8242-6cb643a00f0c,24 Mantra Organic White Poha,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+b9a254a6-a5ce-44c5-899d-7fb1140af2e8,Fast&Up Reload Energy & Electrolyte Drink (Orange),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+08f2dc65-72ab-4bb1-b3df-f74b8013de79,Colgate Total Advanced Health Toothpaste - 120 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+d1a20d13-dd3e-47e5-953c-45ad2a734839,Cornitos Nachos Combo Pack 3+1 - Yellow Combo - 215 Gm,Snacks,18.0,5.0,3926,2005,Prepared vegetables / corn snacks,HSN corrected (was plastics/cosmetics/2-digit)
+16ece9ac-fc69-4cef-81ea-4695f22ab783,Liquid IV Sugar Free Raspberry Melon Electrolyte Drink Mix,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+0ee9f98f-bb5c-40c5-89a8-6767f8df5584,Liquid IV Sugar Free Mango Pineapple Electrolyte Drink Mix,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+3d75a4cf-f585-4ab2-a1e9-fd36a2648e55,Fast&Up Reload Instant Energy & Electrolyte (Berry),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+a8d36901-4955-4375-afd7-d521bb9355ef,Cremica Bourbon Cream - 111.4 Gm,Bakery,18.0,5.0,3304,1905,"Biscuits, bread and bakery products",HSN corrected (was plastics/cosmetics/2-digit)
+ab0fdbe5-df83-4a83-864b-c84a6435788d,Colgate Total Advanced Health Toothpaste 140 Gm (Pack Of 2) - 280 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+dfe2eb10-c78d-43ab-ad3b-f6bff42f960c,Liquid IV Hydration Multiplier Electrolyte Drink Mix - Brazilian Orange,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+02a92df1-b23e-4402-9616-50c3f748c777,Liquid IV Hydration Multiplier Electrolyte Drink Mix - Acai Berry,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+e30ba33e-c5af-4842-892a-7dcd2ffb4c97,Navratna Active Deo Cool Talc - 400 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Talcum powder 5% (GST Sept 2025)
+17478a65-fcb4-4dd8-9ddd-129a57cd55f5,Supply6 Salts Electrolyte Mix (Lime & Blue Raspberry),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+a1996ea3-be3d-4b4c-99dd-4f671c1fd5b2,Colgate Strong Teeth Toothpaste - 300 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+beacd348-b403-409d-abba-b9963a2c7efc,Close Up Red Toothpaste - 150 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+1b7cc8bb-d1bf-4d8d-91f3-f0a592d6e207,Colgate Charcoal Clean Bamboo & Mint Toothpaste - 240 Gm (Buy 1 Get 1 Free),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+8e372217-30e6-441e-b83c-4f62484c8d30,Colgate Bamboo Charcoal & Mint Toothpaste - 120 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+10456a26-b2d9-4978-8590-b552c935f3a9,Patanjali Dant Kanti Natural Toothpaste - 200 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+b7f3b655-8313-4cdd-9afb-fb7ef25e6bd5,Patanjali Dantkanti Toothpaste - 200 Gm + 200 Gm +100 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+a80a0256-a20a-4457-9078-3139bf2995d0,Colgate Total Advanced Health Toothpaste 140 Gm (Pack Of 2) - 280 Gm (Buy 1 Get 1 Free),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+c4e389a3-37e6-4033-8575-bbe1bab0558f,Colgate Visible White Toothpaste - 200 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+65e83329-f012-4891-9753-de72022a6cb4,Navratna Cool Active Deo Talc - 100 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Talcum powder 5% (GST Sept 2025)
+e3ecd60f-35e7-46d1-975c-14bca09a4a6c,Colgate Vedshakti Toothpaste Complete Ayurvedic Protection - 140 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+ee21759b-4947-416b-a250-87a76575461e,Zandu Dantveer Toothpaste - 300 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+b0d62617-d401-450b-bcf7-4e2b5840d1c8,Britannia Marie Gold Biscuits (Combo Pack 4 + 1) - 585 Gm,Bakery,18.0,5.0,3926,1905,"Biscuits, bread and bakery products",HSN corrected (was plastics/cosmetics/2-digit)
+337604e9-3c91-4f02-87d8-b26f193545f6,Patanjali Dant Kanti Natural Toothpaste - 800 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+7c6a3e37-4bb3-48ec-b923-a08bc61f843a,Colgate Kids Strawberry Toothpaste - 40 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+f1a0701c-5c3a-4c56-ac77-88c8b159fb2f,Dabur Red Toothpaste -100 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2198fd33-81d7-4816-9035-65c4f2baab32,Colgate Vedshakti Toothpaste - 400 Gm,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+5936f6b7-573f-40dd-b4b9-3f0fe5b44a9f,Sensodyne Expert Toothbrush - Buy 2 Get 1 Free,Health & Wellness,5.0,5.0,3005,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+81ef90b0-3ee5-497e-a80f-a4b7e19dda61,Pantene Silky Smooth Care 2 in 1 Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+98c9b8e3-bb99-493b-bb8c-caa854603782,Biotique Fresh Neem Anti Dandruff Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+a63bbfcd-9043-4ebc-8fac-449dd688f83b,Fix My Curls Cleansing Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+392f957a-198e-43f5-9a3b-9200166708e6,Biotique Green Apple Shine & Gloss Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+6e3f32b5-412a-429c-863f-f404c5018045,"Vidhyadevam Toothbrush Case Box (Plastic, Multicolour)",Household Essentials,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+7dd6011c-5604-4032-8c89-676de87d3599,"7Stars Wall-Mounted Self Adhesive Toothbrush Holder (Plastic, White)",Household Essentials,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+bf909d2e-42a6-481a-a472-38dfab2c912b,"Zulaxy Wall Mount Toothbrush Holder (ABS Plastic, Multicolour)",Household Essentials,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+b0d8c239-7871-4a85-9726-24c2903ab580,Bare Anatomy Ultra-Smoothing Travel Size Hair Care Kit (Shampoo & Hair Mask),Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+f560e595-3936-4c6b-a6c1-f2a18322abaa,"7Stars Toothbrush Case (Plastic, Colour May Vary)",Household Essentials,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+08805eb3-3595-4a5a-ab61-acbb04eddb73,"Zulaxy Wall-Mounted Storage & Toothbrush Holder (ABS Plastic, White)",Household Essentials,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+01f0fb06-95fb-43f6-83dd-1c798a549f8c,Plix Hibiscus Bond Repair Advanced Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+263bc17e-cd3d-4d06-90b1-2ebf82532f77,Plum Soft & Shiny Hair Duo Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+0606e1a4-976f-4c64-87da-c26b482a94b9,Gillette Regular Shaving Foam - 196 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Shaving cream 5% (GST Sept 2025)
+3a98affc-ba48-4f54-8267-05ece965af4a,Gillette Regular Shaving Foam - 418 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Shaving cream 5% (GST Sept 2025)
+60d0ebfb-1b53-4a6b-aa62-e545a5289cfe,Gillette Shaving Foam (sensitive) - 418 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Shaving cream 5% (GST Sept 2025)
+7fd134e5-dacd-4f5a-90b0-15034a9b74ea,Bombay Shaving Company Charcoal Shaving Foam - 425 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Shaving cream 5% (GST Sept 2025)
+e1d46ffa-5f8c-439d-80a9-b3dbb0ad69fa,Bombay Shaving Company Sensitive Shaving Foam - 425 Gm,Personal Care,18.0,5.0,3307,3307,"Shaving preparations, deodorants, body sprays, perfumes, after-shave",Shaving cream 5% (GST Sept 2025)
+12758495-920e-409e-955d-2555e540c717,Parachute Advansed Tea Tree Essential Oil + Gold Coconut Hair Oil Combo,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+c44d3af9-d925-4c4f-8bf4-2659229a3956,Keratine Professional Shampoo & Hair Mask Combo,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+0f5a6bd0-41c8-41cf-b57d-6fbd837a7639,Parachute Advansed Rosemary Essential Oil + Gold Coconut Hair Oil Combo,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+345a603f-d381-4ab7-8c12-be098fc195a5,Curl Up Curly Hair Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+7934f373-ee39-4751-a2d5-07f62a944d23,Curl Up Curly Hair Shampoo & Conditioner with Defining Cream & Hair Gel,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+73369c0d-0b88-4f15-8a9a-68933985b14a,Khadi Natural Amla & Bhringraj Hair Shampoo & Conditioner (Combo Pack),Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+7895c6da-8596-448e-9556-e3a30c7f61d4,Head & Shoulders Silky & Smooth 2-in-1 Shampoo & Conditioner,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+8ce3b732-2814-49f2-a30a-82ea62589ef7,Curl Up Curly Hair Shampoo & Conditioner with Defining Cream,Personal Care,18.0,5.0,3305,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+835011c3-1e29-4160-9070-246e46186049,Liquid IV Hydration Multiplier Lemon Lime Electrolyte Drink Mix,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+0e74ecfb-07a6-42e3-8ff3-66074b0a2162,Liquid IV Sugar Free Juicy Peach Electrolyte Drink Mix,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+a57ebd15-f037-47d4-98f6-367970404dec,Fast&Up L-Carnitine Weight Loss Effervescent Tablets - Pack of 2,Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+0296d98f-dec6-4e3c-8cdd-f6417e6ea0b1,Evereve Maternity Pants,Feminine Care,5.0,5.0,61,6104,"Women's trousers, knitted",HSN corrected (was plastics/cosmetics/2-digit)
+11376bb7-2dc4-46f5-971f-96cade107d53,Organic Tattva Organic Kabuli Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+c911d6c4-9c7a-4e3e-927d-838c31273eb5,Whole Farm Premium Moong & Masoor Dal Mix,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+2f736283-4280-47ba-b836-3d2a4259663e,Whole Farm Premium Moong (Sabut) Green,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+7a272c0e-771c-4148-92c8-891e857f083d,Whole Farm Premium Moong Dal (Chilka) Green,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+e1ac0c47-f261-4a97-8dad-ff9a6292bd1b,Whole Farm Premium Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+549d01a2-f490-49f9-b8fb-a9b99ef10eea,The Millet Company Unpolished Millet Combo,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+02d90583-939f-43ef-a23f-89d9fed18fce,Whole Farm Grocery Malka Masoor,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+7e75bf60-51d2-4dbf-86ff-2744b503815e,Whole Farm Grocery Masoor Dal,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+00e299b1-b0b9-40e3-87a9-3423f30666a3,Whole Farm Grocery Moong Dal (Chilka) Split,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+4fd1b19f-f7c1-47e6-a73e-2e4eb49409fa,Whole Farm Premium Masoor Dal (1 kg),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+58a555cd-b38c-4c1b-be00-e369df39e82b,Whole Farm Premium Moong (Sabut) (1 kg),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+6939d7aa-8f94-4ad3-a086-4d88324e6731,Whole Farm Premium Moong Dal (Dhuli) (1 kg),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+0d64f319-9816-4623-8483-23ccf3f56c60,Whole Farm Premium Kangni/Foxtail Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+bc6d56a5-f001-46cc-8ff8-6e2b285bb63e,Whole Farm Grocery Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ef3fd81c-242f-4d63-84cc-58350488d326,Whole Farm Premium Doodheshwar Rice (Doodheshwar Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+6a4771f8-9128-431d-8265-aeea01b31b61,Whole Farm Premium Atap Parmal Rice (Parmal Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1b3daf24-3d42-40c5-9f15-0145f69e81da,Whole Farm Premium Tulsi Bhog Rice (Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ae4397e3-f773-40f0-b2b1-c7e8dd159975,Whole Farm Premium Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+75abc616-f56f-4e7f-964c-4f50dabb9bf9,Whole Farm Premium Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+108c481e-39fb-485d-bed3-f51c1aef9a05,Organic Tattva Organic Biryani Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+3d00f783-d7ce-4f62-8801-330e9eb46eae,Whole Farm Grocery Raw Broken Rice (Broken Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1e74fae0-fdf6-4d9c-b46b-ad04cb5e733b,Whole Farm Premium Parmal Rice (Parmal Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+095768df-293e-4bc0-85c0-c007d8473d82,Whole Farm Premium Idli Rice (Idli Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+06f94157-d8a3-4230-94d3-8c0cd17e0186,Whole Farm Premium Super Mogra Broken Basmati Rice (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1bf602a2-13ba-4db4-bc4f-9707e736db93,Whole Farm Grocery Broken Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0c52746d-6520-4b67-8853-aa80856c8a68,Whole Farm Grocery Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7c6c98af-8bb3-4e49-8820-40d8ce968474,Whole Farm Premium Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+64e10c77-df16-4e54-a23d-6f1c279fc383,Whole Farm Grocery Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8cb27c70-e5e1-44ad-b743-578f4be8e647,Whole Farm Premium Tulaipanji Rice (Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+588b0a73-3590-42f7-9fa8-e73367dced1e,Whole Farm Grocery Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+254a0760-28ec-426b-833e-6619efcf1723,Whole Farm Grocery Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0c3f6be9-339b-4253-a797-23ae4007de38,Organic Tattva Organic Brown Sonamasuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+31280afb-5654-42db-8d08-45634eec67c5,Whole Farm Grocery Long Grain Parmal Rice (Parmal Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+be7f7781-68cf-4355-8966-dbcfaec1d7cc,Organic Tattva Traditional Organic Basmati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+76b28cc1-552b-4552-bfb4-e6935852fa00,Whole Farm Grocery Ratna Rice (Ratna Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1ce7e5ef-7b76-4c74-87bc-bed5a738ba00,Whole Farm Grocery Idli Rice (Idli Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5af12a22-1b24-471b-badb-5fa1c3e6c33c,Whole Farm Grocery Raw Sonamasuri Rice (6-12 Months) (Medium Grain) (Kaccha Sonamasuri Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+edaef01d-84f3-41ad-857d-98ca97479883,Gillette Regular Shaving Foam (50 g),Personal Care,18.0,5.0,3307,3307,Men grooming and toiletry preparations,Shaving cream 5% (GST Sept 2025)
+b54fdfe1-1766-4c43-9e0a-7b397366a464,Gillette Lemon Shaving Foam,Personal Care,18.0,5.0,3307,3307,Men grooming and toiletry preparations,Shaving cream 5% (GST Sept 2025)
+1542470f-9476-423b-b1c9-6086a3ebb6ab,Vi-John Shaving Foam,Personal Care,18.0,5.0,3307,3307,Men grooming and toiletry preparations,Shaving cream 5% (GST Sept 2025)
+eabcc3bd-15cb-46ab-945d-0ec1137ce37e,Natureland Organic Malka Masoor,"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+a826a1a4-7039-485a-91a9-7172fed8f4b4,Amul Organic Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,0713,0713,Dried leguminous vegetables / pulses,"Branded, pre-packed staple 5%"
+fa9cbba3-fd27-4e17-a69c-e74ec91d39df,Sensodyne Sensitive Toothbrush (With Soft Rounded Bristles) - Buy 2 Get 1 Free,Health & Wellness,5.0,5.0,3005,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+44ab2658-1094-448b-9cda-b6c1b7fadc43,True Elements Wholegrain Gluten-Free Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+b5be9626-d7fc-4ae0-b84e-9c53ffc179e2,Whole Farm Premium Popcorn Kernels//Makki Dana,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+2942594d-8ccc-4e33-a303-304468720616,Whole Farm Premium Barley (Without Skin) (Jau),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+4a809dab-17fc-4394-950e-8a20938804aa,"Farmley Natural Quinoa High Protein, Dietary Fiber & Gluten-Free Superfood","Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+1f186934-1650-4ec0-b5a0-cae91233145d,Whole Farm Premium Quinoa Seeds,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+a8b3e11c-6027-4c05-a573-e47d1832cd63,Natureland Murmure Organic Murmura,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+08c4e715-4e02-4dad-8818-16d81b1ea013,Rajdhani Sabudana,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+17ab4e45-f861-4289-b7bb-d795cf576499,"Farmley Natural Quinoa High Protein, Dietary Fiber & Gluten-Free Superfood","Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+ef768aae-325a-4622-9f90-afc79b27472a,Mille Kangni/Foxtail Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+1115f7ee-ac45-457f-924e-347c404c3243,Whole Farm Premium Rajgira/Amaranth Millet Seeds,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+49ea3023-e691-4322-a724-5b7341d9926c,Organic India - Organic Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+42c88716-2c13-49aa-8d42-69c04d72683b,Whole Farm Premium Chena/Proso Millet/Baragu,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+7f7f4e5f-8c4b-4ae6-9b3f-5bf5b5d3f6eb,Natureland Organic Kodo Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+1543a70c-0105-4264-8a0f-71d51fae78fc,Whole Farm Premium Nylon Sabudana (Chhoto Sabudana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+3c43d1fe-4a69-4b65-853e-84c37eab491f,True Elements Whole Jowar/Sorghum Millets (Jola),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+65a2dbb8-63e9-4948-a3be-04623208f066,True Elements Whole Bajra/Pearl Millets,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+b2672848-f334-40d3-a321-222812b73cc5,True Elements Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+18ce0c1d-2567-47da-9df6-6774994ef29f,Yoga Bar Premium Wholegrain Quinoa (Gluten-free),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+313ee166-2bc4-400f-ba39-dfe36780f8e0,Organic Tattva Organic Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+0e9cdaa8-286b-4713-b645-be3643519a11,Whole Farm Premium Whole Jowar/Sorghum Millets Grains,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+1fdb9f34-acdb-4405-a59b-962797955f50,Whole Farm Premium Kodra/Kodo Millet/Araka,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+76821193-f0af-48e5-9813-fbbc1ecd6bb9,Conscious Food Organic Quinoa Seeds,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+acfda847-292b-4c3c-a32f-f12085320ed9,Natureland Organic Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+bcf322b3-d9f3-4447-8540-503e885b8aa8,Mille Kodra/Kodo Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+24a6ceeb-9a71-4d81-ab16-72fd82f2553e,Nourish You Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+70e36559-89ff-4dde-964a-a40b0f023fcd,Voila Red Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+4702e9b4-2fd5-4aa5-9f74-2a013870c2cd,Whole Farm Premium Bajra/Pearl Millets,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+98138ede-deab-41ce-89b3-a4d9cd9463d4,JK Sago Motidana Sabudana (Chhoto Sabudana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+0e962eb0-ed34-44c2-9226-0eac93da3bf5,Rajdhani Samak/Barnyard Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+c850a81a-46b1-4c54-8029-94cb3c89506f,Mille Samak/Barnyard Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+2ee5769c-600a-46b4-95b6-0cafb9e59f9b,True Elements Whole Rajgira/Amaranth,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+09bdbe21-10bb-45a9-8f0e-565b6bb81408,Mille Sama Kutki/Little Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+410fad73-f3b6-4278-8b0b-abadc30c2b98,"Farmley Natural Quinoa High Protein, Dietary Fiber & Gluten-Free Superfood","Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+65c4d28a-4a8b-46b2-a7f6-13855a2a00bd,Whole Farm Premium Whole Wheat Grains (Gahu Dana),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+bab0a546-775d-487a-9010-9dbd20f0eda1,True Elements Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+1994a50f-11fc-4fac-8856-601ee8ad4cd8,Whole Farm Premium Whole Jowar/Sorghum Millets Grains,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+5fd81e7a-bc41-4d66-a5c7-f59cfb72279f,Yoga Bar Premium Wholegrain Quinoa (Gluten-free),"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+3f9ec0ec-bfc4-4ca8-9773-71f8c7170035,Whole Farm Premium Whole Ragi/Finger Millet,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+01758bd7-b567-498f-b236-f7e7cec28b42,True Elements 100% Wholegrain Premium Quinoa,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+ff0548f0-a8e6-4fb1-b70f-c3d3027aadd8,The Millet Company Unpolished Millet Combo,"Rice, Atta, Dal and Maida",0.0,5.0,1008,1008,Other grains and millets,"Branded, pre-packed staple 5%"
+4b213484-a4ea-4d5e-9ef0-25811e1ab6ef,Closeup White Now Stain Eraser Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+c8e37f9d-41cb-4dcf-b455-37599adc1bad,Sensodyne Deep Clean Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+b469e55d-2b2a-43b0-a70e-b13d3f7d2db7,Closeup White Now - Purple Color Corrector Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+f2dc8d17-856f-44df-853c-29ca51871d13,"Oral-B Pro Clean Sensitive & Gums Toothbrush (Extra Soft, Colour may Vary)",Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+eac70524-27bf-45b7-a3cb-a6e67e7a0c97,Colgate Visible White Purple Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+e4e39a99-73d7-4995-86bf-8e5ff5eee36e,Sensodyne Repair & Protect Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+72010d88-bdcc-4070-9733-31d6b931ed7a,Pepsodent Germicheck 8 Actions Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+8f054648-b605-4ebb-b45f-5f40b349e724,Colgate Visible White Purple Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+03c7c0d0-4ab9-4474-ad72-9c3e2365d6d7,Colgate MaxFresh Rainbow Fresh Gel Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2dca5875-c970-4eb9-b322-3e2d41ec4c4a,Dabur Red Gel Toothpaste for effective Oral Care,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+7d223fa4-6ffa-425e-8be7-65fa82975ada,Sensodyne Pronamel Toothpaste - Fresh Breath,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+86771cb4-e016-42f5-ba19-682d370121cc,Sensodyne Fresh Gel Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+873b0610-2fbe-4345-9936-a2a9927b7e6e,Oral-B Sensitive Care Toothbrush (Extra Soft),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+4821fa29-2782-4e5a-9e0e-d7644e428606,Sensodyne Fresh Mint Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+43cf9e86-dcfc-4b1d-bb82-e090ab647e77,Colgate MaxFresh Peppermint Ice Gel Toothpaste - Saver Pack,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+3da6280b-d4a5-496c-8e25-b0e175a72d51,Sensodyne Sensitive Toothbrush (With Soft Bristles),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+03cf15ea-4b9c-4714-aaff-31077462ec8d,Colgate Total Advanced Health Anti-Germ Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+4215bbde-281e-4548-b648-883fa24f629d,Parodontax Daily Fluoride Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+74e6bfc4-bc95-4956-bf2f-e007c1f19128,Colgate MaxFresh Peppermint Ice Gel Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+e40ba82d-e55c-4dba-9fba-5b8286b4fe7a,Colgate Gentle Sensitive Soft Bristles Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+4864d759-473d-484b-8146-f4a0e335d71f,Colgate Zig Zag Deep Clean Toothbrush (Medium) (Removes Bacteria Between The Teeth),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+bb5a3a49-8dae-4fd2-9459-a2269d55a1b7,Colgate Gentle UltraFoam Bristles Toothbrush (Ultra Soft),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+32ff967d-5805-47a5-8aa3-003b2dd603b1,Colgate Sensitive Toothbrush (Ultra Soft Bristles),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+758a988e-bf5c-4957-92b4-b6dabfd8fec8,Colgate Clove Essence Sensitive Toothpaste - Buy 1 Get 1 Free,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2886db66-a483-4e9f-aec3-ed8890b0b5b9,Colgate SlimSoft Charcoal Toothbrush - Buy 2 Get 2 Free,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+cd0edfcb-7a01-47fc-b7b9-69b44297c31a,"Chicco Kids Toothpaste (Mix Fruit Flavor, 1 - 6 Years)",Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+1b0d6aaf-f929-49f4-b153-584e6ad3cfae,Colgate SlimSoft Charcoal Soft Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+06efd6a4-5759-4114-9b4f-2df3962ecda8,Colgate MaxFresh Watermelon Blast Gel Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+d0c2edc3-e7fa-46a8-8ea5-98de2c6e0bfd,Closeup Everfresh+ Anti-Germ Red Hot Gel Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+a3f47981-3e75-486d-91d8-cd8e5c3f5440,Oral-B Kids Toothbrush (Colour may Vary),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+0ef57d62-31ba-43d1-af90-fa9f824abf9b,Colgate Zig Zag Deep Clean Toothbrush (Medium),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+2ef253f9-6fbf-4f23-9b37-6f99f26c86f2,Colgate Visible White Sparkling Mint Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+c5dea8fa-65a1-46ed-9e44-c321332ce20f,Dabur Meswak Complete Tooth & Gum Care Toothpaste - Mega Saver Pack,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+8689b3f5-cfd5-4100-8196-a651bdaa0a1a,Sensodyne Pronamel Toothpaste - Daily Protection,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+5561aaea-82c7-4e1f-9c91-49ffb157c9e6,Colgate Charcoal Clean Toothpaste (Bamboo Charcoal & Mint),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+0bdd32f1-d86b-4f6a-9b5d-ec1a4c1ce160,Colgate Visible White O2 Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+80625029-a4f8-4d3a-8857-79eef6251680,Oral-B Cavity Defense Toothbrush Set (with Charcoal Extract),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+92b7322d-100e-4838-97a1-b1939240963d,Parodontax Ultra Clean Expert Gum Care Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+76c67b34-c128-416d-8053-44262ec96ef6,Colgate Kids Toothpaste ((2 - 5 years) - Strawberry Flavor),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+57dc7bff-d87a-4340-a170-9131c8e1d071,Perfora Super Soft Toothbrush (OG Black),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+b8656f6f-52f9-47b4-9d17-56515e4f6a70,Colgate Batman Extra Soft Kids Toothbrush (5+ Years),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+042d236a-0938-4fb2-86ae-b434913f25ea,Colgate Barbie Strawberry Baby Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+59285a65-0403-46d9-872b-1d3fb839c3a2,Colgate PerioGard Gum Expert Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+22cfb6b5-065d-4dde-83ab-30e75791d924,Colgate Smiles Barbie Extra Soft Kids Toothbrush (Ages 5+),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+4a46a87d-3f2b-4ba4-8ac7-17dd272a7286,Clove Oral Care Ultimate Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+6a8f8b47-6915-44b3-b204-60e468e77935,Colgate MaxFresh Charcoal Gel Toothpaste (130 g),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+49586eda-da1c-4c91-91dd-0519928f5b20,Oral-B Criss Cross Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+1f9181d8-55d7-429b-9e1d-891ef073ec0b,Colgate (2+ Years) Gentle Soft Kids Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+1d57845c-f3dd-4413-a33b-d1823e889da6,Sensodyne Complete Protection + Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2133b82a-fa0c-4f85-b55b-29f156d34681,Sensodyne Deep Clean Toothbrush - Buy 2 Get 1 Free,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+b44dd208-cb33-4706-a852-f898ab4116b0,Colgate Zig Zag Charcoal Toothbrush (Medium),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+22fea801-cf6a-4056-904f-c42079ae0389,Colgate Zig Zag Deep Clean Toothbrush (Soft) - Buy 2 Get 1 Free,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+9912e033-7ea8-4654-8fd9-f47d8f6ec0fe,Oral-B Crisscross Toothbrush (Buy 2 Get 2 Free),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+2a0825da-d953-4c43-83a5-50b163280edc,Perfora Dream White - Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+f2dc9c47-a69e-48a8-a31b-d71549db3134,Vantej Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+d17e3ed2-c908-4264-bd86-6d9a2f295b17,Vicco Vajradanti Ayurvedic Tooth Powder,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+9ae555dd-7c1b-497b-8e05-64467cba9ce2,Colgate Bamboo Charcoal & Mint Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+749b6266-095c-4afc-a229-e88ea6d89bcf,Colgate Sensitive Care Toothbrush (Ultra Soft),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+37138e80-1a2c-471b-9b3e-cc9cdb61988a,Colgate Extra Soft Baby Toothbrush (0 - 2 Years),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+1dc50b9c-e079-4a56-a9c6-e95ba63d9664,Colgate Visible White O2 Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+2a43f8b5-eeb6-457e-becd-1768035db35a,Oral-B Sensitive Toothbrush (Extra Soft),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+634ac640-994e-441b-a76d-5e365868c058,Perfora Activated Charcoal Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+0e94cf57-e3a0-492c-af0b-81196f62952c,Colgate Everyday Protection Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+30d5ea79-def4-4764-8c2f-7fc2b6f64b44,Colgate Total Anti-Tartar Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+6272bfd9-33c1-4dbf-8edc-0311bd1e26cb,Sensodyne Repair & Protect Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+0be930d3-77a8-4648-9648-4af39ec0e9a5,Chicco Apple-Banana Kids Toothpaste (6m to 6 yr),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+3c34ed5a-1d91-4820-94c5-85c123a038af,Colgate Batman Bubble Fruit Flavour Kids Toothpaste (6+ Years),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+333d3e05-8de4-46d7-bd2a-73720c0bdc2f,Colgate Cocomelon Kids Toothpaste (for 2-5 Years (Strawberry)),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+1bd7dba9-e04c-4dc0-8bb6-efbc0e2fe8c8,Colgate Kids Anticavity Motu Patlu Bubble Fruit Flavour Kids Toothpaste (6+ years),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+63987f6d-8ccb-4a45-ba3b-34c352a994ce,Colgate Lemon Fresh Gel Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+5daa17fc-2bf2-4269-94fa-967462f9abf8,Colgate Total Charcoal Deep Clean Antibacterial Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+e4f8a9a0-7197-43b6-81ef-1d31ef52988d,Colgate Visible White O2 Whitening Toothpaste (25 g),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+dfe2d3ac-40ec-4efa-a1fb-bdc5e7f60193,Sensodyne Whitening Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+11acfc50-962f-45b4-bab7-69f67761ca44,"Dabur Herb'l Kids Toothpaste (Ironman, 3+ years, Strawberry Flavour)",Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+15974d12-55f1-4c11-8cf3-479bc3ef8e07,Dabur Herb’l Activated Charcoal Herbal Toothpaste With Mint,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+a031820b-59f3-4c08-b9dc-72bde909bdc0,Clove Oral Care Hydrate Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+57210037-8ba0-41ae-9779-e660ce91500c,Colgate Natural Strawberry Flavour Kids Toothpaste (3-5 years),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+b1ff1c94-4cba-4999-b549-c7452ca47c75,Colgate Total Plaque Release Toothpaste 3X Powerful,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+795adb90-7295-4488-a837-21fce446d6d5,Patanjali Dant Kanti Advance Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+7dcbfdd9-4c0e-487b-8625-a6a9be788b3d,Beco Wooden Bamboo Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+117c6c17-84ce-4e63-9494-362a606fec29,Colgate Gentle Enamel Toothbrush - Buy 2 Get 2 Free,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+2a08800d-63de-4c4d-9269-055512ac9c90,Oral-B Criss Cross Toothbrush (Soft),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+3462ef0d-629a-4f72-b0ed-37fbe0af3872,Oral-B Cross Action Power Electric Toothbrush Refill (Head),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+6745d64a-1206-41fd-aa16-13b194f32ec6,Perfora Super Fresh Teeth Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+72df7bc9-ca4e-43b0-8e01-44df91d37dcd,Oral-B Cross Action Electric Toothbrush (Battery Powered),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+15069a8a-3290-48ac-89b1-47b30480b3f8,Perfora Xtraaa Fresh Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+09e0500a-28f5-49d1-a955-b835ea1de0d7,Sensodyne Rapid Relief Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+9a061507-80ae-44c5-bdb8-f5082948acd3,Colgate Natural Strawberry Mint Flavour Kids Toothpaste ((6-9 Years)),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+59e51a08-11fb-4606-b59f-d2bf8280dcc2,Oral-B Cross Action Electric Toothbrush Refill (Head),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+0cd3870d-471a-4cd1-b4d6-d0f1f5ca81ff,"Dabur Herb'l Kids Toothpaste (Frozen, 3+ years, Strawberry Flavour)",Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+e4991841-1316-4c99-bb5f-2c403ac47948,Oral-B Vitality 100 Criss Cross Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+65125916-dcb5-4bfa-9e96-da25e12d6da4,Closeup Gel Toothpaste For Fresh Breath & White Teeth,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+18a27a53-3409-469f-aae7-58e750ce4ec0,Perfora Smart Electric Toothbrush (Dark Night),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+67004677-60e1-4a95-9779-98cf03065266,Oral-B Vitality Pro with Sensitive Plus Rotating Rechargeable Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+97128318-cd01-4a28-9226-da50f5995362,Oral-B Sensitive Clean Electric Toothbrush Refill,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+5263cc5a-f74e-4bce-a2f5-ac72e1cd667e,Clove Oral Care Revive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2e50c886-32de-443e-bbce-5e479d2d9d99,Clove Oral Care Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+92e027d6-9dfd-429a-94ce-71f8f0bb88cd,Colgate Kids Toothpaste (for 2-5 Years (Bubblefruit flavour)),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+ee91224f-6f0f-4549-a63f-8c3783c85643,Oral-B iO9 Rechargeable Smart Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+2c80e489-1a2e-4111-9e8f-88df4af9abfa,Oral-B Cavity Defense Bacterial Fighter Toothbrush (Soft - Pack of 6),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+23469c2c-8983-4584-85fd-816f456a4879,Perfora Purple Magic Whitening Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+048ff610-3855-4a81-b7fa-d67ebe011d8d,Oral-B iO Ultimate Clean Electric Toothbrush Refill,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+1b6337c4-eac5-4665-97b2-23ee896bb8bb,Oral-B iO3 Blue Ultimate Clean Electric Toothbrush (for Adults),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+3b0d280a-b4f8-485f-b653-26db862d496e,Colgate Batman Extra Soft Kids Electric Toothbrush (3+ Years),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+12db7408-9ab9-4211-bbbb-65a72318cfe2,Myorl-Care My1Brush- 3-Sided Soft Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+49f0896c-7bb8-4955-9bfc-684e4dabaa4b,Colgate Barbie Extra Soft Kids Electric Toothbrush (3+ Years),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+4d5c2ab1-f399-4b72-8390-a8c82103d481,Oral-B Pro Expert Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+de8f15d6-9f74-42ff-ae8e-bc39fb228c5d,"Zulaxy Toothbrush Case (Plastic, Multicolour)",Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+29b40be9-7bd3-42d8-9e84-4cf123aaa1ba,Agaro Cosmic Lite Sonic Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+b2e086ca-32bd-4ab7-83e8-30a1d1eedb96,Vantej Tooth Sensitive Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2327a98a-7b40-446a-9212-178df797cc2b,Awenest Bamboo Toothbrush Set,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+6c2f766b-3ec2-42f6-a085-661831b53246,Colgate Sensitive Plus Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+285f0a88-6059-4fc7-98cd-a27bdcaf057a,Clove Oral Care Color Changing Kids Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2139c1a8-586c-40b3-ac55-be1e681b4784,Awenest Bamboo Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+34ddd18d-e165-404b-b213-ede1d27a95bb,UltraCare PRO Uniq Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+9a0e6b0b-4eea-4936-aae4-efa807db25b6,Athelas Natural Premium Bamboo Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+04c068d3-596f-4b4e-831e-5f9a3866f573,Ausha Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+00354652-d4d3-4ba5-9f25-1c44403cb00f,Colgate Total Sensitive Antibacterial Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+83a3ada9-d5dd-4a07-b32a-5f8a012540a9,Salt. Dusk Night Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+62e337a3-84dc-41c8-8b32-101bebebda3f,Salt. Senergy Sensitive Toothpaste (Grapefruit),Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+4092b15b-affe-4f23-b2d9-8d781afad6c7,Ausha Pink Electric Toothbrush,Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+49d48161-f3d1-4b18-8bcd-f9fe619f02cb,MAHARISHI ayurveda Ayurdent Classic Herbal Toothpaste,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+8e81876a-ca5d-41d2-91c6-a433e195daee,Bentodent Teeth Whitening Toothpaste Charcoal,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+4cb3e1a9-04a0-43cf-975b-a6de811cb969,Dencrus Soft Bamboo Charcoal Toothbrush Set (Pack of 5),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+5c2914f2-37c0-4de1-ad7b-e30ef91645e6,Perfora Awake Fresh Breath Toothpaste - Pack of 2,Personal Care,18.0,5.0,3306,3306,Preparations for oral or dental hygiene,Toothpaste 5% (GST Sept 2025)
+2e0c074f-7f9f-4fab-b01e-5c7a95b30ac4,Dr. Brown's Silicone Finger Baby Toothbrush (With Case),Personal Care,18.0,5.0,3306,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+3ff8d1b8-520b-40f4-b929-6003f2c65603,24 Mantra Organic Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1f41ef19-d6d4-4be3-bd5e-fb32e096a13b,Organic Tattva - Organic Kala Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+d7dbad97-4c45-4cc5-811f-5a40bfe7064c,24 Mantra Organic Tur / Arhar Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+be7d4463-7908-4de1-aac4-425f95c135ce,Natureland Organic Kabuli Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+00b0a922-19dc-4039-bd6e-a3bb158b274a,Organic Tattva - Organic Red Rajma,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+3986cd53-ea60-4bd7-ad99-d167a217a0eb,Organic Tattva Organic Chana Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+04c9cae1-4d9c-4666-bfb3-e83c0954676a,Natureland Organic Arhar Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5e08ed01-892e-4771-b918-2c06c7e4bc2d,Organic Tattva Whole White Organic Urad (Sabut),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+79941df9-7c53-40a7-9c20-2d335e2f9760,Pro Nature Organic Kala Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+a98b8bd5-f9c8-448d-85f9-9ee24a8be151,Safe Harvest Pesticide-Free Kabuli Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5c1ddaaa-ba97-4ba4-a834-64651356f258,Lalbaba Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5fb4bbe6-c6e8-4c11-99a8-9765bdaf5a24,Safe Harvest Pesticide-Free Urad Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+9b9add8a-fc26-4821-baa5-39b81fddbb5c,Daawat Govindo Bhog Rice 1 Kg,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5e927d0e-e3fe-451f-9a57-cc982f678c3e,Tata Sampann Unpolished Kabuli Chana (Medium Size),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+03a5fa06-834a-48d6-9427-21bc2e3665c8,Whole Farm Grocery Kabuli Chana (Medium Size),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+e9f5bb58-af11-4c5a-bcc3-235270261c52,Whole Farm Grocery White Dried Peas/Safed Matar (Shada Sukno Matar),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+76a12dce-6547-46b9-9df4-0a9bfab5eb54,Emami Healthy & Tasty Advans Soya Chunks,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+3debbdd7-b371-4472-b470-84c142a43ed4,India Gate Super Basmati Rice (1 kg + 500 g) (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1c2184e6-f6ea-4b49-847e-2ff86ea4d049,Basic Rajma (Desi),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+85c4603f-d271-4dc5-8a6e-f354cc904ff3,Zoff Soya Chunks,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+3497a8d3-117f-41bd-b5fd-c4f49ad15ab8,Basic Kabuli Chana (Small Size),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+6b944c4a-08d9-4b47-83e6-f15688b3a824,Pro Nature Organic Kabuli Chana,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+943b7e99-5ed1-4c10-ba7b-94be0140fc73,Lalbaba Traditional Basmati Rice (Extra Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+23108b6f-29fe-41d1-96ea-2501f46efeeb,Whole Farm Premium Dhania Dal,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+61d74755-52ca-4ee3-b34d-3563c6d86c9f,Fortune Hamesha Mini Dubar Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+2b399be1-f2ca-4e02-885d-26c9b1765fa3,Fortune Premium Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+af4d48c7-c269-4d36-93d2-4b5bf50011e8,Lalbaba Minikit Premium Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+c2ac52b9-018a-4cef-8249-f2cc783caeaa,Daawat Rozana Super Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+87cd2df1-f303-40c1-93a0-112e0218926f,India Gate Everyday Pure Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+6d5b0ccd-415e-4e67-9087-c4edfb40ee4c,Fortune Rozana-Gold Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+cd78e390-af6f-4d75-ab3a-8a577d6b38b3,Lalbaba Exclusive Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5856f984-4899-45e5-ab47-7075faf5708c,Daawat Rozana Super Basmati Rice - 1 kg (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+70a3a052-fb4f-427f-862d-a6f5be67bac4,Daawat Rozana Gold Basmati Rice Tibar (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+286aaf6a-c7a1-4372-a90d-2860458df13f,India Gate Feast Rozana Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8b234868-33df-4e44-8d64-2b61b30724f5,India Gate Govindo Bhog Rice (1 kg) (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1a8b7fd2-4c7f-4932-b0a3-3131f062b76a,India Gate Feast Rozana Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7e6e3cbd-b4ab-46dd-8c1e-b3915efbf91a,India Gate Daily Premium Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+29e2e695-8457-4bcc-9348-7314dbe777ce,India Gate Daily Delight Pure Basmati Rice (Broken) (Short Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+c053fb81-9006-4632-8d49-432f66874ec7,India Gate Rozzana Lite Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8bca18e2-20b7-4f43-9bfe-b343d0635ffb,India Gate Everyday Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+9c2a0f83-62cc-444b-b0de-d1691dd5464d,Daawat Biryani Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+282438d5-fa83-412e-b5f0-5848fc9d3c3e,Daawat Rozana Mini Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5ef38c26-f766-41a1-9c54-0c54524872f2,Whole Farm Premium Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+107149a0-81ed-4935-b614-1b6a9f56962a,Daawat Super Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+2c426679-b154-42bd-b7c0-dea4b0cb618a,India Gate Weight Watchers Brown Rice (Brown Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+296cb67a-e667-416c-86d7-6faf24d38c5b,Fortune Special Biryani Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+36352a96-78bf-4fa0-b7e3-ad4f4045e4b3,India Gate Mogra Basmati Rice 5 Kg (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+3b458369-b4a6-48bd-b2ad-192d96b141dd,Fortune Rozana Super Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0903c3a3-9b9c-4732-aa96-5528060aa5c4,Whole Farm Premium Biryani Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+277ef02e-efb3-4ecc-a105-8d9e84979017,Lalbaba Ratna Rice (Ratna Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+150cd374-4326-41a3-9f22-2ad344eeb461,Devaaya Biryani Biryani Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+32f4b64b-0fb7-442b-9b69-a714dfe10489,India Gate Super Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+cda83b5e-9a0d-4530-87a8-ed6e777e42cc,Daawat Brown Basmati Rice (Extra Long Grain) (Brown Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0e9f3bce-dcdf-4229-81fe-a8a79ab98c53,Organic Tattva Brown Organic Sonamasuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+74bedf73-9969-4b67-a1e5-382b97b513b9,Lalbaba Superior Miniket Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+3b377c87-d56c-4ea4-97d0-ca97d189a1ea,Charminar Long Grain Everyday Rice (Long Grain) (Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+08aed95f-50e2-444c-80a4-516cf8fa933e,India Gate Dubar Basmati Rice (Long Grain) (Dubar Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5ca2c849-b9ba-43d8-a990-7cf9dec24032,India Gate Mini II Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+4ea1fe0d-211c-484c-bfcb-8274e9c259f8,Devaaya Everyday Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+575f9655-684c-4f47-9db7-5b44a6e2e0ea,Kohinoor Royale Pulao Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+cff01535-9d74-497a-8571-a00b7958ccb1,Fortune Premium Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8c65bf4f-2396-402e-bc7c-0960a010eb02,Whole Farm Premium Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+fcce6a51-df53-4b67-9231-b9b200a94e7e,Lalbaba Bhadreswar Economy Ratna Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+06449a65-2f5d-415a-aeff-3ccf75063408,24 Mantra Organic Brown Sonamasuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+20a1e476-415d-410c-ba20-bc54a30c006c,Daawat Super Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+06a5d3a0-31fa-45f9-8746-b7eb848066cb,India Gate Classic Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+12bd5195-8426-4c23-a5c1-fe8b3873cc68,Lalbaba Bhadreswar Premium Miniket Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+c9caa277-317b-46d1-ab68-8be459635549,India Gate Pure Biryani Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+24c46f46-b967-41a4-831b-887c2c0f284b,Daawat Rozana Gold Tibar Basmati Rice (Medium Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+15096855-d15d-40b4-9c7c-a22e4e638aab,Devaaya Premium Everyday Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+b12ef7b3-10db-4209-ac3c-3befb2a39cd8,India Gate Mini Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+21fe737c-a38b-4bd4-834c-4e68fd550d9e,Devaaya Weight Watchers Brown Rice (Brown Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0f372a3f-1148-4c3c-848b-cd69095b2393,India Gate Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+e62d0e35-1c70-4933-a8a4-b5e5de69b207,Organic Tattva Organic Sonamasuri Rice 1 kg,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+35a37dcb-2b8b-43cd-b979-9b0da2eb7740,Daawat Sehat Mini Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+16be2a66-de83-4008-abf3-84f347b3ed6c,Kohinoor Super Value Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+22a5caab-b94e-4467-8bf3-d8f32f94cdfb,Sugar Watchers Low GI Rice (Low Gi Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7dceec6a-951e-40ca-9e09-564068ccb96e,24 Mantra Organic White Sonamasuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+21d80291-a81f-4489-ac3a-d5fbaec1d480,India Gate Tibar Basmati Rice (Long Grain) (Tibar Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+373be4bd-1e03-4405-b8d9-856424420769,Pansari Daily Dubar Basmati Rice (Roazana) (Long Grain) (Dubar Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+79254544-6d74-42a5-86cf-20ec3ff183db,Daawat Biryani Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0a34213d-e3b9-4003-9d3e-a512bb0282e0,India Gate Mogra Basmati Rice 10 Kg (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+97228cfd-6b28-423b-97f1-e07900d2f568,Daawat Raw Sonamasuri Rice (Short Grain) (Kaccha Sonamasuri Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+227df2c0-1b87-4115-802e-da99aece5b10,Daawat Rozana Mini Mogra Basmati Rice - II (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+485af09f-8bee-42ba-bd3b-5cf8daab5427,Lalbaba Parboiled Jeerakathi Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+36ef1df0-d5a2-4e25-9825-0577b55ba477,Amul Organic Dehraduni Basmati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+746c723d-06c0-4c38-aef5-02c02bbd9ac1,Daawat Brown Basmati Rice (Extra Long Grain) (Brown Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+01023b8c-e853-4046-be84-54e6b2a60391,Fortune Everyday Full Grain Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1853f9ef-fd2d-4760-a63b-c4ef9db4b4dd,Whole Farm Grocery Ratna Rice (Ratna Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+d8d7d0ac-f53b-47d3-b39f-c5cd348381be,Daawat Rozana Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0a1cd689-deb7-4f10-a296-96778b12f559,Golden Grain Premium Basmati Rice (Extra Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7245e009-eb5d-4ea6-9960-eee42faba557,India Gate Pulav Pure Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+c3905d74-c1f7-4f9e-8058-693b3f80a8c3,Shyamatara's Bengal Crown Husking Minikit Everyday Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7f32f78c-6a15-4a08-a956-89036cd46dd2,Shyamatara's Bengal Crown Miniket Rice (Extra Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+373d1267-7f82-49b0-b02d-0ac4bf4aebd7,Whole Farm Grocery Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+2561efa7-b706-496e-999e-82fb567a5551,Whole Farm Premium Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1a391a1a-7427-4277-b76c-6c5a458bb968,Fortune Special Extra Long Grain Biryani Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1cea9883-3d68-4626-b393-ea0205b3eae4,Fortune Everyday Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+b95788ee-f278-4b03-afe6-aa25e3e3878c,Lalbaba Bhadreswar Best Quality Banskati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+55bb8dce-f32a-488b-bd6d-1fd4ff267ffd,Sugar Watchers Low GI Rice (Low Gi Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+bb272101-e410-4119-8f73-7abad871e856,Amul Organic Basmati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+42d6a9bb-39e7-4b47-a723-fb0bc9449d2e,Brightcrop Himalayan Red Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+10498c33-9829-4a29-b98d-b8329ed5728b,Whole Farm Premium Everyday Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+189c8ab8-2e94-4d5e-a696-8dd9b7d0bf9f,Gopal Premium Miniket Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+cda313ee-9b57-489c-bad0-0873542f150c,Lalbaba Banskati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+acd74d52-6660-4f5d-8da6-0a85a0ba4bc7,Praakritik Natural Indrayani Indrayani Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+819fa319-2359-43bd-86bd-66d7aa61b117,India Gate Jeera Rice (Jeera Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ec18089e-9a68-4003-9057-ed552a5fd14c,Organic Tattva White Organic Sonamasuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+638aa089-6805-4de3-951d-cb2ca82767af,Devaaya Biryani Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+558d0756-803c-4ead-bdda-1b3c772f4a64,Daawat Super Basmati Rice (Long Grain) (Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+10b13c84-aa75-4312-8274-497d11969198,Kohinoor Traditional Authentic Basmati Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+201a2f3a-5ef7-4358-b247-a8355daa0bcf,Safe Harvest Pesticide-Free Raw Sonamasuri Rice 12 Months Old,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1c4083ed-3ddf-445c-b97d-bdd16b0eb4c3,Daawat Quick Cooking Red Rice 1 Kg,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+04cda8da-d36b-4a2c-9cd2-a9f0fa050ecf,Pansari Royal Premium Biryani Rice -Free Shasha Jeera (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+55e4b2be-dae2-4a53-a267-a7ba7e14c80f,Shyamatara's Bengal Crown Miniket Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+061e3607-b194-4558-8857-3cf65216dcfd,Kharif Aromatic Basmati Rice (Extra Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8bd0d460-b248-40f6-8535-63cdfc44ab11,Organic Tattva Organic Red Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0cd6610a-d5d8-4e63-8003-09f36d1c78f8,Whole Farm Premium White Sella Rice (Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+eae99e2a-f12e-45db-9285-1ca63b2c5813,Lalbaba Govindo Bhog Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+390da58c-3041-45cf-bd68-15942798f4f1,Dainik Ratna Rice (Ratna Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+16a6ed67-41a5-41a1-baaf-c18c50e734b6,Pansari Royal Premium Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+49af4286-fbba-4f1a-a7bd-73edabcb2e67,24 Mantra Organic Active Mantras Organic Low GI Rice (Low Gi Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+44a7790b-f4df-4fbb-98f6-84508ae36ef8,Organic Tattva Organic Idli Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+378e0141-d6b7-46b4-9998-dcc9e5254ff5,Whole Farm Grocery Mini Broken Mogra Basmati Rice (Short Grain) (Mogra Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ecf9d0f5-67d9-4be8-a95b-9078165f2c3c,Pansari Khana Pulao Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+f8e5404b-c9eb-445f-939d-00964bcbc70d,Organic Tattva Organic Basmati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8e25a35a-e29b-4e3a-87ab-f407facf6a3d,Jolkhabar Tulaipanji Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ffc84fb9-6596-44da-b52f-a9e651a8d42c,Maharani Classic Reserve Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1a4546f5-9ac8-44a0-8017-a2ac4070709c,Daawat I'm Organic Basmati Rice (Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+72670a8b-e84c-4561-a74e-f883c1ef467f,Hasyaras 24Carat Premium Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1137d499-edd3-4460-b8b1-9b4092a9646a,Red Rose Govindo Bhog Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+26528ad7-38fa-40bc-bd57-8ae73854374f,Lalbaba Superior Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+a7944707-2ecb-45c2-a88f-c8851c7dc423,Whole Farm Grocery Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0dcb293c-7ec6-47de-9014-c5f848358e67,Better Nutrition Low GI Rice – 2X Nutrition (Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+bdb4842b-8bf9-4c5a-a2d6-9bf4e1a7f5e6,Red Rose Classic Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+312004ba-1de6-48c5-93ce-57cae614967c,OryzaFoods Tulaipanji Rice (Medium Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+627f3fdc-24f9-4c40-9aaf-28023f7c1315,Heritage Royal Basmati Rice (Extra Long Grain) (Basmati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+514964e1-bb26-48d1-99c4-30f7543f524e,Aishwarya Diabetic Friendly Low GI Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+5679a59f-f900-48ae-bd41-69c30006ca92,Whole Farm Premium Doodheshwar Rice (Doodheshwar Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+85ebd579-8ba3-4b9d-b156-eac85cc384ab,Whole Farm Grocery Steam Sonamasuri Rice (6-12 Months) (Medium Grain) (Bhapor Sonamasuri Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+9b278742-bb7e-48cc-a9ed-efc5c57b7352,Lalbaba Superior Banskati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+60d54b4f-87f2-4ea8-aeb5-479ac3693dee,Golden Grain Classic Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+aa452841-2560-4a14-9093-3cf64b57a0ff,MAAGAANI Sugar Control Rice (Low GI White Rice),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1e10ddc2-e6b6-4f74-a0a1-00d49fee3d8a,Fortune Premium Govindo Bhog Rice (Govindo Bhog Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+55e9bba1-a064-4bc5-a4bd-4d93e10a92d6,Dainik Premium Banskati Rice (Banskati Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+4f1ba6a0-fca1-4bd4-b343-e9a9ec9a3e3d,Dainik Regular Miniket Rice (Miniket Chaal),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+2d7e0d3e-8d53-4204-99c5-e46e258d8fda,Safe Harvest Unpolished Brown Sona Masuri Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+190ac9f1-3b51-4a0d-ae04-eff4dc151903,Native Again Heritage Black Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+6c2fa0aa-31b9-4b1f-8eb8-678598e627f1,Kumaun Hills Basmati Rice (Extra Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+60cafef3-05b5-47c8-a5b0-edee60d264cc,Green Diet Govindo Bhog Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+67b97820-c22f-4ad1-b999-067b9c9a10fe,Haryana King Pulao Bemisal Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0c485f85-2afe-412a-a93a-1d4a1a932d21,Haryana King Royal Basmati Rice (Extra Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+0fa2bd45-d0cf-45fa-9283-c396f4f4c117,Organic Tattva Organic Brown Basmati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+8bb39eb5-df68-4898-b939-3c235fcdcc22,Red Rose Delight Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+79a10131-46eb-4a56-a777-48beb7dbe67d,Shyamatara's Bengal Crown Silky Sorted Miniket Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+85101e24-2774-4cc8-8bb5-fb2e9a8b11ec,Golden Grain Rozana Basmati Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+7dd16edf-9946-4844-9ba4-f56ddb3a6a18,Sugarfit Sugar Control Sonamasuri Rice (Medium Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+387557a2-523c-4f4b-8ba9-3e2768578764,Haryana King Special Mogra Basmati Rice (Short Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+1739fcd8-c5e2-4b14-95f0-9a1c90446b3c,Red Rose Premium Basmati Rice (Long Grain),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+ed48d629-9867-4994-a6df-a5d17f5738cb,Himalaya Baby Hair Oil,Personal Care,18.0,5.0,3307,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+18de86e3-571a-4c26-82cd-98cda9198801,Johnson's Baby Hair Oil (with Avocado & Pro Vitamin B5),Personal Care,18.0,5.0,3307,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+5e17a2c4-46b5-47d1-b623-db0f811d1dbd,Bare Anatomy Junior Hypoallergenic Gentle Kids Shampoo,Personal Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+2822b683-571b-4d1b-bddc-7b16b6d83cfd,Mamaearth Nourishing Baby Hair Oil (0 - 10 Years),Personal Care,18.0,5.0,3307,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+643b2f4a-43cc-4fbd-9685-59ae695d6204,Tuco Kids Natural Reetha Shampoo,Personal Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+a63ef1b9-632d-49dc-a3fe-de3138126514,Boldfit Gym Supporter Trunks for Men (Black),Sports,5.0,5.0,61,6107,"Men's underwear, knitted",HSN corrected (was plastics/cosmetics/2-digit)
+6cc1a91f-a5b6-40a7-8ceb-9afd01f24a55,Boldfit Men's Sports Underwear (Black),Sports,5.0,5.0,61,6107,"Men's underwear, knitted",HSN corrected (was plastics/cosmetics/2-digit)
+6836eacd-0602-4093-9508-7bb174655316,Decathlon Synthetic Fabric Hammock - Quechua,Sports,5.0,5.0,63,6306,Tents and camping goods (hammocks),HSN corrected (was plastics/cosmetics/2-digit)
+11c59553-c148-4709-b8fa-cf26454235fc,SG Cricket Compression Shorts (Black),Sports,5.0,5.0,61,6103,"Men's trousers and shorts, knitted",HSN corrected (was plastics/cosmetics/2-digit)
+012e6d21-3298-4a94-a6c9-67787c7c1ffd,Confirtino Solid Head Band,Sports,5.0,5.0,61,6117,"Clothing accessories (headbands), knitted",HSN corrected (was plastics/cosmetics/2-digit)
+5a65f8a7-e337-42bb-ae26-57b1755499b3,Beco Bamboo Reusable Kitchen Towel,Personal Care,5.0,5.0,63,6302,Kitchen and toilet linen,HSN corrected (was plastics/cosmetics/2-digit)
+16843ea1-2117-4a9b-be9e-c7d32c514222,Cpensus Reusable Microfiber Cloth Roll,Personal Care,5.0,5.0,63,6307,Other made-up textile articles (cleaning cloths),HSN corrected (was plastics/cosmetics/2-digit)
+2101adf0-4066-414e-bb70-bbfce17f1e71,Imeco Reusable Bamboo Kitchen Towel Roll,Personal Care,5.0,5.0,63,6302,Kitchen and toilet linen,HSN corrected (was plastics/cosmetics/2-digit)
+7c789264-d720-4582-b483-b07f60ca5f10,Cetaphil Baby Gentle Wash & Shampoo - 230 ml,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+4340b161-53e4-4a4f-b30d-e363035db992,Cetaphil Baby Wash & Shampoo with Organic Calendula - 230 ml,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+3cfb2774-e459-43ae-ae7f-1665d2fc0dec,Ghar Soaps Skin Brightening Kojic Bathing Bar,Bathing Soaps,18.0,5.0,3401,3401,Soap products,Toilet soap 5% (GST Sept 2025)
+c2446cbc-e017-465e-92ba-22b5a03dd597,Pond's Dreamflower Fragrant Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+8dba81f4-4499-4eae-9221-79b9f84cb68d,Candid Activ Antiperspirant Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+2c944006-f1fe-43df-9581-4c3c44282bbc,Yardley Morning Dew Perfumed Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+8d67c282-1012-479b-88b0-bd7151606275,Denver Hamilton Premium Body Talcum Powder For Men,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+117a6626-0ab1-4294-b1c1-97966716b59c,Wild Stone Ultra Sensual Fragrant Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+3c667573-f331-4639-b014-e4ce44fae14e,Nycil Cool Herbal Germ Expert Prickly Heat Powder Talcum Powder - Free 50 g Pack,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+d22d8407-88d8-479c-ad92-3828673b1d6b,Pond's Magic Freshness Talc with Acacia Honey,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+39c96d76-4971-4683-9ef9-a903568e3965,Navratna Cool Talc Powder for Freshness,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+bc1a0edc-0d77-433b-b28f-4051f3a1fbc6,Yardley English Lavender Perfumed Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+3361b367-1402-41fb-ab7b-ebb42333e5a5,Yardley Gold Perfumed Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+4b454a01-03b2-441a-ab90-3e0fee50af52,Dermicool Soothing Lavender Talcum Powder + Aloe Fresh Powder Free,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+09683bca-fe90-437c-8e1e-49ddf3444093,Nycil Talcum Powder - Free Nycil Cool Herbal Powder 50 g,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+6ceb38ce-35a7-4f5d-a3cf-35d3e1bea4ea,Navratna Cool Active Deo Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+bae933fc-1f06-4d34-ac8a-37ad1634e20d,Nycil Cool Gulabjal Talcum Powder - Free Nycil Cool Herbal Pickly Heat Talc 50 g,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+387d54f8-51e5-40fd-aa86-74bc170ec536,Yardley Gentleman Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+0f6bff21-8ef5-438a-bfce-41c92f0a7268,Navratna Maxx Cool Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+693200e1-7ab3-4a7b-8d8e-42cb7a8f7964,Denver Black Code Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+a72fb4ef-122b-4ea2-bccb-d4d4a0ace897,Nycil Cool Herbal Prickly Heat Powder Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+99aa7701-1e77-4071-8d61-06fd83a33c8d,Tetmosol Prickly Heat Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+24a32c2f-4e96-4785-b6b3-56c6de27fe36,Z. Magnetism For Men Classic Talcum Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+856f9d1c-b0a8-4d19-954b-096b8940322b,Dermicool Her Prickly Heat Talc Powder,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+03de4ae2-796a-4b68-84f6-d2b3b7b94200,Dermicool Menthol Regular Talcum Powder + Aloe Fresh Powder Free,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+4c9a94a5-e22a-47d5-9bbf-04bcb4efc27c,Cinthol Lime Talc,Personal Care,18.0,5.0,3307,3307,"Deodorants, body sprays, talcum powder, perfumery preparations",Talcum powder 5% (GST Sept 2025)
+89192809-6380-4b60-a9fb-08660b27f850,Fast&Up Reload Energy Sports Drink (Lemon Blast),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+1b680c9c-26e9-44e5-a615-452a0b6215c6,Fast&Up Reload Zero Sugar Energy Sports Drink (Orange),Beverages,40.0,5.0,2202,2106,Food preparations not elsewhere specified,"Electrolyte tablets / drink mix are food preparations (2106), not a beverage"
+daf43291-fc7c-4ff8-a4e5-de4d8f9fe89c,"ReeQ Multi-Purpose Toothbrush Holder (Polypropylene, White, Blue)",Household Essentials,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+7708a73f-503a-4a89-af9d-61bd76bb8359,Tuco Kids Natural Reetha Shampoo,Baby Care,18.0,5.0,3401,3401,Soap & cleansing preparations,Shampoo 5% (GST Sept 2025)
+3bd4d4d0-5219-4a4d-8dbc-274d8b32e4fa,Baby Dove Rich Moisture Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+95b29c76-1870-4160-86f5-7b701df8a1f6,Johnson's No More Tears Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+0b35010e-9926-4ebf-818a-36504f568192,Aveeno Daily Moisture Baby Wash & Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+c573169b-802e-450e-b638-ea08f37a1902,Chicco Baby Moments Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+bd9cc305-f4e4-405d-8969-8dff9077a920,Aveeno Daily Moisturise Baby Wash & Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+5e7a98c1-aed8-4bf8-a45f-b98a409fc6e0,Mamaearth Gentle Cleansing Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+0688c323-be0a-465c-bce1-cc4c4994f8b6,Parachute Advansed Nourishing Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+26b9c480-6171-4df7-b262-21e52e693b0a,Chicco Gentle Body Baby Wash & Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+66fdc24d-c20d-4d89-bf97-3af1762f387b,Cetaphil Baby Wash & Shampoo with Organic Calendula,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+ad930c9f-bd84-4b1d-9d9a-e10f4024ee57,Johnson's Shiny Drops Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+9fe3a296-3414-4a4e-ac49-877ea659aa99,Cetaphil Baby Gentle Wash & Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+e1f841eb-25e6-44e5-b5d9-e4c4b62073f1,Sebamed Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+5e86e861-71f0-445a-beec-354988b0b6e7,Cetaphil Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+2a59c16d-9436-43e3-8a67-431eb9e8f530,Parachute Advansed Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+396b0035-2ea4-4423-ab4b-ed8bf2e40f4a,Little Rituals Plant Protein Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+a179296a-fb30-4357-95ab-3b5773a043ba,Himalaya Gentle Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+7ee56e16-f934-4db6-8fb0-0659376a82ac,Chicco Baby Moments Calendula And Hibiscus Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+1253d398-e994-41f7-98d5-2af5f598db15,Mamaearth Milky Soft Baby Shampoo (0+ Years),Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+2da3e56c-0103-4b3e-959c-2b6a6bc93ffd,Mother Sparsh Natural Care Baby Wash & Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+2870c21c-0eba-4006-9df1-aafee7598698,Tedibar Spoo Gentle Baby Shampoo,Baby Care,18.0,5.0,3307,3305,Preparations for use on the hair,Shampoo 5% (GST Sept 2025)
+23fb3d89-36f4-4331-ba8d-23e35485ced4,"Kidology Baby Toothbrush Teether Toys (Beige, Dark Brown)",Baby Care,18.0,5.0,3924,9603,Brushes (incl. toothbrushes),"Toothbrush 5%, HSN 9603"
+1071aafc-0ecd-4d92-acff-3bfb925b9c59,Himalaya Baby Hair Oil,Baby Care,18.0,5.0,3304,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+2e47ceae-0d3c-47a1-b0f5-99a7554535cc,Johnson's Baby Hair Oil (with Avocado & Pro Vitamin B5),Baby Care,18.0,5.0,3304,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+3f502758-429a-411a-a5de-6b866894a8e1,Mamaearth Nourishing Baby Hair Oil (0 - 10 Years),Baby Care,18.0,5.0,3304,3305,Preparations for use on the hair,Hair oil 5% (GST Sept 2025)
+04757aa0-d3f0-4b7c-a9a5-b955dbbf13ff,24 Mantra Organic Wheat Daliya,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+53199d4e-0d9f-4e06-9b5b-8c5390e54373,24 Mantra Organic Kabuli Chana / Chole,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+4ddf7912-c26c-4877-aee8-7b1b8fcbc232,Aashirvaad 100% Organic Moong Dal (Dhuli),"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"
+4e820785-b834-4c06-bd61-269ed5e69706,24 Mantra Organic Low GI Rice,"Rice, Atta, Dal and Maida",0.0,5.0,1006,1006,"Rice, pulses, grains and staples","Branded, pre-packed staple 5%"

@@ -1,0 +1,4 @@
+item,count,detail
+empty image_url set to NULL,see query,all rows where image_url was an empty string
+empty categories deleted,9,Body Scrubs & Exfoliators; Sexual Wellness; Personal Care Appliances; Beauty & Makeup; Gift Sets & Combos; Intimate Hygiene; Nail Care; Body Creams & Lotions; Bath Accessories
+admin notifications marked read,1114,type product_updated

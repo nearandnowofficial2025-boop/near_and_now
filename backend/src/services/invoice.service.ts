@@ -211,6 +211,10 @@ function amountToWords(amount: number): string {
  * NEAR_AND_NOW_GSTIN; a value that fails the GSTIN check is never printed.
  */
 const DEFAULT_PLATFORM_GSTIN = '19AAYFN8032H1ZM';
+
+/** The one state Near & Now delivers in (GST state code 19). */
+const DELIVERY_STATE = 'West Bengal';
+const DELIVERY_STATE_CODE = '19';
 export function platformGstin(): string {
   const g = normalizeGstin(process.env.NEAR_AND_NOW_GSTIN || DEFAULT_PLATFORM_GSTIN);
   return isValidGstin(g) ? g : '';
@@ -448,7 +452,11 @@ function buildInvoiceData(raw: Awaited<ReturnType<typeof fetchOrderData>>): Invo
   const buyerName = [customer?.name, customer?.surname].filter(Boolean).join(' ') || appUser?.name || 'Customer';
   const buyerPhone = customer?.phone || appUser?.phone || '';
   const buyerEmail = appUser?.email || '';
-  const buyerState = customer?.state || '';
+  // Every delivery is in West Bengal (see isInterState below), so the billing
+  // state and the place of supply are always West Bengal, whatever (or
+  // nothing) the customer typed into their profile. Was blank, which printed
+  // a place of supply of "India" on every invoice (2026-11-08 audit).
+  const buyerState = DELIVERY_STATE;
   const buyerPincode = customer?.pincode || '';
   const buyerAddress = o.delivery_address || [customer?.address, customer?.city, customer?.state, customer?.pincode].filter(Boolean).join(', ');
 
@@ -578,7 +586,7 @@ function buildInvoiceData(raw: Awaited<ReturnType<typeof fetchOrderData>>): Invo
     // mistyped one, and a wrong GSTIN on a tax invoice is worse than none.
     buyer_gstin: o.gstin && isValidGstin(o.gstin) ? normalizeGstin(o.gstin) : '',
     buyer_legal_name: o.gstin && isValidGstin(o.gstin) ? String(o.gstin_business_name || '').trim() : '',
-    place_of_supply: buyerState || 'India',
+    place_of_supply: `${DELIVERY_STATE} (${DELIVERY_STATE_CODE})`,
     reverse_charge: false,
 
     store_groups: storeGroups,
@@ -1496,9 +1504,13 @@ async function upsertInvoiceItems(invoiceId: string, items: InvoiceLineItem[]): 
 
   if ((count ?? 0) > 0) return; // already inserted
 
-  const rows = items.map((item) => ({
+  // line_no restarts at 1 for each store's section (that is how the PDF
+  // numbers them), but invoice_items needs it unique per invoice
+  // (invoice_items_invoice_line_uniq). A two-store order used to fail here,
+  // leaving its invoice with no items (INV-2026-000001, 2026-11-08 audit).
+  const rows = items.map((item, idx) => ({
     invoice_id: invoiceId,
-    line_no: item.line_no,
+    line_no: idx + 1,
     product_id: item.product_id || null,
     product_name: item.product_name,
     hsn_code: item.hsn_code,

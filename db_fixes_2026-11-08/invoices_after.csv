@@ -1,0 +1,12 @@
+﻿buyer_state,grand_total,invoice_number,lines,lines_total,order_code,order_status,payment_method,payment_status,place_of_supply,status,total_amount
+,5277.00,INV-2026-000001,8,5261.58,NN20260903-0004,order_delivered,razorpay,paid,India,generated,5277
+,32.00,INV-2026-000002,1,16.80,NN20260904-0001,order_delivered,razorpay,paid,India,generated,32
+,32.00,INV-2026-000003,1,16.80,NN20260924-0006,order_delivered,razorpay,paid,India,generated,32
+,199.00,INV-2026-000004,1,216.30,NN20261003-0001,order_cancelled,razorpay,paid,India,cancelled,199
+,4296.87,INV-2026-000005,8,4340.66,NN20261003-0002,order_delivered,cod,pending,India,generated,4296.8700000000003
+,504.00,INV-2026-000006,1,488.52,NN20261004-0010,order_cancelled,razorpay,refunded,India,cancelled,504
+,504.00,INV-2026-000007,1,488.52,NN20261004-0011,order_cancelled,razorpay,paid,India,cancelled,504
+West Bengal,32.00,INV-2026-000008,1,16.80,NN20260903-0002,order_delivered,cod,pending,West Bengal (19),generated,32
+West Bengal,32.00,INV-2026-000009,1,16.80,NN20260903-0003,order_delivered,cod,pending,West Bengal (19),generated,32
+West Bengal,49.00,INV-2026-000010,1,33.60,NN20260924-0009,order_delivered,cod,pending,West Bengal (19),generated,49
+West Bengal,200.00,INV-2026-000011,2,184.82,NN20260924-0012,order_delivered,cod,pending,West Bengal (19),generated,200

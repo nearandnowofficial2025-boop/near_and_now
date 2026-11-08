@@ -2,32 +2,43 @@
 
 7 Nov 2026, updated 8 Nov 2026 · Tias Mondal · Shared copy: <https://claude.ai/artifact/SKjBcNPLVD7j332L3ViW8X>
 
-The product catalogue is the main problem. `master_products` has corrupted prices that customers pay directly, 23,010 dead duplicate rows, fake ratings and conflicting GST. Every store adds its products from this table, so a wrong row is wrong for any store that lists it, now or later. The fixes therefore cover the whole catalogue, not only the products today's stores list. The other tables are small and mostly consistent, but 17 orders are stuck and invoices don't reconcile. The 7 Nov audit only read data; the first fixes went in on 8 Nov (section 8).
+The product catalogue is the main problem. `master_products` has corrupted prices that customers pay directly, 23,010 dead duplicate rows, fake ratings and conflicting GST. Checkout also added GST on top of prices that already include it, so 6,066 active products sold above their MRP; the code fix is ready (8 Nov) and needs deploying. Every store adds its products from this table, so a wrong row is wrong for any store that lists it, now or later. The fixes therefore cover the whole catalogue, not only the products today's stores list. The other tables are small and mostly consistent, but 17 orders are stuck and invoices don't reconcile. The 7 Nov audit only read data; the first fixes went in on 8 Nov (section 8).
 
 ## Summary
 
 | # | Problem | Scale | Why it matters | Status |
 | --- | --- | --- | --- | --- |
-| 1 | MRP parsed from pack size, model numbers or glued combo sizes; price and size swapped | ~3,500 active rows | Any store that lists these charges the wrong price (7UP 750 ml at ₹645). | Open |
-| 2 | Loose items: apps price per kg, data prices per pack; `min_quantity = 1` | 189 active loose rows | Loose items sell 4–6× too cheap, and orders under 1 kg likely fail at checkout. | Open: needs the pricing decision |
-| 3 | Orders stuck after rejection or mid-delivery | 17 orders | Never cancelled or completed; 6 rider offers still pending. | Open |
-| 4 | GST / HSN conflicts, misclassification and malformed codes | 316 active rows with conflicting copies; ~600 more at doubtful rates; 29 malformed codes | Wrong tax on invoices. | 19 malformed codes fixed 8 Nov; rest open |
-| 5 | Invoices missing, on undelivered orders, or not adding up; no seller GSTIN | 7 invoices, 4 delivered orders without one | Not valid GST invoices yet. | Open: needs seller GSTIN and FSSAI |
-| 6 | Dead duplicate rows | 23,010 inactive copies (54% of the table) | Bloat; deleting them cascades to store listings, so check references first. | Open |
-| 7 | Fake ratings and review counts | 42,718 rows at 4★ with 0 reviews; 73 fake counts | Every product shows 4★ on the website and on the app's product page. | Review handling fixed 8 Nov; reset on hold |
-| 8 | Brand = first word of name | ~3,600 rows with generic brands | Brand filters lump unrelated brands ("The", "Organic"). | Open |
-| 9 | Images hotlinked from Blinkit/DealShare or missing | 28,677 hotlinked, 14,068 missing | Can break any time; copyright risk. | Open |
+| 1 | Checkout added GST on top of prices that already include it | 18,277 active products with GST; 6,066 charged above their MRP | Customers overpay by the GST rate; selling above MRP is illegal. | Code fixed 8 Nov; deploy pending |
+| 2 | MRP parsed from pack size, model numbers or glued combo sizes; price and size swapped | ~3,500 active rows | Any store that lists these charges the wrong price (7UP 750 ml at ₹645). | 671 "₹ in the unit" rows fixed 8 Nov; ~2,800 open |
+| 3 | Loose items: apps price per kg, data prices per pack; `min_quantity = 1` | 189 active loose rows | Loose items sell 4–6× too cheap, and orders under 1 kg likely fail at checkout. | Open: needs the pricing decision |
+| 4 | Orders stuck after rejection or mid-delivery | 17 orders | Never cancelled or completed; 6 rider offers still pending. | Open |
+| 5 | GST / HSN conflicts, misclassification and malformed codes | 316 active rows with conflicting copies; ~600 more at doubtful rates; 29 malformed codes | Wrong tax on invoices. | 19 malformed codes fixed 8 Nov; rest open |
+| 6 | Invoices missing, on undelivered orders, or not adding up; no seller GSTIN | 7 invoices, 4 delivered orders without one | Not valid GST invoices yet. | Open: needs seller GSTIN and FSSAI |
+| 7 | Dead duplicate rows | 23,010 inactive copies (54% of the table) | Bloat; deleting them cascades to store listings, so check references first. | Open |
+| 8 | Fake ratings and review counts | 42,718 rows at 4★ with 0 reviews; 73 fake counts | Every product shows 4★ on the website and on the app's product page. | Review handling fixed 8 Nov; reset on hold |
+| 9 | Brand = first word of name | ~3,600 rows with generic brands | Brand filters lump unrelated brands ("The", "Organic"). | Open |
+| 10 | Images hotlinked from Blinkit/DealShare or missing | 28,677 hotlinked, 14,068 missing | Can break any time; copyright risk. | Open |
 
 A per-row list of every flagged `master_products` row, with an issue-code column, the active flag and how many stores list it, was exported to CSV during the audit (see the appendix).
 
 ## 1. master_products — prices
+
+**GST was charged twice.** Stored prices are the printed prices with GST included (Coca-Cola 750 ml ₹40, Britannia Good Day 200 g ₹40, Amul Taaza 1 L ₹77), but checkout, the customer app and the website added `gst_rate` on top. A ₹40 Coke was shown with an MRP of ₹56 and charged ₹53.20.
+
+| GST rate | Active products | Charged above their MRP |
+| --- | --- | --- |
+| 40% | 484 | 479 |
+| 18% | 6,948 | 5,051 |
+| 5% | 10,845 | 536 |
+
+Fixed in code on 8 Nov, not deployed yet: catalogue prices are treated as GST-inclusive everywhere (`backend/src/utils/catalogPrice.ts`), and the server never charges more than its own order total, so older app builds that still add GST are charged the right amount. Invoices already backed GST out of the line total and need no change.
 
 The import parser corrupted MRPs on thousands of rows, and customers pay `master_products.discounted_price` directly (store `products` rows carry no price; checkout re-derives the price from the master row).
 
 | Problem | All rows | Active | Example |
 | --- | --- | --- | --- |
 | MRP equals the pack size | 6,202 | 2,652 | 7UP 750 ml: MRP 750, sells for ₹645. Maggi Ketchup 960 g sells for ₹902. Aashirvaad Mango Lassi 130 ml sells for ₹120. |
-| Price and size swapped (unit holds a price) | 1,212 | 671 | Organic Tattva Sooji: unit "₹65", MRP 500, sells for ₹460. The real price is in `unit`; the 500 g size became the MRP. |
+| Price in the unit field ("₹65") | 1,212 | 671, fixed 8 Nov | Organic Tattva Sooji: unit "₹65", MRP 500, sold for ₹460. The real price was in `unit`; the 500 g size became the MRP. |
 | MRP taken from a number in the name | 218 | 132 | KILRR "Curry No. 9211": MRP ₹9,211. 1950 Origins tea 80 g sells for ₹1,755. Havells GS8714 trimmer: MRP ₹8,714. |
 | MRP is combo sizes glued together | 81 | 39 | Palmolive "750 ml + 250 ml": MRP ₹750,250. A L'Oréal combo: MRP ₹565,018,040. |
 | Placeholder or zero price | 6 | 2 | Two rows at ₹9,999 (Del Monte olive oil, My Soul ring), two at ₹0. Fortune Soya Chunks 1 kg at ₹4. |
@@ -36,6 +47,19 @@ The import parser corrupted MRPs on thousands of rows, and customers pay `master
 - **Selling prices look generated.** The discount is always between 4% and 30%, never more. In 96% of duplicate groups sharing name, unit and MRP, the copies have different selling prices (KILRR copies: ₹8,750 / ₹8,935 / ₹8,382). This points to a random markdown applied at import, so even a correct MRP doesn't mean a real selling price.
 - **Stores already list some of them:** about 45 of the 195 products stores list today have a price flag. The fix still has to cover every row, because any store can add any product from the catalogue.
 - **Impact so far is small.** Only 45 order lines exist; 3 used flagged prices (e.g. Maggi Hot & Sweet ketchup 200 g at ₹180.60).
+
+**Fixed 8 Nov: the 671 active products with a price in the unit field.** They split into four patterns:
+
+| Pattern | Rows | Fix applied |
+| --- | --- | --- |
+| Sports: the real selling price was in the unit | 428 | Selling price set to that figure; MRP kept; unit "1 piece", "1 pair" or "pack of N" |
+| Grocery: the MRP column held the pack size | 151 | Price and MRP set to the figure; unit set to that size ("500 g") |
+| Sports: the unit price equalled the MRP | 42 | Selling price set to the MRP; unit "1 piece" |
+| Grocery: pack size and MRP unknown | 50 | Price and MRP set to the figure; 42 still say "1 pack" and need their real size |
+
+- **Market check:** 22 products were searched online and 17 found. All 9 sports MRPs matched the market and all 4 grocery sizes were 500 g. Today's prices are often lower than the figures, which date from the April import (Zike Frisbee ₹59 now vs ₹139).
+- **Record:** before and after values for every row are in `price_fix_671_review_2026-11-08.csv`.
+- **Left alone:** 541 inactive copies still hold a "₹" unit.
 
 ## 2. master_products — duplicates and dead rows
 
@@ -203,9 +227,9 @@ These checked clean: no orphaned foreign keys in orders, items, payments, offers
 
 ## 8. Fix order and open decisions
 
-Fix the catalogue as a whole. Any store can add any product from `master_products`, so every row has to be right whichever stores are active. Prices come first, then tax, then cleanup.
+Fix the catalogue as a whole. Any store can add any product from `master_products`, so every row has to be right whichever stores are active. Deploy the GST fix first (backend, then the customer app update); after that, prices, then tax, then cleanup.
 
-1. **Repair prices across the whole catalogue:** recover the real price from the "₹" units (671 active), then review the MRP = pack size (2,652 active), name-number (132), glued-size (39) and placeholder (2) rows. Selling prices look generated, so a real price list would be better than recalculating them (decision below).
+1. **Repair prices across the whole catalogue:** the 671 "₹" unit rows are done. Still to review: the MRP = pack size (2,652 active), name-number (132), glued-size (39) and placeholder (2) rows, and pack sizes for the 42 groceries marked "1 pack". Selling prices look generated, so a real price list would be better than recalculating them (decision below).
 2. **Settle loose pricing** (decision below), then set units, prices and `min_quantity` on the 189 active loose rows.
 3. **Merge the 33 active duplicate products:** keep one active copy, with one price and one category, per product.
 4. **Fix GST/HSN:** unify the 306 conflicting products, fix the keyword misclassifications and the 10 remaining two-digit codes, and have a CA confirm the toothpaste, staples and soda rates.
@@ -218,6 +242,8 @@ Fix the catalogue as a whole. Any store can add any product from `master_product
 
 **Done on 8 Nov 2026:**
 
+- GST no longer added on top of catalogue prices (code ready, not deployed): backend, website and customer app treat stored prices as GST-inclusive, and the server caps the order total at its own figure.
+- 671 products with a price in the unit field repriced (section 1).
 - Review trigger: a product's rating returns to 0 when its last approved review is hidden or deleted (migration `20261108000000`, live).
 - 19 malformed HSN codes fixed (section 3).
 - "Test Verify Category" deleted.
