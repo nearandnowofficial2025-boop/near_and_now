@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { parseGstRatePercent, priceWithGst } from '../utils/priceGst';
+import { parseGstRatePercent } from '../utils/priceGst';
 import { apiUrl, shouldUseBackendApi } from '../utils/apiBase';
 import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 import { cached, invalidateCache } from '../utils/queryCache';
@@ -343,20 +343,20 @@ export function productRowsToProducts(rows: ProductRow[]): Product[] {
 function transformProductRowToProduct(row: ProductRow): Product {
   const mp = row.master_products!;
   const isLoose = mp.is_loose ?? false;
-  // Loose items: sold at listed discounted/base price only; no GST on top.
+  // Catalogue prices already include GST (backend utils/catalogPrice.ts), so
+  // they're shown as stored. gst_rate is only passed through for display.
   const gstRate = isLoose ? 0 : parseGstRatePercent(mp.gst_rate);
-  const discountedPreTax = mp.discounted_price != null
+  const discounted = mp.discounted_price != null
     ? (typeof mp.discounted_price === 'string' ? parseFloat(mp.discounted_price) : mp.discounted_price)
     : 0;
-  const basePreTax =
+  const base =
     mp.base_price != null
       ? typeof mp.base_price === 'string'
         ? parseFloat(mp.base_price)
         : mp.base_price
       : undefined;
-  const price = priceWithGst(Number.isFinite(discountedPreTax) ? discountedPreTax : 0, gstRate);
-  const originalPrice =
-    basePreTax != null && Number.isFinite(basePreTax) ? priceWithGst(basePreTax, gstRate) : undefined;
+  const price = Number.isFinite(discounted) && discounted > 0 ? discounted : 0;
+  const originalPrice = base != null && Number.isFinite(base) ? base : undefined;
   return {
     id: mp.id,
     name: row.product_name || mp.name,

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { supabaseAdmin } from '../config/database.js';
 import { paymentService } from '../services/payment.service.js';
 import { validateQuantity } from '../utils/quantity.js';
+import { catalogUnitPrice } from '../utils/catalogPrice.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
 
@@ -126,10 +127,8 @@ async function resolveTrustedItems(
     const storeOrderId = storeOrderByStoreId.get(option.store_id);
     if (!storeOrderId) continue;
 
-    const preTax = Number(master.discounted_price) || 0;
     const isLoose = Boolean(master.is_loose);
-    const gstRate = isLoose ? 0 : Math.max(0, Number(master.gst_rate) || 0);
-    const unitPrice = preTax + (preTax * gstRate) / 100;
+    const unitPrice = catalogUnitPrice(master.discounted_price);
 
     let quantity: number;
     try {

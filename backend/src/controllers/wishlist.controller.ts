@@ -21,13 +21,10 @@ export class WishlistController {
 
       if (error) throw error;
 
-      // Raw base_price/discounted_price only — GST is a display/cart concern
-      // the frontend already has a shared helper for (priceWithGst), same as
-      // every other product listing. Returning pre-tax here and letting each
-      // client apply GST itself keeps this endpoint consistent with how
+      // Raw base_price/discounted_price, which already include GST
+      // (utils/catalogPrice.ts): clients show them as they are, the same way
       // master_products is read directly elsewhere (customer app's
-      // productService.ts, website's supabase.ts), rather than baking a
-      // website-specific tax calculation into a shared API response.
+      // productService.ts, website's supabase.ts).
       const items = (data ?? [])
         .filter((row: any) => row.master_products) // product could have been hard-deleted
         .map((row: any) => ({

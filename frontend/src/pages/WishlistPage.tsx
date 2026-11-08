@@ -4,7 +4,6 @@ import { Heart, ShoppingCart, Loader2, WifiOff, ArrowLeft } from 'lucide-react';
 import { getAuthHeaders, authedFetch } from '../utils/authHeader';
 import { useCart } from '../context/CartContext';
 import { Product } from '../services/supabase';
-import { parseGstRatePercent, priceWithGst } from '../utils/priceGst';
 
 interface WishlistItem {
   wishlistItemId: string;
@@ -20,18 +19,16 @@ interface WishlistItem {
   isActive: boolean;
 }
 
-// Same GST-inclusive pricing as services/supabase.ts's product mapper — the
-// wishlist API returns pre-tax base/discounted prices (like every other
-// master_products read), so GST is applied client-side here too.
-function withGst(item: WishlistItem): { price: number; originalPrice?: number } {
-  const gstRate = item.isLoose ? 0 : parseGstRatePercent(item.gstRate);
-  const price = priceWithGst(item.discountedPrice, gstRate);
-  const originalPrice = item.basePrice > 0 ? priceWithGst(item.basePrice, gstRate) : undefined;
+// Same pricing as services/supabase.ts's product mapper: the wishlist API
+// returns base/discounted prices that already include GST, shown as stored.
+function catalogPrices(item: WishlistItem): { price: number; originalPrice?: number } {
+  const price = item.discountedPrice;
+  const originalPrice = item.basePrice > 0 ? item.basePrice : undefined;
   return { price, originalPrice };
 }
 
 function toCartProduct(item: WishlistItem): Product {
-  const { price, originalPrice } = withGst(item);
+  const { price, originalPrice } = catalogPrices(item);
   return {
     id: item.productId,
     name: item.name,
@@ -159,7 +156,7 @@ const WishlistPage = () => {
                   {!item.isActive ? (
                     <p className="text-xs text-gray-400 italic mt-1">No longer available</p>
                   ) : (() => {
-                    const { price, originalPrice } = withGst(item);
+                    const { price, originalPrice } = catalogPrices(item);
                     return (
                       <div className="flex items-baseline gap-2 mt-1">
                         <span className="text-primary font-bold">₹{price.toFixed(2)}</span>

@@ -4,6 +4,7 @@ import { planAllocation } from './allocationPlanner.js';
 import { fetchCandidateStores, fetchStoreStock, PLACEMENT_RADIUS_KM } from './storeAllocation.service.js';
 import { reverseGeocode, forwardGeocode } from './geocoding.service.js';
 import { validateQuantity } from '../utils/quantity.js';
+import { catalogUnitPrice } from '../utils/catalogPrice.js';
 import { notificationService } from './notification.service.js';
 import { AppError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
@@ -1023,13 +1024,9 @@ export class DatabaseService {
     // SECURITY-010: never trust item.price from the request body — a client can set
     // an arbitrary/near-zero price per line item. Overwrite with the real catalog
     // price (admin-controlled, on master_products) looked up by master_product_id.
-    // Pricing model (mirrors frontend/src/utils/priceGst.ts + services/supabase.ts):
-    // sellable price = discounted_price + (discounted_price * gst_rate / 100), except
-    // loose products (is_loose = true), which are sold at discounted_price with no
-    // per-item GST (gst_rate treated as 0). This per-item price is separate from — and
-    // stacks with — the flat 5% GST added on the whole bill at checkout
-    // (checkoutCalculations.ts / the trustedFloor multiplier below), which is a
-    // GoI-mandated business-level tax, not a per-product one.
+    // Pricing model: catalogUnitPrice() — discounted_price as stored, which
+    // already includes GST (utils/catalogPrice.ts). Nothing is added on top,
+    // per item or on the bill.
     const { data: masterPriceRows, error: masterPriceError } = await take(pricesP);
 
     if (masterPriceError) {
@@ -1044,16 +1041,8 @@ export class DatabaseService {
       // (productRowsToProducts drops inactive masters) but was still orderable
       // from a stale cart. Treat it as unavailable. (2026-10-04 audit)
       if ((row as any).is_active === false) continue;
-      const preTax = Number((row as any).discounted_price) || 0;
       const isLoose = Boolean((row as any).is_loose);
-      const rawGstRate = (row as any).gst_rate;
-      const gstRate = isLoose
-        ? 0
-        : Number.isFinite(Number(rawGstRate)) && Number(rawGstRate) >= 0
-          ? Number(rawGstRate)
-          : 0;
-      const priceWithGst = preTax + (preTax * gstRate) / 100;
-      trustedPriceByMaster.set(row.id, priceWithGst);
+      trustedPriceByMaster.set(row.id, catalogUnitPrice((row as any).discounted_price));
       boundsByMaster.set(row.id, {
         min_quantity: (row as any).min_quantity ?? null,
         max_quantity: (row as any).max_quantity ?? null,
@@ -1178,20 +1167,42 @@ export class DatabaseService {
     // folded anonymously into order_total with no way to verify or pay it out.
     const trustedTipAmount = Math.max(0, Number(orderData.tip_amount) || 0);
 
-    // Floor check on order_total: the frontend's own total = subtotal (each
-    // item's own price already has its real per-product GST baked in — the
-    // checkout page no longer adds a further flat 5% checkout-only markup on
-    // top of that, removed 2026-07-31 as a double-count) + PLATFORM_FEE +
-    // HANDLING_FEE + trustedDeliveryFee (currently always 0) -
-    // trustedDiscountAmount + tip_amount. Now that tip is a real, known
-    // field, the floor accounts for it exactly instead of only checking the
-    // portion determined by item prices alone.
+    // Check order_total against the server's own total: subtotal at catalogue
+    // prices (GST already inside them) + PLATFORM_FEE + HANDLING_FEE +
+    // trustedDeliveryFee (currently always 0) - trustedDiscountAmount +
+    // tip_amount. Clients round the total to the rupee, hence the ₹1 margin.
     const PLATFORM_FEE = 9.5;
     const HANDLING_FEE = 5.5;
     const trustedFloor =
       trustedSubtotal + PLATFORM_FEE + HANDLING_FEE + trustedDeliveryFee - trustedDiscountAmount + trustedTipAmount;
     if (orderData.order_total < trustedFloor - 1) {
       throw new Error('Order total does not match item prices. Please refresh your cart and try again.');
+    }
+    // Ceiling: never charge more than the server's total. Customer app builds
+    // from before 2026-11-08 add GST on top of the catalogue price and so send
+    // a higher order_total; the order (and the Razorpay amount, which reads
+    // total_amount) uses the server's total instead.
+    let duplicateLookup = recentDuplicateP;
+    if (orderData.order_total > trustedFloor + 1) {
+      const serverTotal = Math.round(trustedFloor);
+      console.warn('[placeCheckoutOrder] client order_total above the catalogue total; charging the server total', {
+        clientTotal: orderData.order_total,
+        serverTotal,
+      });
+      orderData.order_total = serverTotal;
+      duplicateLookup = settled(
+        supabaseAdmin
+          .from('customer_orders')
+          .select('*')
+          .eq('customer_id', orderData.user_id)
+          .eq('total_amount', serverTotal)
+          .eq('subtotal_amount', trustedSubtotal)
+          .neq('status', 'order_cancelled')
+          .gte('created_at', dedupeWindowStart)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+      );
     }
 
     // Split cash/UPI payment: the frontend's own "Balanced"/"over"/"short"
@@ -1215,7 +1226,7 @@ export class DatabaseService {
     // equivalent order (same customer, same total, same item count) placed in
     // the last 30 seconds and returns that instead of inserting a new one.
     // (read issued above, alongside the coupon validation)
-    const { data: recentDuplicate } = await take(recentDuplicateP);
+    const { data: recentDuplicate } = await take(duplicateLookup);
     if (recentDuplicate) {
       return {
         id: recentDuplicate.id,

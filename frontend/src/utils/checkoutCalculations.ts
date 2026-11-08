@@ -63,9 +63,9 @@ export function calculateCheckoutTotals(
   // ═══════════════════════════════════════════════════════════════════════════
   // STEP 1: Calculate Items - Taxable value, MRP
   // ═══════════════════════════════════════════════════════════════════════════
-  // Cart subtotal is the taxable value. Each item's own price already has its
-  // real per-product GST baked in server-side (master_products.gst_rate, via
-  // transformProductRowToProduct/priceWithGst) — by design, the checkout page
+  // Cart subtotal is the taxable value. Each item's own price already includes
+  // its GST (catalogue prices are GST-inclusive, backend utils/catalogPrice.ts)
+  // — by design, the checkout page
   // no longer adds a further flat 5% on top of that (that extra line was a
   // double-count, not a real additional charge). itemsGST is kept at zero
   // rather than removed from the type so existing callers reading the field

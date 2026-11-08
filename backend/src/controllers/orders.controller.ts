@@ -6,6 +6,7 @@ import { notificationService } from '../services/notification.service.js';
 import { payRiderForDeliveredOrder } from './deliveryPartner.controller.js';
 import { broadcastToNearbyDrivers } from './shopkeeper.controller.js';
 import { validateQuantity } from '../utils/quantity.js';
+import { catalogUnitPrice } from '../utils/catalogPrice.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
 import { gstinRejectionMessage, verifyGstin } from '../services/gstVerification.service.js';
@@ -111,9 +112,8 @@ export class OrdersController {
       // SECURITY-010: never trust cart_items[].unit_price from the request body —
       // a client can set an arbitrary/near-zero price per line item. Overwrite with
       // the real catalog price (admin-controlled, on master_products), looked up via
-      // each item's store-scoped products row. Same pricing formula as placeCheckoutOrder:
-      // sellable price = discounted_price + (discounted_price * gst_rate / 100), with
-      // loose products (is_loose = true) sold at discounted_price with no per-item GST.
+      // each item's store-scoped products row. Same pricing as placeCheckoutOrder:
+      // catalogUnitPrice() — discounted_price as stored, which already includes GST.
       const productIds = [...new Set(cart_items.map((it: any) => it.product_id))];
       // Require the parent store to be online (is_active) and admin-approved
       // (is_approved) — same gate the customer-facing display paths enforce
@@ -160,15 +160,8 @@ export class OrdersController {
       const boundsByMaster = new Map<string, { min_quantity: number | null; max_quantity: number | null }>();
       const isLooseByMaster = new Map<string, boolean>();
       for (const row of masterPriceRows || []) {
-        const preTax = Number((row as any).discounted_price) || 0;
         const isLoose = Boolean((row as any).is_loose);
-        const rawGstRate = (row as any).gst_rate;
-        const gstRate = isLoose
-          ? 0
-          : Number.isFinite(Number(rawGstRate)) && Number(rawGstRate) >= 0
-            ? Number(rawGstRate)
-            : 0;
-        trustedPriceByMaster.set(row.id, preTax + (preTax * gstRate) / 100);
+        trustedPriceByMaster.set(row.id, catalogUnitPrice((row as any).discounted_price));
         boundsByMaster.set(row.id, {
           min_quantity: (row as any).min_quantity ?? null,
           max_quantity: (row as any).max_quantity ?? null,

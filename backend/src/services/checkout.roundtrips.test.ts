@@ -58,7 +58,7 @@ function setup(fails: Fail[] = []) {
         return ok([]);
       case 'customer_orders':
         if (c.op === 'select' && has('duplicate')) {
-          return ok([{ id: 'dup-1', payment_status: 'pending', total_amount: 274.4, subtotal_amount: 293.5, delivery_fee: 0, discount_amount: 29.35, gstin: null, gstin_business_name: null, receiver_name: null, receiver_phone: null, receiver_address: null, tip_amount: 0, created_at: '2026-10-05T09:59:50Z', order_code: 'NN20261005-0041' }]);
+          return ok([{ id: 'dup-1', payment_status: 'pending', total_amount: 246, subtotal_amount: 256.5, delivery_fee: 0, discount_amount: 25.65, gstin: null, gstin_business_name: null, receiver_name: null, receiver_phone: null, receiver_address: null, tip_amount: 0, created_at: '2026-10-05T09:59:50Z', order_code: 'NN20261005-0041' }]);
         }
         return ok([]);
       case 'rpc:place_multi_store_order':
@@ -71,12 +71,15 @@ function setup(fails: Fail[] = []) {
   };
 }
 
+// Catalogue prices include GST (utils/catalogPrice.ts): Milk 40 × 2 + loose
+// Rice 25.5 × 3 + Ghee 100 = 256.5; SAVE10 takes 25.65; + ₹9.50 + ₹5.50 fees
+// = 245.85, which the apps round to 246.
 const ORDER = {
   user_id: '00000000-0000-0000-0000-000000000001',
   customer_name: 'Asha',
   customer_phone: '+919999999999',
-  order_total: 293.5 + 9.5 + 5.5 - 29.35,
-  subtotal: 293.5,
+  order_total: 246,
+  subtotal: 256.5,
   delivery_fee: 0,
   payment_status: 'pending',
   payment_method: 'cod',
@@ -110,6 +113,40 @@ describe('placeCheckoutOrder', () => {
     payload.p_customer_order.delivery_otp = '####';
     expect(JSON.stringify(payload, null, 1)).toMatchSnapshot('place payload');
     expect(fake.on('rpc:record_coupon_redemption_if_available')).toHaveLength(1);
+  });
+
+  // 2026-11-08: catalogue prices include GST, so items are charged as stored.
+  it('charges catalogue prices as stored, with no GST added on top', async () => {
+    const { fake, error } = await place();
+    expect(error).toBeNull();
+    const payload = fake.on('rpc:place_multi_store_order')[0].payload as {
+      p_customer_order: { subtotal_amount: number; total_amount: number };
+      p_store_chunks: Array<{ items: Array<{ product_name: string; unit_price: number }> }>;
+    };
+    const prices = Object.fromEntries(payload.p_store_chunks.flatMap((c) => c.items).map((i) => [i.product_name, i.unit_price]));
+    expect(prices).toEqual({ Milk: 40, 'Rice (loose)': 25.5, Ghee: 100 });
+    expect(payload.p_customer_order.subtotal_amount).toBe(256.5);
+    expect(payload.p_customer_order.total_amount).toBe(246);
+  });
+
+  // App builds from before 2026-11-08 add GST on top and send a higher total;
+  // the order is placed at the server's total instead.
+  it('charges the server total when the app sends a higher one', async () => {
+    const oldAppTotal = 279.15; // the same cart priced with GST added on top
+    const { fake, result, error } = await place([], { ...ORDER, order_total: oldAppTotal });
+    expect(error).toBeNull();
+    expect(result?.order_total).toBe(246);
+    const co = (fake.on('rpc:place_multi_store_order')[0].payload as { p_customer_order: { total_amount: number } }).p_customer_order;
+    expect(co.total_amount).toBe(246);
+    // The double-tap check looks for the total actually stored, not the client's.
+    const dedupes = fake.on('customer_orders', 'select').filter((c) => c.filters.some(([m, col]) => m === 'eq' && col === 'total_amount'));
+    expect(dedupes.some((c) => c.filters.some(([m, col, v]) => m === 'eq' && col === 'total_amount' && v === 246))).toBe(true);
+  });
+
+  it('keeps a total within ₹1 of the server total as sent (rounding)', async () => {
+    const { result, error } = await place([], { ...ORDER, order_total: 246.5 });
+    expect(error).toBeNull();
+    expect(result?.order_total).toBe(246.5);
   });
 
   it('returns the recent duplicate instead of placing again', async () => {
