@@ -13,6 +13,12 @@ import { getCurrentAdmin } from '../../services/secureAdminAuth';
 import { hasRole } from '../../services/adminAuthService';
 import { useToast } from '../../context/ToastContext';
 import {
+  AdditionalImagesField,
+  extraImageUrls,
+  toExtraImages,
+  type ExtraImage,
+} from '../../components/admin/AdditionalImagesField';
+import {
   Alert,
   Button,
   Card,
@@ -33,12 +39,13 @@ import {
 import { cn } from '../../utils/cn';
 
 /**
- * The one image persisted for a product (master_products.image_url).
+ * The main image of a product (master_products.image_url): listings, cart,
+ * orders, and first on the product page. Extra photos are a separate list
+ * (master_products.additional_images, components/admin/AdditionalImagesField),
+ * shown after it on the customer app's product page.
  *
- * This page used to offer a multi-image gallery with reorder / set-primary
- * controls, but updateProduct only maps the first URL to image_url and nothing
- * reads or writes product_images, so every extra upload was silently
- * discarded. The UI now promises exactly what is stored: a single image.
+ * (An older gallery UI here uploaded extra photos that were never stored —
+ * nothing read or wrote product_images. Extra photos are now a real column.)
  */
 interface ImageData {
   id: string;
@@ -196,6 +203,10 @@ const EditProductPage = () => {
 
   const [image, setImage] = useState<ImageData | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
+  // Extra photos (master_products.additional_images), and the list as loaded,
+  // to tell whether saving needs to write them.
+  const [extraImages, setExtraImages] = useState<ExtraImage[]>([]);
+  const loadedExtrasRef = useRef<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Latest image for the upload pipeline and the unmount cleanup.
@@ -267,6 +278,8 @@ const EditProductPage = () => {
         });
 
         setImage(product.image ? { id: 'existing', url: product.image, isUploading: false } : null);
+        loadedExtrasRef.current = product.additional_images ?? [];
+        setExtraImages(toExtraImages(product.additional_images));
         setCategories(categoriesData.map((cat) => cat.name));
       } catch (err) {
         if (!isCurrent()) return;
@@ -393,6 +406,24 @@ const EditProductPage = () => {
     setImageError(null);
   };
 
+  // Swap an extra photo with the main image: the chosen photo becomes the
+  // main one and the old main image takes its place in the list (or it just
+  // leaves the list when there was no main image).
+  const makeExtraMain = (extra: ExtraImage) => {
+    if (extra.isUploading || image?.isUploading) return;
+    const previousMain = image;
+    setImage({ id: generateId(), url: extra.url, isUploading: false });
+    setExtraImages((prev) => {
+      const index = prev.findIndex((p) => p.id === extra.id);
+      if (index < 0) return prev;
+      const next = [...prev];
+      if (previousMain) next[index] = { id: generateId(), url: previousMain.url, isUploading: false };
+      else next.splice(index, 1);
+      return next;
+    });
+    setImageError(null);
+  };
+
   const validate = (): FieldErrors => {
     const errors: FieldErrors = {};
     const price = parseFloat(formData.price);
@@ -453,8 +484,8 @@ const EditProductPage = () => {
     }
     setFieldErrors({});
 
-    if (image?.isUploading) {
-      setError('Please wait for the image to finish uploading');
+    if (image?.isUploading || extraImages.some((i) => i.isUploading)) {
+      setError('Please wait for the photos to finish uploading');
       return;
     }
 
@@ -483,6 +514,12 @@ const EditProductPage = () => {
       }
 
       const price = parseFloat(formData.price);
+      // Extra photos are only written when the list changed, so saving a
+      // product whose photos weren't touched never depends on that column.
+      const extraUrls = extraImageUrls(extraImages);
+      const loadedExtras = loadedExtrasRef.current;
+      const extrasChanged =
+        extraUrls.length !== loadedExtras.length || extraUrls.some((url, i) => url !== loadedExtras[i]);
       const productData = {
         name: formData.name.trim(),
         price,
@@ -491,6 +528,7 @@ const EditProductPage = () => {
         description: textOrNull(formData.description),
         // null, not undefined, so removing the image is persisted (updateProduct skips undefined).
         image: image && !image.isUploading ? image.url : null,
+        ...(extrasChanged ? { additional_images: extraUrls } : {}),
         category: categoryToUse,
         in_stock: formData.in_stock,
         rating: parseFloat(formData.rating),
@@ -594,7 +632,7 @@ const EditProductPage = () => {
     );
   }
 
-  const uploading = Boolean(image?.isUploading);
+  const uploading = Boolean(image?.isUploading) || extraImages.some((i) => i.isUploading);
   // A stored category that is no longer in the categories table would make the
   // select fall back to "Select a category" while the hidden value still saves.
   const staleCategory = formData.category && !categories.includes(formData.category) ? formData.category : null;
@@ -719,8 +757,8 @@ const EditProductPage = () => {
 
         <Card>
           <CardHeader
-            title="Product image"
-            description="One image is stored per product and shown in listings and on the product page."
+            title="Main image"
+            description="Shown in listings, the cart and orders, and first on the product page."
           />
           <CardBody>
             <input
@@ -742,7 +780,7 @@ const EditProductPage = () => {
                   onDragLeave={handleDragLeave}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
-                  disabled={uploading}
+                  disabled={Boolean(image?.isUploading)}
                   aria-describedby="product-image-hint"
                   className={cn(
                     'flex min-h-[12rem] flex-1 flex-col items-center justify-center rounded-md border-2 border-dashed px-6 py-8 text-center transition-colors',
@@ -775,6 +813,16 @@ const EditProductPage = () => {
                 </button>
               </div>
             </FormField>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardHeader
+            title="More photos"
+            description="Optional. Customers swipe through these after the main image on the app's product page."
+          />
+          <CardBody>
+            <AdditionalImagesField images={extraImages} setImages={setExtraImages} onMakeMain={makeExtraMain} />
           </CardBody>
         </Card>
 
@@ -977,7 +1025,7 @@ const EditProductPage = () => {
               Cancel
             </Button>
             <Button type="submit" loading={saving} disabled={uploading} leftIcon={<Save />}>
-              {uploading ? 'Uploading image…' : 'Save changes'}
+              {uploading ? 'Uploading photos…' : 'Save changes'}
             </Button>
           </CardFooter>
         </Card>

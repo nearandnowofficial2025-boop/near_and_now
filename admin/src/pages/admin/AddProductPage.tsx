@@ -38,17 +38,22 @@ import {
   Spinner,
 } from '../../components/ui';
 import { useToast } from '../../context/ToastContext';
+import {
+  AdditionalImagesField,
+  extraImageUrls,
+  type ExtraImage,
+} from '../../components/admin/AdditionalImagesField';
 import { cn } from '../../utils/cn';
 
 /**
- * The one image persisted for a product (master_products.image_url).
+ * The main image of a product (master_products.image_url): listings, cart,
+ * orders, and first on the product page. Extra photos are a separate list
+ * (master_products.additional_images, components/admin/AdditionalImagesField,
+ * 2026-11-15), shown after it on the customer app's product page.
  *
- * Decision (2026-10-04): public.product_images exists in the baseline
- * migration, but nothing in admin/, frontend/ or backend/ reads or writes it
- * and master_products has no images column. The previous gallery UI here
- * (reorder / set primary / "add more") therefore uploaded files that were
- * never attached to the product. The form now promises exactly what is
- * stored — a single image, with upload and remove — matching EditProductPage.
+ * (Until 2026-10-04 a gallery UI here uploaded extra photos that were never
+ * stored — nothing read or wrote public.product_images. Extra photos are now
+ * a real column.)
  */
 interface ImageData {
   id: string;
@@ -141,6 +146,8 @@ const AddProductPage = () => {
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [image, setImage] = useState<ImageData | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
+  // Extra photos (master_products.additional_images).
+  const [extraImages, setExtraImages] = useState<ExtraImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Depth counter so dragleave fired by child elements does not flicker the
@@ -358,6 +365,24 @@ const AddProductPage = () => {
     setImageError(null);
   };
 
+  // Swap an extra photo with the main image: the chosen photo becomes the
+  // main one and the old main image takes its place in the list (or it just
+  // leaves the list when there was no main image).
+  const makeExtraMain = (extra: ExtraImage) => {
+    const previousMain = imageRef.current;
+    if (extra.isUploading || previousMain?.isUploading) return;
+    setImage({ id: generateId(), url: extra.url, isUploading: false });
+    setExtraImages((prev) => {
+      const index = prev.findIndex((p) => p.id === extra.id);
+      if (index < 0) return prev;
+      const next = [...prev];
+      if (previousMain) next[index] = { id: generateId(), url: previousMain.url, isUploading: false };
+      else next.splice(index, 1);
+      return next;
+    });
+    setImageError(null);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -402,8 +427,8 @@ const AddProductPage = () => {
       return;
     }
 
-    if (image?.isUploading) {
-      showFormError('Please wait for the image to finish uploading');
+    if (image?.isUploading || extraImages.some((i) => i.isUploading)) {
+      showFormError('Please wait for the photos to finish uploading');
       return;
     }
 
@@ -439,8 +464,9 @@ const AddProductPage = () => {
         price,
         original_price: formData.original_price ? parseFloat(formData.original_price) : undefined,
         description: formData.description.trim() || undefined,
-        // Exactly one image is stored (master_products.image_url) — see ImageData.
+        // The main image (master_products.image_url) — see ImageData.
         image: image && !image.isUploading ? image.url : undefined,
+        additional_images: extraImageUrls(extraImages),
         category: categoryToUse,
         in_stock: formData.in_stock,
         // A new product has no reviews yet (toMasterProduct defaults to 0 too).
@@ -496,7 +522,7 @@ const AddProductPage = () => {
     }
   };
 
-  const uploading = Boolean(image?.isUploading);
+  const uploading = Boolean(image?.isUploading) || extraImages.some((i) => i.isUploading);
 
   // Tax split sanity check (non-blocking)
   const gstRateValue = formData.gst_rate ? parseFloat(formData.gst_rate) : null;
@@ -695,8 +721,8 @@ const AddProductPage = () => {
         {/* Product image */}
         <Card>
           <CardHeader
-            title="Product image"
-            description="One image is stored per product and shown in listings and on the product page."
+            title="Main image"
+            description="Shown in listings, the cart and orders, and first on the product page."
           />
           <CardBody>
             {/* Hidden file input */}
@@ -720,7 +746,7 @@ const AddProductPage = () => {
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
+                  disabled={Boolean(image?.isUploading)}
                   className={cn(
                     'flex min-h-[12rem] flex-1 flex-col items-center justify-center rounded-md border-2 border-dashed px-6 py-8 text-center transition-colors',
                     'focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2',
@@ -750,6 +776,17 @@ const AddProductPage = () => {
                 </button>
               </div>
             </FormField>
+          </CardBody>
+        </Card>
+
+        {/* More photos */}
+        <Card>
+          <CardHeader
+            title="More photos"
+            description="Optional. Customers swipe through these after the main image on the app's product page."
+          />
+          <CardBody>
+            <AdditionalImagesField images={extraImages} setImages={setExtraImages} onMakeMain={makeExtraMain} />
           </CardBody>
         </Card>
 
@@ -961,7 +998,7 @@ const AddProductPage = () => {
               Cancel
             </Button>
             <Button type="submit" loading={loading} disabled={uploading} leftIcon={<Save />}>
-              {loading ? 'Creating…' : uploading ? 'Uploading image…' : 'Create product'}
+              {loading ? 'Creating…' : uploading ? 'Uploading photos…' : 'Create product'}
             </Button>
           </CardFooter>
         </Card>

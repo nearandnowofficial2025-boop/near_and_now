@@ -68,12 +68,18 @@ export interface Product {
   gst_rate?: number;
   original_price?: number;
   description?: string;
+  /** The main image (master_products.image_url) — listings, cart, orders. */
   image?: string;
   image_url?: string;
-  // No `images`, `size` or `weight`: master_products has a single image_url,
-  // the pack size lives in `unit` (NOT NULL), and product_images is unused by
-  // every app (see AddProductPage/EditProductPage). Those former fields were
-  // never persisted and only let pages promise data that was dropped.
+  /**
+   * Extra photos in display order, shown after the main image on the customer
+   * app's product page (master_products.additional_images, max 8 —
+   * migration 20261115000000). Never includes the main image.
+   */
+  additional_images?: string[];
+  // No `size` or `weight`: the pack size lives in `unit` (NOT NULL).
+  // public.product_images is unused by every app; extra photos live in
+  // additional_images above.
   category: string;
   in_stock: boolean;
   rating?: number;

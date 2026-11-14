@@ -78,6 +78,30 @@ export async function uploadProductImage(file: File): Promise<string | null> {
   }
 }
 
+/** master_products_additional_images_valid allows at most this many extra photos. */
+export const MAX_ADDITIONAL_IMAGES = 8;
+
+/**
+ * The extra-photo list as the database accepts it: trimmed http(s) URLs,
+ * no blanks (the CHECK constraint rejects them), no duplicates, never the
+ * main image itself, at most MAX_ADDITIONAL_IMAGES. Local `blob:` previews of
+ * photos still uploading are dropped — the pages block saving until uploads
+ * finish, this is only the backstop.
+ */
+export function normaliseAdditionalImages(list: unknown, mainImage?: string | null): string[] {
+  if (!Array.isArray(list)) return [];
+  const main = typeof mainImage === 'string' ? mainImage.trim() : '';
+  const out: string[] = [];
+  for (const item of list) {
+    if (typeof item !== 'string') continue;
+    const url = item.trim();
+    if (!/^https?:\/\//i.test(url) || url === main || out.includes(url)) continue;
+    out.push(url);
+    if (out.length === MAX_ADDITIONAL_IMAGES) break;
+  }
+  return out;
+}
+
 // Admin Types
 // Mirrors public.categories (migration 20260813000000 lines 328-336): id, name,
 // description, image_url, display_order, created_at, updated_at. No migration
@@ -436,12 +460,16 @@ export async function getProductById(id: string): Promise<Product | null> {
 
 function toMasterProduct(product: Partial<Product>): Record<string, unknown> {
   const p = product as any;
+  const imageUrl = p.image_url || p.image || null;
+  const additionalImages = normaliseAdditionalImages(p.additional_images, imageUrl);
   return {
     name: p.name,
     category: p.category,
     brand: p.brand || null,
     description: p.description || null,
-    image_url: p.image_url || p.image || null,
+    image_url: imageUrl,
+    // Only sent when there are some; otherwise the column default ({}) applies.
+    ...(additionalImages.length ? { additional_images: additionalImages } : {}),
     base_price: p.base_price ?? p.original_price ?? p.price ?? 0,
     discounted_price: p.discounted_price ?? p.price ?? 0,
     // Create path only (updateProduct never defaults unit): the column is NOT
@@ -470,6 +498,8 @@ function transformMasterProductToProduct(row: any): Product {
     original_price: row.base_price ?? row.original_price,
     in_stock: row.is_active ?? row.in_stock ?? true,
     image: row.image_url ?? row.image,
+    // [] before migration 20261115000000 is applied (no such column yet).
+    additional_images: Array.isArray(row.additional_images) ? row.additional_images : [],
     isLoose: row.is_loose ?? row.isLoose
   };
 }
@@ -514,6 +544,10 @@ export async function updateProduct(id: string, updates: ProductUpdate): Promise
     if (u.brand !== undefined) row.brand = u.brand;
     if (u.description !== undefined) row.description = u.description;
     if (u.image_url !== undefined || u.image !== undefined) row.image_url = u.image_url ?? u.image;
+    // undefined = leave the extra photos alone; null or [] = remove them all.
+    if (u.additional_images !== undefined) {
+      row.additional_images = normaliseAdditionalImages(u.additional_images, row.image_url as string | null | undefined);
+    }
     if (u.base_price !== undefined || u.original_price !== undefined) row.base_price = u.base_price ?? u.original_price;
     if (u.discounted_price !== undefined || u.price !== undefined) row.discounted_price = u.discounted_price ?? u.price;
     // unit is NOT NULL and is never defaulted on update: an earlier version
