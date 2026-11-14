@@ -64,6 +64,9 @@ router.post('/notifications/preferences',                         ctrl.updateRid
 router.get('/available-orders',                                   ctrl.getAvailableOrders.bind(ctrl));
 router.post('/offers/:offerId/accept',                            ctrl.acceptOffer.bind(ctrl));
 
+// Earnings tab totals (one call instead of paging the whole history)
+router.get('/earnings/summary',                                   ctrl.getEarningsSummary.bind(ctrl));
+
 // Active order management
 router.get('/orders',                                             ctrl.getOrders.bind(ctrl));
 router.get('/orders/:orderId',                                    ctrl.getOrderById.bind(ctrl));

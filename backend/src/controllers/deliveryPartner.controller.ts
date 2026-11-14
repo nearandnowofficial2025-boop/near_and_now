@@ -11,6 +11,8 @@ import { sendError } from '../utils/httpError.js';
 import { createImageUploadUrl } from '../services/imageUploadUrls.js';
 import { runInBackground } from '../utils/background.js';
 import { selectInChunks } from '../utils/selectInChunks.js';
+import { fetchAllRows } from '../utils/fetchAllRows.js';
+import { resolveEarningsWindow, summariseRiderEarnings, type EarningsOrder, type EarningsPayout } from '../utils/riderEarnings.js';
 import { codCollectionEnabled, getCodCollection, issueCodQr, publicCodCollection, recordCodCash } from '../services/codCollection.service.js';
 import { RazorpayApiError } from '../services/payment.service.js';
 import {
@@ -728,6 +730,93 @@ export class DeliveryPartnerController {
       }
     } catch (err) {
       return sendError(res, 'DeliveryPartnerController.updateLocation', 'Could not update the location', err);
+    }
+  }
+
+  /**
+   * GET /delivery-partner/earnings/summary?today_start=<ISO>&week_start=<ISO>
+   *
+   * Today / last-7-days / all-time totals for the Earnings tab in one call,
+   * plus the deliveries inside the 7-day window (for the Today and Last 7
+   * Days lists). The app used to download the whole history through
+   * getOrders — every page also reading items and stores — and add it up on
+   * the phone. Rules: utils/riderEarnings.ts. The All Time list pages through
+   * getOrders on demand instead.
+   */
+  async getEarningsSummary(req: Request, res: Response) {
+    try {
+      const riderId = req.riderId!;
+      const window = resolveEarningsWindow(req.query as Record<string, unknown>);
+
+      // Two light reads in parallel, each paged past PostgREST's 1000-row cap
+      // (a rider with a long history would otherwise be silently truncated).
+      // Completed orders use getOrders' 'completed' filter exactly, so the
+      // counts here match the list.
+      const [orderRows, payoutRows] = await Promise.all([
+        fetchAllRows<{ id: string; order_code: string | null; placed_at: string; store_orders: Array<{ store_id: string }> | null }>((from, to) =>
+          supabaseAdmin
+            .from('customer_orders')
+            .select('id, order_code, placed_at, store_orders!inner(store_id)')
+            .eq('store_orders.delivery_partner_id', riderId)
+            .neq('store_orders.status', 'order_cancelled')
+            .eq('status', 'order_delivered')
+            .order('placed_at', { ascending: false })
+            .order('id', { ascending: false })
+            .range(from, to)
+        ),
+        fetchAllRows<EarningsPayout>((from, to) =>
+          supabaseAdmin
+            .from('delivery_partners_payouts')
+            .select('customer_order_id, amount, created_at')
+            .eq('partner_user_id', riderId)
+            .order('id', { ascending: true })
+            .range(from, to)
+        ),
+      ]);
+
+      // As in getOrders: with several of this rider's store rows on one
+      // order, the last one picks the store shown.
+      const orders: EarningsOrder[] = orderRows.map((o) => {
+        const storeRows = o.store_orders || [];
+        return {
+          id: o.id,
+          order_code: o.order_code,
+          placed_at: o.placed_at,
+          store_id: storeRows.length ? storeRows[storeRows.length - 1].store_id : null,
+        };
+      });
+
+      const { today, week, all, recent } = summariseRiderEarnings(orders, payoutRows, window);
+
+      // Store names for the 7-day list only.
+      const storeIds = [...new Set(recent.map((r) => r.store_id).filter((id): id is string => !!id))];
+      const { data: stores } = storeIds.length
+        ? await selectInChunks<{ id: string; name: string }>(storeIds, (ids) =>
+            supabaseAdmin.from('stores').select('id, name').in('id', ids))
+        : { data: [] as { id: string; name: string }[] };
+      const storeNameById = new Map((stores || []).map((s) => [s.id, s.name]));
+
+      res.json({
+        success: true,
+        window: {
+          today_start: new Date(window.todayStart).toISOString(),
+          week_start: new Date(window.weekStart).toISOString(),
+        },
+        summary: { today, week, all },
+        recent: recent.map((r) => {
+          const storeName = r.store_id ? storeNameById.get(r.store_id) : undefined;
+          return {
+            id: r.id,
+            order_code: r.order_code,
+            placed_at: r.placed_at,
+            payout_amount: r.payout_amount,
+            payout_created_at: r.payout_created_at,
+            stores: storeName ? { name: storeName } : null,
+          };
+        }),
+      });
+    } catch (err) {
+      return sendError(res, 'DeliveryPartnerController.getEarningsSummary', 'Could not load your earnings', err);
     }
   }
 
