@@ -1,0 +1,21 @@
+order_code,order_status,method,old_order_payment_status,old_payments_row_status,new_status,new_paid_at
+NN20260924-0005,order_cancelled,cod,pending,pending,cancelled,
+NN20260925-0007,order_cancelled,cod,pending,pending,cancelled,
+NN20260926-0001,order_cancelled,cod,pending,pending,cancelled,
+NN20260926-0002,order_cancelled,cod,pending,pending,cancelled,
+NN20260926-0003,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0005,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0006,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0007,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0008,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0009,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0010,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0011,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0012,order_cancelled,cod,pending,pending,cancelled,
+NN20261003-0013,order_cancelled,cod,pending,pending,cancelled,
+NN20261004-0001,order_cancelled,cod,pending,pending,cancelled,
+NN20260903-0002,order_delivered,cod,pending,pending,paid,2026-09-03 16:12:39.064481+00
+NN20260903-0003,order_delivered,cod,pending,pending,paid,2026-09-03 16:16:44.579626+00
+NN20260924-0009,order_delivered,cod,pending,pending,paid,2026-09-24 18:28:08.993254+00
+NN20260924-0012,order_delivered,cod,pending,pending,paid,2026-09-24 18:30:15.377237+00
+NN20261003-0002,order_delivered,cod,pending,pending,paid,2026-10-03 18:05:14.626809+00
