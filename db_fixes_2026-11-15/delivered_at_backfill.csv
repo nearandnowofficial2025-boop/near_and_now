@@ -1,0 +1,18 @@
+order_code,row_type,id,delivered_at_set,source
+NN20260903-0002,customer_order,0dbda94a-176d-4c32-adc3-bc43e7ea1162,2026-09-03 16:12:39.064481+00,order_status_history order_delivered
+NN20260903-0002,store_order,b53925af-5689-489c-8e4d-163d96e853b9,2026-09-03 16:12:39.064481+00,copied from its customer order
+NN20260903-0003,customer_order,4bd93671-a33f-4ea7-8cc4-3d7163e82e91,2026-09-03 16:16:44.579626+00,order_status_history order_delivered
+NN20260903-0003,store_order,aff15193-ae6b-4028-a750-bb69b4378b93,2026-09-03 16:16:44.579626+00,copied from its customer order
+NN20260903-0004,customer_order,a5256791-3267-4409-b7a8-62011e9f347a,2026-09-03 16:21:03.79798+00,order_status_history order_delivered
+NN20260903-0004,store_order,1acf17cc-8a1e-433f-8b13-33ddec253f8c,2026-09-03 16:21:03.79798+00,copied from its customer order
+NN20260903-0004,store_order,30d13918-a389-4288-a631-b67c7dde9ced,2026-09-03 16:21:03.79798+00,copied from its customer order
+NN20260904-0001,customer_order,6fdac69b-08e4-4021-957c-02a5088d3ac5,2026-09-04 06:32:13.68062+00,order_status_history order_delivered
+NN20260904-0001,store_order,fcc088eb-ada7-4772-886c-a778880d2042,2026-09-04 06:32:13.68062+00,copied from its customer order
+NN20260924-0006,customer_order,6ecd8d1b-23be-4be7-8455-b463156cab97,2026-09-24 18:19:41.846431+00,order_status_history order_delivered
+NN20260924-0006,store_order,f7cbdb29-09b7-4334-bfba-26d9783f5de0,2026-09-24 18:19:41.846431+00,copied from its customer order
+NN20260924-0009,customer_order,5eff3f6c-6cf6-4500-8623-5e962848cd60,2026-09-24 18:28:08.993254+00,order_status_history order_delivered
+NN20260924-0009,store_order,f70e8c98-f5d1-4fbb-a5e8-f5b23a4cf73e,2026-09-24 18:28:08.993254+00,copied from its customer order
+NN20260924-0012,customer_order,49cfed7e-3efd-4931-892d-ac5962b56fc3,2026-09-24 18:30:15.377237+00,order_status_history order_delivered
+NN20260924-0012,store_order,47a7f2e4-ec99-4f22-b1a0-925737dd6d8a,2026-09-24 18:30:15.377237+00,copied from its customer order
+NN20261003-0002,customer_order,9b6084c9-7958-4f99-b464-3dcda0ad1595,2026-10-03 18:05:14.626809+00,order_status_history order_delivered
+NN20261003-0002,store_order,7bafa39c-cace-432d-bdd5-6b0cb56d4288,2026-10-03 18:05:14.626809+00,copied from its customer order
