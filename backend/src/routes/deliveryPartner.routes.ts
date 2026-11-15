@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import multer from 'multer';
 import { DeliveryPartnerController, requireRider } from '../controllers/deliveryPartner.controller.js';
 import { MAX_DOC_SIZE_BYTES } from '../utils/deliveryPartnerVerificationDocuments.js';
@@ -13,6 +14,8 @@ const docUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 
 // script-guess them. Keyed per order/allocation, not per rider globally, so
 // exhausting attempts on one order doesn't lock a rider out of others.
 const verifyDeliveryOtpLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('rider-delivery-otp'),
   windowMs: 3 * 60 * 1000,
   max: 3,
   skipSuccessfulRequests: true, // only wrong-code (4xx) attempts count — a correct guess or status poll doesn't burn the budget
@@ -23,6 +26,8 @@ const verifyDeliveryOtpLimiter = rateLimit({
 });
 
 const verifyPickupCodeLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('rider-pickup-code'),
   windowMs: 3 * 60 * 1000,
   max: 3,
   skipSuccessfulRequests: true,

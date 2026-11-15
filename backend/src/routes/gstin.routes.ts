@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import { requireCustomer } from '../middleware/customerAuth.middleware.js';
 import { gstinRejectionMessage, verifyGstin } from '../services/gstVerification.service.js';
 import { sendError } from '../utils/httpError.js';
@@ -10,6 +11,8 @@ const router = Router();
 // generous for a real checkout (a few attempts), tight enough that a script
 // can't run up the bill.
 const verifyLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('gstin-verify'),
   windowMs: 60 * 60 * 1000,
   max: 30,
   keyGenerator: (req) => req.customerId || req.ip || 'unknown',

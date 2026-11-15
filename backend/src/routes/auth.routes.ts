@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import { z } from 'zod';
 import { AuthController } from '../controllers/auth.controller.js';
 import { validate } from '../middleware/validate.js';
@@ -29,6 +30,8 @@ const phoneKey = (req: { body?: { phone?: unknown }; ip?: string }) => {
 
 // Allow max 5 OTP sends per phone per 10 minutes
 const sendOtpLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('send-otp'),
   windowMs: 10 * 60 * 1000,
   max: 5,
   keyGenerator: phoneKey,
@@ -39,6 +42,8 @@ const sendOtpLimiter = rateLimit({
 
 // Allow max 10 verification attempts per phone per 15 minutes
 const verifyOtpLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('verify-otp'),
   windowMs: 15 * 60 * 1000,
   max: 10,
   keyGenerator: phoneKey,

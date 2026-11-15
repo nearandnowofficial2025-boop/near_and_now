@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import { z } from 'zod';
 import { CouponsController } from '../controllers/coupons.controller.js';
 import { requireAdmin, requirePermission } from '../middleware/adminAuth.middleware.js';
@@ -65,6 +66,8 @@ export const updateCouponSchema = couponBaseSchema.partial().refine(dateOrderChe
 // (coupon object vs 400) is a clean success/fail oracle. Found 2026-08-11
 // during a rate-limiting audit.
 const couponValidateLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('coupon-validate'),
   windowMs: 10 * 60 * 1000,
   max: 20,
   keyGenerator: (req) => req.customerId || req.ip || 'unknown',

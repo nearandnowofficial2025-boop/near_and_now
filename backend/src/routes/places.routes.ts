@@ -11,6 +11,10 @@ const router = Router();
 // (autocomplete firing on every keystroke while typing an address) while
 // still meaningfully throttling scripted abuse. Same library/pattern already
 // used for OTP rate limiting in auth.routes.ts.
+// Deliberately left on the in-memory store, unlike the other limiters
+// (utils/rateLimitStore.ts): this caps Google Places spend, not a secret,
+// and it runs on every address-search keystroke, where a database round trip
+// per request would slow typing for everyone. Per-instance counting is enough.
 const placesLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 60,

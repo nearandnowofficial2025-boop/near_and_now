@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import { AdminController } from '../controllers/admin.controller.js';
 import { requireAdmin } from '../middleware/adminAuth.middleware.js';
 
@@ -8,6 +9,8 @@ const ctrl = new AdminController();
 
 // Max 10 login attempts per email per 15 minutes (mirrors verifyOtpLimiter in auth.routes.ts).
 const adminLoginLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('admin-login'),
   windowMs: 15 * 60 * 1000,
   max: 10,
   keyGenerator: (req) => (req.body?.email || req.ip || 'unknown').toLowerCase(),

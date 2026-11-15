@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import { requireCustomer } from '../middleware/customerAuth.middleware.js';
 import { walletController } from '../controllers/wallet.controller.js';
 
@@ -11,6 +12,8 @@ const router = Router();
 // vector (and can spam an account with thousands of pending orders). Found
 // 2026-08-11 during a rate-limiting audit.
 const topupCreateLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('wallet-topup'),
   windowMs: 60 * 60 * 1000,
   max: 10,
   keyGenerator: (req) => req.customerId || req.ip || 'unknown',

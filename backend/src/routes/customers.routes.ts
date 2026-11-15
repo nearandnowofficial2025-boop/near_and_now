@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
+import { sharedRateLimitStore } from '../utils/rateLimitStore.js';
 import { CustomersController } from '../controllers/customers.controller.js';
 import { requireCustomer } from '../middleware/customerAuth.middleware.js';
 
@@ -24,6 +25,8 @@ router.delete('/addresses/:addressId', requireCustomer, customersController.dele
 
 // Max 5 verification-code sends per customer per 10 minutes (mirrors send-otp limiter).
 const emailCodeLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('email-code'),
   windowMs: 10 * 60 * 1000,
   max: 5,
   keyGenerator: (req) => req.customerId || req.ip || 'unknown',
@@ -38,6 +41,8 @@ const emailCodeLimiter = rateLimit({
 // doesn't own as verified. Same skipSuccessfulRequests shape as the rider
 // app's verifyDeliveryOtpLimiter. Found 2026-08-11 during a rate-limiting audit.
 const verifyEmailLimiter = rateLimit({
+  // Shared across Vercel instances (utils/rateLimitStore.ts).
+  store: sharedRateLimitStore('verify-email'),
   windowMs: 5 * 60 * 1000,
   max: 5,
   skipSuccessfulRequests: true,
