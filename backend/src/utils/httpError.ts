@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { reportServerError, routeOf } from './monitoring.js';
 
 /**
  * Structured API error responses.
@@ -105,6 +106,17 @@ export function sendError(
 
   if (status >= 500) {
     console.error(`[${requestId ?? '-'}] ${where} → ${status}: ${friendly}${reason ? ` | ${reason}` : ''}`, err instanceof Error ? err.stack : err);
+    // A controller "handled" this with a 500, so nothing else would report it.
+    const req = res.req as Request | undefined;
+    void reportServerError(err ?? new Error(`${where}: ${friendly}`), {
+      where,
+      status,
+      requestId,
+      method: req?.method,
+      route: routeOf(req),
+      reason: reason || friendly,
+      code,
+    });
   } else {
     console.warn(`[${requestId ?? '-'}] ${where} → ${status}: ${friendly}${reason ? ` | ${reason}` : ''}`);
   }

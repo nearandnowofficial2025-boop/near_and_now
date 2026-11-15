@@ -46,6 +46,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > active firs
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -105,6 +106,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > category + 
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -159,6 +161,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > first page,
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -213,6 +216,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > page 3 of 2
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -271,6 +275,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > search by f
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -329,6 +334,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > search by n
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -383,6 +389,7 @@ exports[`getAdminProductsPaginated: existing queries are unchanged > unknown sor
     "price": 152,
     "original_price": 160,
     "in_stock": true,
+    "additional_images": [],
     "isLoose": false
    }
   ],
@@ -455,6 +462,7 @@ exports[`updateProduct > a category-only change writes only the category column 
   "price": 152,
   "original_price": 160,
   "in_stock": true,
+  "additional_images": [],
   "isLoose": false
  }
 }"
@@ -493,6 +501,7 @@ exports[`updateProduct > a price-only change writes only the two price columns 1
   "price": 155,
   "original_price": 170,
   "in_stock": true,
+  "additional_images": [],
   "isLoose": false
  }
 }"

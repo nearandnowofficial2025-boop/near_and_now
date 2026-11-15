@@ -93,7 +93,7 @@ const EMPTY_FORM: FormState = {
   description: '',
   category: '',
   in_stock: true,
-  rating: '4.5',
+  rating: '0',
   rating_count: '0',
   unit: '',
   brand: '',
@@ -264,7 +264,7 @@ const EditProductPage = () => {
           description: product.description || '',
           category: product.category || '',
           in_stock: product.in_stock ?? true,
-          rating: product.rating != null ? String(product.rating) : '4.5',
+          rating: product.rating != null ? String(product.rating) : '0',
           rating_count: product.rating_count != null ? String(product.rating_count) : '0',
           unit: product.unit || '',
           brand: product.brand || '',
@@ -440,14 +440,6 @@ const EditProductPage = () => {
     if (showNewCategoryInput && !newCategoryData.name.trim()) errors.newCategoryName = 'New category name is required';
     if (!formData.unit.trim()) errors.unit = 'Unit is required';
 
-    const rating = parseFloat(formData.rating);
-    if (!formData.rating.trim() || Number.isNaN(rating) || rating < 0 || rating > 5) {
-      errors.rating = 'Rating must be between 0 and 5';
-    }
-    const ratingCount = parseInt(formData.rating_count, 10);
-    if (!formData.rating_count.trim() || Number.isNaN(ratingCount) || ratingCount < 0) {
-      errors.rating_count = 'Enter 0 or more';
-    }
     const minQty = parseInt(formData.min_quantity, 10);
     const maxQty = parseInt(formData.max_quantity, 10);
     if (!formData.min_quantity.trim() || Number.isNaN(minQty) || minQty < 1) errors.min_quantity = 'Enter 1 or more';
@@ -531,8 +523,9 @@ const EditProductPage = () => {
         ...(extrasChanged ? { additional_images: extraUrls } : {}),
         category: categoryToUse,
         in_stock: formData.in_stock,
-        rating: parseFloat(formData.rating),
-        rating_count: parseInt(formData.rating_count, 10),
+        // rating / rating_count are deliberately not sent: they come only from
+        // published customer reviews (recompute_master_product_rating trigger).
+        // Typed-in ratings were how 41k products ended up with fake stars.
         // Never default to 'piece' here: that overwrote every product's real unit on edit.
         unit: formData.unit.trim(),
         brand: textOrNull(formData.brand),
@@ -880,35 +873,20 @@ const EditProductPage = () => {
               <Input id="brand" name="brand" value={formData.brand} onChange={handleChange} placeholder="e.g. Amul" />
             </FormField>
 
-            <FormField label="Rating" htmlFor="rating" required hint="0 to 5" error={fieldErrors.rating}>
+            <FormField
+              label="Customer rating"
+              htmlFor="rating"
+              hint="Calculated from published customer reviews, so it can't be edited here."
+            >
               <Input
-                type="number"
                 id="rating"
-                name="rating"
-                value={formData.rating}
-                onChange={handleChange}
-                required
-                min={0}
-                max={5}
-                step="0.1"
-                inputMode="decimal"
-                invalid={Boolean(fieldErrors.rating)}
-                placeholder="4.5"
-              />
-            </FormField>
-            <FormField label="Rating count" htmlFor="rating_count" required error={fieldErrors.rating_count}>
-              <Input
-                type="number"
-                id="rating_count"
-                name="rating_count"
-                value={formData.rating_count}
-                onChange={handleChange}
-                required
-                min={0}
-                step={1}
-                inputMode="numeric"
-                invalid={Boolean(fieldErrors.rating_count)}
-                placeholder="0"
+                value={
+                  Number(formData.rating_count) > 0
+                    ? `${Number(formData.rating).toFixed(1)} ★ from ${formData.rating_count} review${formData.rating_count === '1' ? '' : 's'}`
+                    : 'No reviews yet'
+                }
+                readOnly
+                disabled
               />
             </FormField>
             <FormField label="Min order quantity" htmlFor="min_quantity" required error={fieldErrors.min_quantity}>

@@ -1,5 +1,6 @@
 import { waitUntil } from '@vercel/functions';
 import { outsideRequest } from './requestMetrics.js';
+import { reportServerError } from './monitoring.js';
 
 /**
  * Runs `work` without making the caller wait for it — and, on Vercel, keeps
@@ -22,7 +23,11 @@ export function runInBackground(label: string, work: () => Promise<unknown>): vo
   // Started outside the request's metrics context, so a background job's
   // database calls are not counted against the request that started it.
   const task = outsideRequest(() => Promise.resolve().then(work))
-    .catch((err) => console.error(`[background] ${label} failed:`, err));
+    .catch((err) => {
+      console.error(`[background] ${label} failed:`, err);
+      // Awaited so this same waitUntil keeps the function alive until the report is sent.
+      return reportServerError(err, { where: `background:${label}`, reason: err instanceof Error ? err.message : String(err) });
+    });
   try {
     waitUntil(task);
   } catch (err) {

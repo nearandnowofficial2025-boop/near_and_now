@@ -8,7 +8,8 @@ import { fileURLToPath } from 'url';
 import { MulterError } from 'multer';
 import { requestContext } from './middleware/requestContext.js';
 import { mountJsonBodyParsers } from './middleware/jsonBody.js';
-import { AppError, errorReason, inferStatus } from './utils/httpError.js';
+import { AppError, errorCode, errorReason, inferStatus } from './utils/httpError.js';
+import { reportServerError, routeOf } from './utils/monitoring.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import productsRoutes from './routes/products.routes.js';
@@ -242,6 +243,17 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
 
   const reason = errorReason(err);
   console.error(`[${requestId ?? '-'}] server.errorHandler ${req.method} ${req.originalUrl} → ${status}: ${reason}`, err instanceof Error ? err.stack : err);
+  if (status >= 500) {
+    void reportServerError(err, {
+      where: 'server.errorHandler',
+      status,
+      requestId,
+      method: req.method,
+      route: routeOf(req),
+      reason,
+      code: errorCode(err),
+    });
+  }
   res.status(status).json({
     success: false,
     error: message,

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { supabaseAdmin } from '../config/database.js';
 import { hasPermission } from '../utils/adminPermissions.js';
 import { sendError } from '../utils/httpError.js';
+import { reportServerError, routeOf } from '../utils/monitoring.js';
 
 declare module 'express' {
   interface Request {
@@ -125,6 +126,7 @@ export function requirePermission(permission: string) {
       next();
     } catch (err) {
       console.error('requirePermission auth check failed:', err);
+      void reportServerError(err, { where: 'adminAuth.requirePermission', status: 500, requestId: req.requestId, method: req.method, route: routeOf(req) });
       res.status(500).json({ error: 'Authentication check failed' });
     }
   };
