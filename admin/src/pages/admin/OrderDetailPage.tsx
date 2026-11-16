@@ -33,6 +33,7 @@ import {
   orderStatusMeta,
   useConfirm,
 } from '../../components/ui';
+import { formatOrderQuantity } from '../../utils/looseProduct';
 
 type OrderStatus = Order['order_status'];
 type InvoiceDocType = 'customer' | 'store' | 'delivery';
@@ -447,7 +448,7 @@ const OrderDetailPage = () => {
                             </div>
                           </Td>
                           <Td align="right" className="tabular-nums">
-                            {item.quantity}
+                            {formatOrderQuantity(item.quantity, item.unit)}
                           </Td>
                           <Td align="right" muted className="tabular-nums">
                             {formatCurrency(item.price)}

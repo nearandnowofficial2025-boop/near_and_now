@@ -760,6 +760,62 @@ describe('paid add-ons respect the allocation state', () => {
     expect(fake.on('order_addition_requests', 'insert')).toHaveLength(0);
   });
 
+  // 2026-11-16: the add-on path validated every quantity as a whole unit, so
+  // 0.5 kg of a loose item was refused as "Invalid quantity" (checkout took it).
+  // Same day: loose items moved to 50 g steps, and countable ones can be
+  // bought by the piece.
+  describe('loose items in add-ons follow the checkout rules', () => {
+    const run = async (product_id: string, quantity: number, sell_by?: 'piece') => {
+      vi.spyOn(paymentService, 'createAdditionPaymentOrder').mockResolvedValue({ id: 'rzp_add_1' } as never);
+      const fake = installFakeSupabase(supabaseAdmin, (c) => {
+        if (c.table === 'customer_orders') return ok({ id: 'o1', customer_id: 'c1', placed_at: new Date().toISOString(), status: 'pending_at_store', payment_method: 'cod', payment_status: 'pending' });
+        if (c.table === 'order_addition_requests' && c.op === 'select') return ok(null);
+        if (c.table === 'order_addition_requests' && c.op === 'insert') return ok({ id: 'r1' });
+        if (c.table === 'store_orders') return ok([{ id: 'so1', store_id: 's1' }]);
+        if (c.table === 'order_store_allocations') return ok([{ store_id: 's1', status: 'pending_acceptance' }]);
+        if (c.table === 'products') return ok([{ id: 'p-onion', store_id: 's1', master_product_id: 'm-onion' }, { id: 'p-milk', store_id: 's1', master_product_id: 'm-milk' }, { id: 'p-apple', store_id: 's1', master_product_id: 'm-apple' }]);
+        if (c.table === 'master_products') {
+          return ok([
+            { id: 'm-onion', name: 'Loose Onions', unit: 'kg', image_url: null, discounted_price: 40, gst_rate: 0, is_loose: true, min_quantity: 0.05, max_quantity: 10, piece_weight_g: null },
+            { id: 'm-apple', name: 'Shimla Apple', unit: 'kg', image_url: null, discounted_price: 318, gst_rate: 0, is_loose: true, min_quantity: 0.05, max_quantity: 10, piece_weight_g: 180 },
+            { id: 'm-milk', name: 'Milk', unit: '500 ml', image_url: null, discounted_price: 30, gst_rate: 0, is_loose: false, min_quantity: 1, max_quantity: 10 },
+          ]);
+        }
+        if (c.table === 'order_items') return ok([]);
+        return undefined;
+      });
+      const res = mockRes();
+      await createAdditionPayment(req({ items: [{ product_id, quantity, ...(sell_by ? { sell_by } : {}) }] }), res as never);
+      return { res, insert: fake.on('order_addition_requests', 'insert')[0] };
+    };
+
+    it('takes 0.5 kg of a loose item and charges half the per-kg price', async () => {
+      const { res, insert } = await run('m-onion', 0.5);
+      expect((res.body as { error?: string }).error).toBeUndefined();
+      expect(insert.payload).toMatchObject({ subtotal_amount: 20, items: [expect.objectContaining({ quantity: 0.5, unit: 'kg', subtotal: 20 })] });
+    });
+
+    it('takes 50 g steps (0.3 kg), refuses amounts off the 50 g grid and half a packet', async () => {
+      const { res, insert } = await run('m-onion', 0.3);
+      expect(res.statusCode).not.toBe(400);
+      expect(insert.payload).toMatchObject({ subtotal_amount: 12 });
+      expect((await run('m-onion', 0.33)).res.statusCode).toBe(400);
+      expect((await run('m-milk', 0.5)).res.statusCode).toBe(400);
+    });
+
+    it('adds 3 apples by the piece at the fixed piece price, with a piece unit for the store', async () => {
+      const { res, insert } = await run('m-apple', 3, 'piece');
+      expect((res.body as { error?: string }).error).toBeUndefined();
+      // ₹318/kg x 180 g = ₹57.24, fixed at ₹57 a piece
+      expect(insert.payload).toMatchObject({ subtotal_amount: 171, items: [expect.objectContaining({ quantity: 3, unit_price: 57, unit: 'pc (~180 g)' })] });
+    });
+
+    it('refuses by-piece for an item without a piece weight, and part of a piece', async () => {
+      expect((await run('m-onion', 2, 'piece')).res.statusCode).toBe(400);
+      expect((await run('m-apple', 1.5, 'piece')).res.statusCode).toBe(400);
+    });
+  });
+
   it('refunds and closes the request when the store finished before the add-on could be applied', async () => {
     vi.spyOn(paymentService, 'verifyPayment').mockResolvedValue(true);
     vi.spyOn(paymentService, 'getPaymentDetails').mockResolvedValue({ status: 'captured', order_id: 'rzp_order_1', amount: 2000 } as never);

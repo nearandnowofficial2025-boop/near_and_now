@@ -161,6 +161,29 @@ describe('invoice generation — multi-store pages, HSN, fee breakdown', () => {
     expect(pdfPageCount(uploaded[pdfPath!])).toBeGreaterThanOrEqual(3);
   });
 
+  // 2026-11-16: loose lines in 50 g steps and lines bought by the piece.
+  it('prints loose (kg) and by-piece lines with their unit, and a clean qty total', async () => {
+    const { uploaded, getInsertedItemRows } = setupMocks({
+      storeCount: 1, itemsPerStore: 3, totalAmount: 500,
+      transformItems: (items) => [
+        { ...items[0], product_name: 'Loose Onions', unit: 'kg', unit_price: 43, quantity: 0.35 },
+        { ...items[1], product_name: 'Shimla Apple', unit: 'pc (~180 g)', unit_price: 57, quantity: 3 },
+        { ...items[2], product_name: 'Chips', unit: '52 g', unit_price: 20, quantity: 2 },
+      ],
+    });
+    await invoiceService.generateForOrder('order-abc-123');
+    const pdfPath = Object.keys(uploaded).find((p) => p.startsWith('customer/'));
+    const text = pdfText(uploaded[pdfPath!]);
+    if (process.env.INVOICE_PDF_OUT) (await import('fs')).writeFileSync(process.env.INVOICE_PDF_OUT, uploaded[pdfPath!]);
+    expect(text).toContain('Loose Onions (kg)');
+    expect(text).toContain('Shimla Apple (pc ~180 g)');
+    expect(text).toMatch(/\bChips\b/);
+    expect(text).not.toContain('Chips (');
+    expect(text).toContain('5.35'); // 0.35 + 3 + 2
+    const rows = getInsertedItemRows();
+    expect(rows.map((r: any) => [r.quantity, r.unit])).toEqual([[0.35, 'kg'], [3, 'pc (~180 g)'], [2, '52 g']]);
+  });
+
   it('persists the real per-product HSN code, not a hardcoded default', async () => {
     const { getInsertedItemRows } = setupMocks({ storeCount: 1, itemsPerStore: 2, totalAmount: 500 });
     await invoiceService.generateForOrder('order-abc-123');

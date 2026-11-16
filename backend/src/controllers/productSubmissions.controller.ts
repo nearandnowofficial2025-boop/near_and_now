@@ -39,6 +39,13 @@ type ValidatedFields = {
   max_quantity: number;
 };
 
+/** "1kg", "1 KG", "kg" -> "kg"; "1l", "1 litre" -> "l"; anything else unchanged. */
+export function looseUnit(unit: string): string {
+  const m = unit.trim().toLowerCase().match(/^(?:1\s*)?(kg|kgs|kilo|kilogram|l|ltr|litre|liter)$/);
+  if (!m) return unit;
+  return m[1].startsWith('k') ? 'kg' : 'l';
+}
+
 function validateSubmissionFields(body: SubmitBody): { ok: true; fields: ValidatedFields } | { ok: false; error: string } {
   const name = typeof body.name === 'string' ? body.name.trim() : '';
   const category = typeof body.category === 'string' ? body.category.trim() : '';
@@ -70,7 +77,9 @@ function validateSubmissionFields(body: SubmitBody): { ok: true; fields: Validat
       image_url: imageUrl,
       base_price: basePrice,
       discounted_price: discountedPrice,
-      unit,
+      // A loose item is priced per kg (or litre), so its unit is the bare "kg" /
+      // "l" the apps recognise; the shopkeeper app sends "1kg" / "1l".
+      unit: body.is_loose ? looseUnit(unit) : unit,
       is_loose: Boolean(body.is_loose),
       min_quantity: minQuantity,
       max_quantity: maxQuantity,

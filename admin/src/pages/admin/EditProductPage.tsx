@@ -37,6 +37,16 @@ import {
   Toggle,
 } from '../../components/ui';
 import { cn } from '../../utils/cn';
+import {
+  LOOSE_STEP_KG,
+  PIECE_WEIGHT_MAX_G,
+  PIECE_WEIGHT_MIN_G,
+  parseOrderLimit,
+  parsePieceWeight,
+  piecePrice,
+  validateOrderLimits,
+  validatePieceWeight,
+} from '../../utils/looseProduct';
 
 /**
  * The main image of a product (master_products.image_url): listings, cart,
@@ -77,8 +87,12 @@ interface FormState {
   /** master_products.unit (NOT NULL) holds the pack size, e.g. "1kg"; there is no `size` column. */
   unit: string;
   brand: string;
+  /** Read-only here: loose items are priced per kg and their quantity limits are kg. */
+  is_loose: boolean;
   min_quantity: string;
   max_quantity: string;
+  /** Loose items only: grams per piece; blank = sold by weight only. */
+  piece_weight_g: string;
   gst_rate: string;
   hsn_code: string;
   hsn_description: string;
@@ -97,8 +111,10 @@ const EMPTY_FORM: FormState = {
   rating_count: '0',
   unit: '',
   brand: '',
+  is_loose: false,
   min_quantity: '1',
   max_quantity: '100',
+  piece_weight_g: '',
   gst_rate: '',
   hsn_code: '',
   hsn_description: '',
@@ -268,8 +284,10 @@ const EditProductPage = () => {
           rating_count: product.rating_count != null ? String(product.rating_count) : '0',
           unit: product.unit || '',
           brand: product.brand || '',
+          is_loose: Boolean(product.isLoose),
           min_quantity: product.min_quantity != null ? String(product.min_quantity) : '1',
           max_quantity: product.max_quantity != null ? String(product.max_quantity) : '100',
+          piece_weight_g: product.piece_weight_g != null ? String(product.piece_weight_g) : '',
           gst_rate: product.gst_rate != null ? String(product.gst_rate) : '',
           hsn_code: product.hsn_code || '',
           hsn_description: product.hsn_description || '',
@@ -440,13 +458,11 @@ const EditProductPage = () => {
     if (showNewCategoryInput && !newCategoryData.name.trim()) errors.newCategoryName = 'New category name is required';
     if (!formData.unit.trim()) errors.unit = 'Unit is required';
 
-    const minQty = parseInt(formData.min_quantity, 10);
-    const maxQty = parseInt(formData.max_quantity, 10);
-    if (!formData.min_quantity.trim() || Number.isNaN(minQty) || minQty < 1) errors.min_quantity = 'Enter 1 or more';
-    if (!formData.max_quantity.trim() || Number.isNaN(maxQty) || maxQty < 1) {
-      errors.max_quantity = 'Enter 1 or more';
-    } else if (!Number.isNaN(minQty) && maxQty < minQty) {
-      errors.max_quantity = 'Must be at least the minimum quantity';
+    // Loose items' limits are kg in 50 g steps (0.05); whole numbers otherwise.
+    Object.assign(errors, validateOrderLimits(formData.min_quantity, formData.max_quantity, formData.is_loose));
+    if (formData.is_loose) {
+      const pieceError = validatePieceWeight(formData.piece_weight_g);
+      if (pieceError) errors.piece_weight_g = pieceError;
     }
     for (const field of ['gst_rate', 'cgst', 'sgst'] as const) {
       const raw = formData[field].trim();
@@ -529,8 +545,10 @@ const EditProductPage = () => {
         // Never default to 'piece' here: that overwrote every product's real unit on edit.
         unit: formData.unit.trim(),
         brand: textOrNull(formData.brand),
-        min_quantity: parseInt(formData.min_quantity, 10),
-        max_quantity: parseInt(formData.max_quantity, 10),
+        min_quantity: parseOrderLimit(formData.min_quantity, formData.is_loose),
+        max_quantity: parseOrderLimit(formData.max_quantity, formData.is_loose),
+        // Only loose items carry a piece weight; others leave the column alone.
+        ...(formData.is_loose ? { piece_weight_g: parsePieceWeight(formData.piece_weight_g) } : {}),
         gst_rate: numberOrNull(formData.gst_rate),
         hsn_code: textOrNull(formData.hsn_code),
         hsn_description: textOrNull(formData.hsn_description),
@@ -858,7 +876,13 @@ const EditProductPage = () => {
                 placeholder="0.00"
               />
             </FormField>
-            <FormField label="Unit / size" htmlFor="unit" required hint="e.g. 1kg, 500ml, piece" error={fieldErrors.unit}>
+            <FormField
+              label="Unit / size"
+              htmlFor="unit"
+              required
+              hint={formData.is_loose ? 'Loose item: the price is per kg, so the unit is "kg"' : 'e.g. 1kg, 500ml, piece'}
+              error={fieldErrors.unit}
+            >
               <Input
                 id="unit"
                 name="unit"
@@ -889,7 +913,13 @@ const EditProductPage = () => {
                 disabled
               />
             </FormField>
-            <FormField label="Min order quantity" htmlFor="min_quantity" required error={fieldErrors.min_quantity}>
+            <FormField
+              label={formData.is_loose ? 'Min order quantity (kg)' : 'Min order quantity'}
+              htmlFor="min_quantity"
+              required
+              hint={formData.is_loose ? 'Loose item: kg in 50 g steps, e.g. 0.05' : undefined}
+              error={fieldErrors.min_quantity}
+            >
               <Input
                 type="number"
                 id="min_quantity"
@@ -897,14 +927,19 @@ const EditProductPage = () => {
                 value={formData.min_quantity}
                 onChange={handleChange}
                 required
-                min={1}
-                step={1}
-                inputMode="numeric"
+                min={formData.is_loose ? LOOSE_STEP_KG : 1}
+                step={formData.is_loose ? LOOSE_STEP_KG : 1}
+                inputMode={formData.is_loose ? 'decimal' : 'numeric'}
                 invalid={Boolean(fieldErrors.min_quantity)}
-                placeholder="1"
+                placeholder={formData.is_loose ? '0.05' : '1'}
               />
             </FormField>
-            <FormField label="Max order quantity" htmlFor="max_quantity" required error={fieldErrors.max_quantity}>
+            <FormField
+              label={formData.is_loose ? 'Max order quantity (kg)' : 'Max order quantity'}
+              htmlFor="max_quantity"
+              required
+              error={fieldErrors.max_quantity}
+            >
               <Input
                 type="number"
                 id="max_quantity"
@@ -912,13 +947,40 @@ const EditProductPage = () => {
                 value={formData.max_quantity}
                 onChange={handleChange}
                 required
-                min={1}
-                step={1}
-                inputMode="numeric"
+                min={formData.is_loose ? LOOSE_STEP_KG : 1}
+                step={formData.is_loose ? LOOSE_STEP_KG : 1}
+                inputMode={formData.is_loose ? 'decimal' : 'numeric'}
                 invalid={Boolean(fieldErrors.max_quantity)}
-                placeholder="100"
+                placeholder={formData.is_loose ? '10' : '100'}
               />
             </FormField>
+            {formData.is_loose ? (
+              <FormField
+                label="Weight per piece (g)"
+                htmlFor="piece_weight_g"
+                className="md:col-span-2"
+                hint={
+                  formData.piece_weight_g.trim() && !fieldErrors.piece_weight_g && Number(formData.price) > 0
+                    ? `Customers can also buy by the piece at ₹${piecePrice(Number(formData.price), Number(formData.piece_weight_g))} each. Leave blank to sell by weight only.`
+                    : 'Average weight of one piece, e.g. 180 for an apple. Lets customers buy by the piece at a fixed price. Leave blank to sell by weight only.'
+                }
+                error={fieldErrors.piece_weight_g}
+              >
+                <Input
+                  type="number"
+                  id="piece_weight_g"
+                  name="piece_weight_g"
+                  value={formData.piece_weight_g}
+                  onChange={handleChange}
+                  min={PIECE_WEIGHT_MIN_G}
+                  max={PIECE_WEIGHT_MAX_G}
+                  step={1}
+                  inputMode="numeric"
+                  invalid={Boolean(fieldErrors.piece_weight_g)}
+                  placeholder="Sold by weight only"
+                />
+              </FormField>
+            ) : null}
           </CardBody>
         </Card>
 

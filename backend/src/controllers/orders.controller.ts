@@ -5,8 +5,7 @@ import { supabaseAdmin } from '../config/database.js';
 import { notificationService } from '../services/notification.service.js';
 import { payRiderForDeliveredOrder } from './deliveryPartner.controller.js';
 import { broadcastToNearbyDrivers } from './shopkeeper.controller.js';
-import { validateQuantity } from '../utils/quantity.js';
-import { catalogUnitPrice } from '../utils/catalogPrice.js';
+import { resolveOrderLine, type OrderLineMaster } from '../utils/quantity.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
 import { gstinRejectionMessage, verifyGstin } from '../services/gstVerification.service.js';
@@ -151,40 +150,27 @@ export class OrdersController {
       const masterProductIds = [...new Set((productRows || []).map((row: any) => row.master_product_id))];
       const { data: masterPriceRows, error: masterPriceError } = await supabaseAdmin
         .from('master_products')
-        .select('id, discounted_price, gst_rate, is_loose, min_quantity, max_quantity')
+        .select('id, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g')
         .in('id', masterProductIds);
       if (masterPriceError) {
         throw new Error('Failed to verify product prices');
       }
-      const trustedPriceByMaster = new Map<string, number>();
-      const boundsByMaster = new Map<string, { min_quantity: number | null; max_quantity: number | null }>();
-      const isLooseByMaster = new Map<string, boolean>();
-      for (const row of masterPriceRows || []) {
-        const isLoose = Boolean((row as any).is_loose);
-        trustedPriceByMaster.set(row.id, catalogUnitPrice((row as any).discounted_price));
-        boundsByMaster.set(row.id, {
-          min_quantity: (row as any).min_quantity ?? null,
-          max_quantity: (row as any).max_quantity ?? null,
-        });
-        isLooseByMaster.set(row.id, isLoose);
-      }
+      const masterById = new Map<string, OrderLineMaster>();
+      for (const row of masterPriceRows || []) masterById.set(row.id, row as OrderLineMaster);
 
       const trustedCartItems = cart_items.map((item: any) => {
         const product = productById.get(item.product_id);
         if (!product || product.store_id !== item.store_id) {
           throw new Error(`Product "${item.product_name}" is not available at this store.`);
         }
-        const trustedPrice = trustedPriceByMaster.get(product.master_product_id);
-        if (trustedPrice == null) {
+        const master = masterById.get(product.master_product_id);
+        if (!master) {
           throw new Error(`Product "${item.product_name}" is not available.`);
         }
-        const quantity = validateQuantity(
-          item.quantity,
-          boundsByMaster.get(product.master_product_id) ?? undefined,
-          item.product_name,
-          isLooseByMaster.get(product.master_product_id) ?? false
-        );
-        return { ...item, unit_price: trustedPrice, quantity };
+        // By-weight, by-unit or (loose items) by-piece: price, quantity and a
+        // piece line's "pc (~180 g)" unit all come from the catalogue row.
+        const line = resolveOrderLine(master, item, item.product_name);
+        return { ...item, unit_price: line.unitPrice, quantity: line.quantity, ...(line.unit ? { unit: line.unit } : {}) };
       });
 
       const storeOrdersMap = new Map();

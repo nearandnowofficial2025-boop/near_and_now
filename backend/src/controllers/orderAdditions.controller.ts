@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { supabaseAdmin } from '../config/database.js';
 import { paymentService } from '../services/payment.service.js';
-import { validateQuantity } from '../utils/quantity.js';
-import { catalogUnitPrice } from '../utils/catalogPrice.js';
+import { resolveOrderLine } from '../utils/quantity.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
 
@@ -14,7 +13,7 @@ import { runInBackground } from '../utils/background.js';
 // by delaying its own request.
 const ADD_ITEMS_WINDOW_MS = 35_000;
 
-type SubmittedItem = { product_id?: string; quantity?: number };
+type SubmittedItem = { product_id?: string; quantity?: number; sell_by?: 'piece' };
 type TrustedItem = {
   store_order_id: string;
   product_id: string; // per-store products.id, not master_product_id
@@ -75,7 +74,7 @@ async function resolveTrustedItems(
 
   const { data: masterRows, error: masterError } = await supabaseAdmin
     .from('master_products')
-    .select('id, name, unit, image_url, discounted_price, gst_rate, is_loose, min_quantity, max_quantity')
+    .select('id, name, unit, image_url, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g')
     .in('id', masterProductIds);
   if (masterError) throw new Error('Failed to verify product prices');
   const masterById = new Map((masterRows ?? []).map((row: any) => [row.id, row]));
@@ -127,16 +126,17 @@ async function resolveTrustedItems(
     const storeOrderId = storeOrderByStoreId.get(option.store_id);
     if (!storeOrderId) continue;
 
-    const isLoose = Boolean(master.is_loose);
-    const unitPrice = catalogUnitPrice(master.discounted_price);
-
+    // Same rules as checkout (utils/quantity.ts): loose items in 50 g steps,
+    // or by the piece at the fixed piece price. Before 2026-11-16 this path
+    // validated loose quantities as whole units, refusing 0.5 kg of onions.
+    let unitPrice: number;
     let quantity: number;
+    let unit: string = master.unit;
     try {
-      quantity = validateQuantity(
-        sub.quantity,
-        { min_quantity: master.min_quantity ?? null, max_quantity: master.max_quantity ?? null },
-        master.name
-      );
+      const line = resolveOrderLine(master, sub, master.name);
+      unitPrice = line.unitPrice;
+      quantity = line.quantity;
+      if (line.unit) unit = line.unit;
     } catch (err: any) {
       return { items: [], error: err?.message || `Invalid quantity for "${master.name}".` };
     }
@@ -145,7 +145,7 @@ async function resolveTrustedItems(
       store_order_id: storeOrderId,
       product_id: option.product_id,
       product_name: master.name,
-      unit: master.unit,
+      unit,
       image_url: master.image_url ?? null,
       unit_price: unitPrice,
       quantity,

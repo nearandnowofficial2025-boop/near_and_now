@@ -558,6 +558,7 @@ export async function updateProduct(id: string, updates: ProductUpdate): Promise
     if (u.is_active !== undefined || u.in_stock !== undefined) row.is_active = u.is_active ?? u.in_stock;
     if (u.min_quantity !== undefined) row.min_quantity = u.min_quantity;
     if (u.max_quantity !== undefined) row.max_quantity = u.max_quantity;
+    if (u.piece_weight_g !== undefined) row.piece_weight_g = u.piece_weight_g;
     if (u.rating !== undefined) row.rating = u.rating;
     if (u.rating_count !== undefined) row.rating_count = u.rating_count;
     if (u.gst_rate !== undefined) row.gst_rate = u.gst_rate;

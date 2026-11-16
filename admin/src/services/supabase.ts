@@ -86,6 +86,11 @@ export interface Product {
   created_at?: string;
   updated_at?: string;
   isLoose?: boolean;
+  /**
+   * Average grams per piece of a countable loose item (master_products.piece_weight_g).
+   * Set = customers may also buy it by the piece at a fixed price; null = by weight only.
+   */
+  piece_weight_g?: number | null;
   brand?: string;
   min_quantity?: number;
   max_quantity?: number;

@@ -3,8 +3,7 @@ import { randomInt } from 'crypto';
 import { planAllocation } from './allocationPlanner.js';
 import { fetchCandidateStores, fetchStoreStock, PLACEMENT_RADIUS_KM } from './storeAllocation.service.js';
 import { reverseGeocode, forwardGeocode } from './geocoding.service.js';
-import { validateQuantity } from '../utils/quantity.js';
-import { catalogUnitPrice } from '../utils/catalogPrice.js';
+import { resolveOrderLine, type OrderLineMaster } from '../utils/quantity.js';
 import { notificationService } from './notification.service.js';
 import { AppError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
@@ -902,6 +901,8 @@ export class DatabaseService {
       quantity: number;
       image?: string;
       unit?: string;
+      /** 'piece': a loose item bought by the piece at its fixed piece price (quantity = pieces). */
+      sell_by?: 'piece';
     }>;
     shipping_address: {
       address: string;
@@ -1004,7 +1005,7 @@ export class DatabaseService {
     const pricesP = settled(
       supabaseAdmin
         .from('master_products')
-        .select('id, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, is_active')
+        .select('id, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g, is_active')
         .in('id', masterProductIds)
     );
     const couponRowP = orderData.coupon_id
@@ -1024,8 +1025,9 @@ export class DatabaseService {
     // SECURITY-010: never trust item.price from the request body — a client can set
     // an arbitrary/near-zero price per line item. Overwrite with the real catalog
     // price (admin-controlled, on master_products) looked up by master_product_id.
-    // Pricing model: catalogUnitPrice() — discounted_price as stored, which
-    // already includes GST (utils/catalogPrice.ts). Nothing is added on top,
+    // Pricing model: resolveOrderLine() — catalogUnitPrice(), discounted_price
+    // as stored, which already includes GST (utils/catalogPrice.ts); for a loose
+    // item bought by the piece, the fixed piece price. Nothing is added on top,
     // per item or on the bill.
     const { data: masterPriceRows, error: masterPriceError } = await take(pricesP);
 
@@ -1033,36 +1035,25 @@ export class DatabaseService {
       throw new Error('Failed to verify product prices');
     }
 
-    const trustedPriceByMaster = new Map<string, number>();
-    const boundsByMaster = new Map<string, { min_quantity: number | null; max_quantity: number | null }>();
-    const isLooseByMaster = new Map<string, boolean>();
+    const masterById = new Map<string, OrderLineMaster>();
     for (const row of masterPriceRows || []) {
       // A master product the admin delisted is hidden from the catalogue
       // (productRowsToProducts drops inactive masters) but was still orderable
       // from a stale cart. Treat it as unavailable. (2026-10-04 audit)
       if ((row as any).is_active === false) continue;
-      const isLoose = Boolean((row as any).is_loose);
-      trustedPriceByMaster.set(row.id, catalogUnitPrice((row as any).discounted_price));
-      boundsByMaster.set(row.id, {
-        min_quantity: (row as any).min_quantity ?? null,
-        max_quantity: (row as any).max_quantity ?? null,
-      });
-      isLooseByMaster.set(row.id, isLoose);
+      masterById.set(row.id, row as OrderLineMaster);
     }
 
     items = items.map((it) => {
       const masterId = it.product_id || it.id;
-      const trustedPrice = masterId ? trustedPriceByMaster.get(masterId) : undefined;
-      if (trustedPrice == null) {
+      const master = masterId ? masterById.get(masterId) : undefined;
+      if (!master) {
         throw new Error(`Product "${it.name}" is not available.`);
       }
-      const quantity = validateQuantity(
-        it.quantity,
-        masterId ? boundsByMaster.get(masterId) : undefined,
-        it.name,
-        masterId ? isLooseByMaster.get(masterId) ?? false : false
-      );
-      return { ...it, price: trustedPrice, quantity };
+      // Price, quantity and, for a loose item bought by the piece, the
+      // "pc (~180 g)" unit all come from the catalogue row, never the request.
+      const line = resolveOrderLine(master, it, it.name);
+      return { ...it, price: line.unitPrice, quantity: line.quantity, ...(line.unit ? { unit: line.unit } : {}) };
     });
 
     // Which store fulfils which item (allocationPlanner.ts): a single store

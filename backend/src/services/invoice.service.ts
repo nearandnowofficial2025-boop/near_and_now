@@ -411,6 +411,25 @@ async function fetchOrderData(orderId: string) {
 // Build InvoiceData from raw DB rows
 // ---------------------------------------------------------------------------
 
+/**
+ * The tax-invoice description cell. Its qty column has no room for a unit, so a
+ * loose line (unit "kg") or a by-piece line (unit "pc (~180 g)") names it after
+ * the product: "Loose Onions (kg)", "Shimla Apple (pc ~180 g)". Packaged lines
+ * are unchanged.
+ */
+export function invoiceItemDescription(name: string, unit: string | null | undefined): string {
+  const u = (unit ?? '').trim();
+  if (/^(kg|kgs|l|ltr|litre|liter)$/i.test(u)) return `${name} (${u})`;
+  const piece = u.match(/^pc \(~(.+)\)$/);
+  if (piece) return `${name} (pc ~${piece[1]})`;
+  return name;
+}
+
+/** The "Total" qty cell: loose amounts are kg, so add up without float noise (0.1 + 0.2 kg -> "0.3"). */
+export function formatQtyTotal(total: number): string {
+  return String(Number(total.toFixed(3)));
+}
+
 function buildLineItems(items: any[], isInterState: boolean): InvoiceLineItem[] {
   return items.map((item: any, idx: number) => {
     const qty = Number(item.quantity || 1);
@@ -896,7 +915,7 @@ function generateCustomerPDF(inv: InvoiceData): Promise<Buffer> {
         const vals = [
           String(item.line_no),
           item.hsn_code || 'N/A',
-          item.product_name,
+          invoiceItemDescription(item.product_name, item.unit),
           item.mrp.toFixed(2),
           item.discount_amount.toFixed(2),
           String(item.quantity),
@@ -934,7 +953,7 @@ function generateCustomerPDF(inv: InvoiceData): Promise<Buffer> {
         if (i > 0) vLine(cx, y, y + totRowH);
         let val = '';
         if (i === 0) val = 'Total';
-        else if (i === 5) val = String(totalQty);
+        else if (i === 5) val = formatQtyTotal(totalQty);
         else if (i === 8) val = cgst.toFixed(2);
         else if (i === 10) val = sgst.toFixed(2);
         else if (i === 13) val = total.toFixed(2);

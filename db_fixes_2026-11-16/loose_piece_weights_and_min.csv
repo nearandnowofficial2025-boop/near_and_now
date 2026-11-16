@@ -1,0 +1,257 @@
+﻿product_id,name,category,price_per_kg,old_min_kg,new_min_kg,piece_weight_g,piece_price,piece_mrp,max_pieces,note
+a879c0a1-7ca3-443f-9acd-05d9739bb6ac,Alphonso Mango Ratnagiri,Fruits,857,0.25,0.05,250,214,249,40,Average weight estimate (16 Nov); please check against what the stores actually sell
+e1a39e02-a236-4187-bf61-d79f01fde962,Amla,Vegetables,224,0.25,0.05,,,,,By weight only
+f76d4ed3-efba-470b-8ee0-cd923892f253,Apple Ber,Fruits,56,0.25,0.05,,,,,By weight only
+6e1e759f-0e16-41d0-82df-ed46a6e68d6a,Ash Gourd (Chaal Kumra),Vegetables,72,0.25,0.05,,,,,By weight only
+47d37f13-b655-4655-ac26-2b21d0b17487,Ash Gourd 250 g Portion,Vegetables,176,0.25,0.05,,,,,By weight only
+9a97e5e5-fa99-4269-a039-2da90b7e7d1b,Atok Rice,"Rice, Atta, Dal and Maida",74,0.25,0.05,,,,,By weight only
+c5615897-ecf7-4298-a218-d8175176d1d6,Avocado Hass - Tanzania,Fruits,727,0.25,0.05,200,145,173,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+95079683-bed8-4858-8fde-506ce7061e16,Avocado Hass (Tanzania),Fruits,608,0.25,0.05,200,122,152,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+6c565a06-194d-4221-b323-9f9e57f0ea79,Baby Onion (Peeled) (Peyaj),Vegetables,116,0.25,0.05,,,,,By weight only
+47f3a39c-248a-4fdd-8b64-ef699e1218c2,Bajji Chilli (Lanka),Vegetables,104,0.25,0.05,,,,,By weight only
+4e8b9021-a29f-46b9-982c-39784e3b9466,Banana Stem (Kacha Kolar Gaach),Vegetables,18,0.25,0.05,500,9,13,20,Average weight estimate (16 Nov); please check against what the stores actually sell
+94af6b69-fceb-49ff-829e-74792649b4e3,Bitter Gourd (Uchhe),Vegetables,96,0.25,0.05,100,10,12,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+359ae59c-a0ca-45de-9f1d-15a71f429c23,Black & Green Grapes (Angur),Fruits,304,0.25,0.05,,,,,By weight only
+9e771445-beb2-4630-8796-08313205c955,Black Grapes -Seedless (Angur),Fruits,465,0.25,0.05,,,,,By weight only
+7baa9d15-3544-4674-b6e6-a6494ef17b51,Black Grapes (Angur),Fruits,374,0.25,0.05,,,,,By weight only
+f647bf3f-3da9-46ed-b3e1-fc6e9d16f3a9,Blueberry,Fruits,1872,0.25,0.05,,,,,By weight only
+a65dc12a-85c6-4fe6-be6a-98f814ed0f44,Blueberry - Imported,Fruits,2104,0.25,0.05,,,,,By weight only
+cd6bdf5d-729e-4d3d-9855-9275461e89cb,Blueberry Minis,Fruits,1656,0.25,0.05,,,,,By weight only
+efdf968a-0348-4245-b58e-ceeea6713cb4,Bok Choy,Vegetables,275,0.25,0.05,200,55,68,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+7cd80e9f-2780-47cf-81ff-b1f35b6bdc11,Bottle Gourd (Lau),Vegetables,82,0.25,0.05,800,66,84,12,Average weight estimate (16 Nov); please check against what the stores actually sell
+0a065fb8-2637-4f29-b307-53366be6e9b8,Bottle Gourd Saag (Lau Saag),Vegetables,116,0.25,0.05,,,,,By weight only
+473d863c-45be-40bf-bf77-b5b226e5fc80,Brinjal - Bharta (Begun),Vegetables,48,0.25,0.05,400,19,25,25,Average weight estimate (16 Nov); please check against what the stores actually sell
+04647ff8-b70b-4e08-b487-c2dc1397f0c7,Broad Beans 250 g (Sheem),Vegetables,128,0.25,0.05,,,,,By weight only
+4b2acddf-514d-42f1-8b8f-ed21c31729bd,Broccoli (Hara Phoolgobhi),Vegetables,505,0.25,0.05,300,152,188,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+82b535ca-61ef-4f34-b579-0598ee9f86c3,Broccoli Florets,Vegetables,490,0.25,0.05,,,,,By weight only
+dd5f92ef-f6fa-4966-b29b-852c16680829,Brown Chana Sprouts,Vegetables,193,0.25,0.05,,,,,By weight only
+ca9954b6-db01-425c-88eb-018356ee8fa3,Brown Coconut Chunks (Narkel),Fruits,390,0.25,0.05,,,,,By weight only
+6464b134-907f-4357-8433-5d36b55d6796,Bullet Green Chilli (Lanka),Vegetables,120,0.25,0.05,,,,,By weight only
+e27cd293-67be-45bb-9e0f-990130e21ee5,Button Mushroom,Vegetables,372,0.25,0.05,,,,,By weight only
+f8141beb-4fb8-4b3b-9caa-a4a0a804cee7,Cabbage (Bandhakopi),Vegetables,55,0.25,0.05,700,39,46,14,Average weight estimate (16 Nov); please check against what the stores actually sell
+c1184410-a18d-4934-a69d-83fe4a559c64,Cape Gooseberry (Mahabaleshwar),Fruits,556,0.25,0.05,,,,,By weight only
+e58b84cd-11e3-4217-84eb-dd06f6bb2071,Cauliflower (Phoolkobi),Vegetables,110,0.25,0.05,600,66,84,16,Average weight estimate (16 Nov); please check against what the stores actually sell
+7eb090b0-cd1b-4203-889b-b60d2c409cfd,Cauliflower Florets (Phoolkobi),Vegetables,230,0.25,0.05,,,,,By weight only
+3e512362-918a-462c-ba6d-5a1ffbc31206,Celery,Vegetables,200,0.25,0.05,,,,,By weight only
+49120896-1cef-4db7-ad6b-469c0c8a64e6,Chenopodium (Bathua),Vegetables,68,0.25,0.05,,,,,By weight only
+48c953a8-436c-4b0e-83a3-d5baa2279467,Cherry Tomatoes (Cherry Tamatar),Vegetables,205,0.25,0.05,,,,,By weight only
+928be56f-5d5c-4490-81ed-4570b77fdedf,Chilean Cherry,Fruits,2088,0.25,0.05,,,,,By weight only
+c4bd3f0a-5bcd-4081-99de-bc0d0d91b198,Chopped Garlic (Rasun),Vegetables,400,0.25,0.05,,,,,By weight only
+26043666-e707-407d-9cc3-7f3f76d11f5f,Chow Chow,Vegetables,82,0.25,0.05,250,21,24,40,Average weight estimate (16 Nov); please check against what the stores actually sell
+87ffa6e1-54a3-43eb-81b6-7ef250bc1e29,Colocasia Stem (Kochu Gaach),Vegetables,76,0.25,0.05,,,,,By weight only
+cb986be7-cb7d-475a-a60b-126842868bf1,Coriander Bunch (Dhaniya Patti),Vegetables,100,0.25,0.05,100,10,13,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+ea01ae94-527b-4e6d-815c-d08d7627a812,Cowpea Beans (Sheem),Vegetables,80,0.25,0.05,,,,,By weight only
+8285b3b1-cee2-4522-b1bb-44e4d18bf48e,Curry Leaves (Curry Pata),Vegetables,220,0.25,0.05,,,,,By weight only
+7bf3efb6-c8da-4154-8353-67a5d940bcf0,Delight Fruit Chaat,Fruits,464,0.25,0.05,,,,,By weight only
+20e426b8-047f-40aa-b882-115ef13ef5a3,Desi Tomato (Tamatar),Vegetables,30,0.25,0.05,,,,,By weight only
+071a92a3-f303-457d-bce5-69498451349e,Diced Orange Carrot,Vegetables,160,0.25,0.05,,,,,By weight only
+afae2ec0-3f16-42f8-a4ec-c836aa1a7cde,Dill Leaves (Shepu) (Dill Pata),Vegetables,190,0.25,0.05,,,,,By weight only
+ab39afbc-9b9b-4342-8406-796073ea9814,Dragon Fruit (Dragon Phal),Fruits,410,0.25,0.05,350,144,156,28,Average weight estimate (16 Nov); please check against what the stores actually sell
+8117dd83-c6da-4305-b310-4621c3bb93f5,Drumstick - Cut,Vegetables,300,0.25,0.05,,,,,By weight only
+975fe2fd-5fe8-46b9-8fde-d9c55445b1f2,Drumstick (Dhaata),Vegetables,104,0.25,0.05,60,6,7,166,Average weight estimate (16 Nov); please check against what the stores actually sell
+e58a2ecf-7ba9-43c4-b9ae-4406b25dff64,English Cucumber (Shosha),Vegetables,158,0.25,0.05,300,47,53,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+08170ff9-a39f-46a9-8b61-063229c5dbdd,Fenugreek (Methi),Vegetables,72,0.25,0.05,,,,,By weight only
+87f71c43-d379-4043-88f8-120603e8aaed,Flat Kale Leaves (Kale Pata),Vegetables,550,0.25,0.05,,,,,By weight only
+e55b577c-c6fe-4114-b03b-71d1a81bf22a,Forest Bitter Gourd,Vegetables,100,0.25,0.05,,,,,By weight only
+34a41c4c-3b6d-455d-93d6-f8f01e7fba6b,French Beans - 250 g (Sheem),Vegetables,76,0.25,0.05,,,,,By weight only
+f02d9892-95f4-4df7-b9bd-762ab73f288f,French Beans Cut (Sheem),Vegetables,240,0.25,0.05,,,,,By weight only
+31934552-373e-4ba0-920e-ad3958911e1a,Fresh Rosemary,Vegetables,1700,0.25,0.05,,,,,By weight only
+f017eb85-5580-481f-9a77-4dbb8695fd0a,Fresh Thyme,Vegetables,2700,0.25,0.05,,,,,By weight only
+5aae45cd-a182-4a1d-adef-06b7b1298db1,Fuji Apple - Imported (Appl),Fruits,804,0.25,0.05,200,161,171,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+b3444573-721f-4ca3-93ed-548a3d62af75,Galangal (Herb) Thai Ginger,Vegetables,220,0.25,0.05,,,,,By weight only
+3733af27-1ae8-48e5-bb5c-2a8fc553588f,Garlic (Lehsun),Vegetables,85,0.25,0.05,,,,,By weight only
+350746fd-ae30-4f7c-99a2-01929e6a8016,Garlic Ekali (Rasun),Vegetables,600,0.25,0.05,,,,,By weight only
+40348030-c5f2-4d23-bcd1-319067f3296e,Giloy Stick,Vegetables,240,0.25,0.05,,,,,By weight only
+a22e191e-0965-4c6e-b26f-df1619fa3cd7,Ginger (Adrak),Vegetables,120,0.25,0.05,,,,,By weight only
+519896c8-7103-40fa-b7e0-0fde7a7c0f0c,Ginger Chopped (Adrak),Vegetables,280,0.25,0.05,,,,,By weight only
+ea341d79-1a5f-46ba-a473-94acddb1ea54,Granny Smith USA Apple (250-300 g),Fruits,468,0.25,0.05,275,129,163,36,Average weight estimate (16 Nov); please check against what the stores actually sell
+f30b7d5e-c015-4b04-bba3-0dc6d350f87e,Grapefruit,Fruits,470,0.25,0.05,350,165,180,28,Average weight estimate (16 Nov); please check against what the stores actually sell
+e2200d46-2737-4b66-baa3-36de5c1d3ace,Grated Coconut (Grated Narkel),Fruits,490,0.25,0.05,,,,,By weight only
+fb53b426-068d-424b-bc39-20f2cc104512,Green Brinjal (Beguni),Vegetables,64,0.25,0.05,100,6,9,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+1c4719c7-973b-4579-a48c-caf3e0d08e9a,Green Capsicum (Shimla Mircha),Vegetables,100,0.25,0.05,120,12,13,83,Average weight estimate (16 Nov); please check against what the stores actually sell
+63617ef6-5594-4c2d-a8aa-d4f252229466,Green Chilli (Lanka),Vegetables,120,0.25,0.05,,,,,By weight only
+7d4690a0-e1a9-44d6-b267-af79ce124837,Green Cucumber (Shosha),Vegetables,42,0.25,0.05,200,8,11,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+3d70451b-d819-4575-a88c-83711cc79ab4,Green Grapes - Seedless (Angur),Fruits,265,0.25,0.05,,,,,By weight only
+b227a3aa-ae18-46bc-b865-ddbbb1df0bd3,Green Grapes (Angur),Fruits,288,0.25,0.05,,,,,By weight only
+4baa71be-03b0-47d4-9e4a-b01c1dfdeb9b,Green Kiwi,Fruits,600,0.25,0.05,80,48,62,125,Average weight estimate (16 Nov); please check against what the stores actually sell
+d71b526e-0f07-423a-8867-5b7323969b5d,Green Lettuce,Vegetables,340,0.25,0.05,200,68,90,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+2a0a102e-2e41-456b-8db0-fa3935a8abe5,Green Moong Sprouts,Vegetables,253,0.25,0.05,,,,,By weight only
+1d7b0dc5-39e0-425b-9e61-6d2c56fe0232,Green Peas (Matar),Vegetables,116,0.25,0.05,,,,,By weight only
+14815fa3-a18e-4322-bc3e-94d275d662f8,Green Peas (Peeled) (Matar),Vegetables,160,0.25,0.05,,,,,By weight only
+19c7dca0-98ec-4bd6-944c-8e0051ebcaf9,Green Pumpkin (Kumro),Vegetables,36,0.25,0.05,,,,,By weight only
+bef327ae-32d9-407f-86f5-32d99ba63862,Green Tomato (Tamatar),Vegetables,34,0.25,0.05,,,,,By weight only
+21567a5e-4c34-4811-be9e-aa8c1c4dbaf5,Green Zucchini,Vegetables,255,0.25,0.05,200,51,65,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+5d9164cb-4f05-46c5-ad61-07b7dbb44d5a,Groundnuts,Fruits,160,0.25,0.05,,,,,By weight only
+4abc86ad-d0cb-45ee-8516-72557f09e41c,Guava (Pyara),Fruits,98,0.25,0.05,150,15,20,66,Average weight estimate (16 Nov); please check against what the stores actually sell
+0607cc73-d325-467a-a65c-c0b97aa66ae8,Holy Tulsi,Vegetables,1400,0.25,0.05,,,,,By weight only
+c125f169-d433-4487-a118-ee401ec5144e,Hybrid Tomato (Tamatar),Vegetables,26,0.25,0.05,,,,,By weight only
+b1b04135-7475-4904-ae71-b7960d90c607,Hybrid Tomato 500 g (Tamatar),Vegetables,44,0.25,0.05,,,,,By weight only
+abd3238c-7d68-4885-aa61-4e76b0ff5a91,Iceberg Lettuce,Vegetables,232,0.25,0.05,500,116,152,20,Average weight estimate (16 Nov); please check against what the stores actually sell
+cf465b09-dc51-4341-b340-c3dae49bcb39,Ivy Gourd,Vegetables,52,0.25,0.05,,,,,By weight only
+ae116ddd-efb4-4ef6-8ee6-d039a818c6a9,Kaffir Lime Leaves (Makroot) (Lime Pata (Makroot)),Vegetables,1600,0.25,0.05,,,,,By weight only
+0fb963ae-2e91-4a86-8e81-4bc102671694,Kalmi Saag,Vegetables,46,0.25,0.05,,,,,By weight only
+215bab6a-79bf-4516-9c45-65074fabf63c,Kinnaur Apple (Appl),Fruits,383,0.25,0.05,180,69,77,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+59dc5440-ea00-489d-8c68-b58bc0a2c57f,Kinnow Orange (Naranga),Fruits,178,0.25,0.05,180,32,41,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+8eec0537-281d-49e4-8040-e330ff5bc8ab,Kiran - Watermelon (Tarbuj),Fruits,36,0.25,0.05,2500,90,108,4,Average weight estimate (16 Nov); please check against what the stores actually sell
+2f125d76-a18f-46cb-b300-177d7f3d539d,Knol Khol,Vegetables,50,0.25,0.05,250,13,16,40,Average weight estimate (16 Nov); please check against what the stores actually sell
+67c055a0-2ad7-426c-a069-2e095d100247,Lady Finger (Bhindi),Vegetables,64,0.25,0.05,,,,,By weight only
+ece19ca2-9c33-47ca-a62f-65db3c29b5bb,Lady Finger Diced (Bhindi),Vegetables,190,0.25,0.05,,,,,By weight only
+68f2596b-efae-4267-9277-c962ca0b5f96,Lemon (Lebu),Vegetables,175,0.25,0.05,50,9,12,200,Average weight estimate (16 Nov); please check against what the stores actually sell
+0e7dfbd2-90fd-42e1-a71d-972a0dd0b1dd,Lemongrass,Vegetables,260,0.25,0.05,,,,,By weight only
+3d32ad09-d73a-4b82-b962-03acc4be50ca,Lettuce Mix,Vegetables,420,0.25,0.05,,,,,By weight only
+ccb8b97e-8855-4866-9b3a-c41ba1c952d8,Long Purple Brinjal (Lomba Begun),Vegetables,72,0.25,0.05,120,9,11,83,Average weight estimate (16 Nov); please check against what the stores actually sell
+cc5807a3-091e-44b9-84c5-cfeb114a287f,Loose Arhar Dal,"Rice, Atta, Dal and Maida",183,0.25,0.05,,,,,By weight only
+0902a98c-079f-4feb-90a6-a1f741a15c6b,Loose Atop Rice,"Rice, Atta, Dal and Maida",44,0.25,0.05,,,,,By weight only
+beeebcca-25de-4eb0-92b0-636e4a3e8683,Loose Atta,"Rice, Atta, Dal and Maida",39,0.25,0.05,,,,,By weight only
+19ba58ef-713c-484f-8604-2a305613b3a9,Loose Banskati Rice,"Rice, Atta, Dal and Maida",67,0.25,0.05,,,,,By weight only
+63d2a866-9636-4581-b8d6-e550febc85ae,Loose Basmati Rice,"Rice, Atta, Dal and Maida",105,0.25,0.05,,,,,By weight only
+634bb928-5397-4fe1-88d8-438f8a1d88ed,Loose Chana Dal,"Rice, Atta, Dal and Maida",143,0.25,0.05,,,,,By weight only
+43ca3695-d46d-45e0-aaa6-80a9cda3e48a,Loose Doodhweshwar Rice,"Rice, Atta, Dal and Maida",56,0.25,0.05,,,,,By weight only
+a39e8dad-18ec-4959-a88c-e3a6ff282b8b,Loose Gobindo Bhog Rice,"Rice, Atta, Dal and Maida",114,0.25,0.05,,,,,By weight only
+139d8000-ec09-4d99-94b3-9bf6c77c8548,Loose Kabli Chaana,"Rice, Atta, Dal and Maida",159,0.25,0.05,,,,,By weight only
+7b39fac2-c8a5-4d49-a3c8-7fae111917da,Loose Kaccha Chaana,"Rice, Atta, Dal and Maida",108,0.25,0.05,,,,,By weight only
+a3bfde7a-b02b-4862-9520-24171d68b8b1,Loose Maida,"Rice, Atta, Dal and Maida",37,0.25,0.05,,,,,By weight only
+d9dfadc6-71ad-4543-af0c-43a7f1edcbe2,Loose Masoor Dal,"Rice, Atta, Dal and Maida",122,0.25,0.05,,,,,By weight only
+55ad9de0-9c9f-4139-9468-383a394bd083,Loose Matar,"Rice, Atta, Dal and Maida",88,0.25,0.05,,,,,By weight only
+f1dd136b-2d0b-46a6-8597-c750fbdb9654,Loose Miniket Rice,"Rice, Atta, Dal and Maida",57,0.25,0.05,,,,,By weight only
+8b989688-60fb-4b4f-85a1-862e52a9f1ba,Loose Moong Dal,"Rice, Atta, Dal and Maida",138,0.25,0.05,,,,,By weight only
+ab639d8a-2cfb-439d-a627-5dbd6ce6aae6,Loose Onions,Vegetables,43,0.25,0.05,,,,,By weight only
+2e7c46ab-2752-42c5-b872-56e0e36d145c,Loose Potatoes,Vegetables,58,0.25,0.05,,,,,By weight only
+da170b1c-ae56-409f-a3ed-170cd9fad7b2,Loose Ratna Rice,"Rice, Atta, Dal and Maida",42,0.25,0.05,,,,,By weight only
+cc336940-08ca-4cd9-83c6-7994ae3b6c36,Loose Shorshe (Black),Spices,130,0.25,0.05,,,,,By weight only
+8eb23dc0-c67c-4f8f-854e-0ec06cae2599,Loose Sona Moong Dal,"Rice, Atta, Dal and Maida",198,0.25,0.05,,,,,By weight only
+c4d4384a-2e9e-45da-8101-80ec3cc6f761,Loose Sugar,Salt and Sugar,33,0.25,0.05,,,,,By weight only
+bde6d44d-6fdc-4980-ac1f-822e50e548db,Loose Tarka Dal,"Rice, Atta, Dal and Maida",148,0.25,0.05,,,,,By weight only
+deedee2a-b8cd-45ab-af4d-e6067a459376,Loose Tomatoes,Vegetables,32,0.25,0.05,,,,,By weight only
+5893e518-747f-4683-b4f4-d95576b66c93,Loose Toor Dal,"Rice, Atta, Dal and Maida",146,0.25,0.05,,,,,By weight only
+172ef2b0-29fc-4b90-8c9c-20c7400a665d,Maan Kochu,Vegetables,48,0.25,0.05,,,,,By weight only
+6e821018-2f66-4d1b-864a-084887081935,Malabar Spinach (Pui Saag),Vegetables,42,0.25,0.05,,,,,By weight only
+c30f2280-6ff9-48f4-961a-90d1d942482d,Mango Ginger (Adrak),Vegetables,170,0.25,0.05,,,,,By weight only
+bd7c9b42-8176-4414-8e79-dbc4b12788fb,Mini Orange (Imported) (Naranga),Fruits,415,0.25,0.05,80,33,41,125,Average weight estimate (16 Nov); please check against what the stores actually sell
+34eb9a29-12e8-4553-9ccc-f20f7afc7b00,Mint Leaves (Pudina Pata),Vegetables,130,0.25,0.05,,,,,By weight only
+f0a86235-106b-42b7-ae7e-669489936091,Mix Cherry Tomatoes (Cherry Tamatar),Vegetables,410,0.25,0.05,,,,,By weight only
+b4d65dda-406f-4d74-907c-797687e299f3,Mixed Sprouts,Vegetables,185,0.25,0.05,,,,,By weight only
+102546cf-35e3-4607-b9fe-b31709d5ad4f,Muskmelon,Fruits,155,0.25,0.05,1000,155,178,10,Average weight estimate (16 Nov); please check against what the stores actually sell
+46ed8669-56eb-4359-a8a7-c4813772a990,Mustard Leaves (Sorisha Shak),Vegetables,60,0.25,0.05,,,,,By weight only
+2a038b23-5112-4e40-ab01-595f815dfece,Nagpur - Orange (Naranga),Fruits,200,0.25,0.05,180,36,38,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+1de1b592-c314-43d2-9c42-4edd5a26f6eb,New Chandramukhi Potato (Alu),Vegetables,23,0.25,0.05,,,,,By weight only
+be66a30c-a1e4-4de4-afd7-c49ac93d1376,New Jyoti Potato (Alu),Vegetables,23,0.25,0.05,,,,,By weight only
+79c0c3cc-bbe9-4f95-babd-e89fd26b80d5,Onion - Sukhsagar (Peyaj),Vegetables,22,0.25,0.05,,,,,By weight only
+4165af7e-0925-48d6-9f99-c3d14c926558,Onion (Peyaj),Vegetables,27,0.25,0.05,,,,,By weight only
+9954d6c2-bd7e-4813-b630-63ca88384faf,Onion Flower (Onion Phool),Vegetables,64,0.25,0.05,,,,,By weight only
+c80c51d9-90ca-4d32-9bf2-f4291cebbf85,Orange Carrot (Gajor),Vegetables,36,0.25,0.05,100,4,5,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+1d3e4284-a481-41f5-bd08-1aa6f0a367a6,Organically Grown - Onion (Peyaj),Vegetables,54,0.25,0.05,,,,,By weight only
+90d098a0-94ab-40f4-9365-bd438f61d222,Organically Grown Beetroot (Chukandar),Vegetables,92,0.25,0.05,150,14,18,66,Average weight estimate (16 Nov); please check against what the stores actually sell
+a27247d0-3de8-4655-b20a-40050f336ae4,Organically Grown Bitter Gourd,Vegetables,200,0.25,0.05,100,20,28,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+15d33ae9-48de-479d-940b-47eee86a8b22,Organically Grown Bottle Gourd (Chal Kumra),Vegetables,100,0.25,0.05,800,80,102,12,Average weight estimate (16 Nov); please check against what the stores actually sell
+0913568c-4ddb-47e4-825b-f531f7dfb4c8,Organically Grown Brinjal Bharta (Beguni),Vegetables,68,0.25,0.05,400,27,36,25,Average weight estimate (16 Nov); please check against what the stores actually sell
+39268b01-0e6a-4b26-89b7-d76e7c0fabec,Organically Grown Broad Beans,Vegetables,76,0.25,0.05,,,,,By weight only
+6bc93daf-5db6-46aa-96e0-734841d70a49,Organically Grown Broccoli,Vegetables,232,0.25,0.05,300,70,88,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+faf072e3-0666-4697-ac6e-d739db19ce8d,Organically Grown Cabbage (Bandhakopi),Vegetables,68,0.25,0.05,700,48,58,14,Average weight estimate (16 Nov); please check against what the stores actually sell
+59d6c2da-0b4f-491e-a0f2-9510067bee88,Organically Grown Carrot (Gajor),Vegetables,80,0.25,0.05,100,8,11,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+2fa5887c-f7b2-4972-aec6-d7d97892685e,Organically Grown Cauliflower (Phoolkobi),Vegetables,160,0.25,0.05,600,96,116,16,Average weight estimate (16 Nov); please check against what the stores actually sell
+8f6bcab8-511d-4476-bda9-e22ea356bbfc,Organically Grown Chandramukhi Potato,Vegetables,28,0.25,0.05,,,,,By weight only
+97727b99-85d8-4280-8ffe-c4b63302a5d2,Organically Grown Chilli (Lanka),Vegetables,220,0.25,0.05,,,,,By weight only
+2a9aec8e-b318-424d-adb3-468f224b4b0d,Organically Grown Colocasia (Kochu),Vegetables,96,0.25,0.05,,,,,By weight only
+5084730b-ce94-4fee-87e1-a94f5aea7217,Organically Grown Coriander (without Roots) (Dhania),Vegetables,190,0.25,0.05,,,,,By weight only
+166adec5-7ade-432b-bac3-8226540be371,Organically Grown Drumstick (Dhaata),Vegetables,212,0.25,0.05,60,13,16,166,Average weight estimate (16 Nov); please check against what the stores actually sell
+4e0102c5-97b0-4858-b28d-c918486b22a1,Organically Grown Fenugreek (without Roots) (Methi),Vegetables,72,0.25,0.05,,,,,By weight only
+64e11b62-d453-4e54-be26-e5735f27ada8,Organically Grown French Beans (Sheem),Vegetables,200,0.25,0.05,,,,,By weight only
+a75b0359-8c28-4c8e-b5a7-9a3e9933a05a,Organically Grown Garlic (Rasun),Vegetables,260,0.25,0.05,,,,,By weight only
+792a962c-7e84-4fcb-8b3f-5bc4ed59cc7c,Organically Grown Ginger (Adrak),Vegetables,240,0.25,0.05,,,,,By weight only
+78d9f412-2fc5-46c6-9297-ed4b7c4035f0,Organically Grown Green Capsicum,Vegetables,120,0.25,0.05,120,14,18,83,Average weight estimate (16 Nov); please check against what the stores actually sell
+d98bd766-fe73-4920-8d04-18f9095b3c0c,Organically Grown Green Cucumber (Shorshe),Vegetables,72,0.25,0.05,200,14,20,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+b20d96db-40a3-44fb-88b3-7dec5cc2989f,Organically Grown Green Peas (Shada Matar),Vegetables,104,0.25,0.05,,,,,By weight only
+eebd2744-b1e1-44b2-a1d9-43e16a8c3c69,Organically Grown Guava,Fruits,110,0.25,0.05,150,17,23,66,Average weight estimate (16 Nov); please check against what the stores actually sell
+52039354-407d-4156-9b8a-5857e8d122b2,Organically Grown Kadi Patta Curry Leaves (Curry Pata),Vegetables,620,0.25,0.05,,,,,By weight only
+b49ad73d-4897-496d-8ee9-fd0c6cded3be,Organically Grown Kiran Watermelon,Fruits,69,0.25,0.05,1800,124,140,5,Average weight estimate (16 Nov); please check against what the stores actually sell
+800db353-07da-4ff4-bc7f-79bbc7aac353,Organically Grown Lemon (Lebu),Vegetables,200,0.25,0.05,50,10,12,200,Average weight estimate (16 Nov); please check against what the stores actually sell
+0b888167-0eb5-41db-86cc-a79dd04322a3,Organically Grown Mint Leaves (Without Roots) (Pudina Pata),Vegetables,200,0.25,0.05,,,,,By weight only
+3deb2844-204f-4460-9a54-0ef90a8e6fdc,Organically Grown Pointed Gourd,Vegetables,236,0.25,0.05,,,,,By weight only
+4b965ff9-404c-422e-86a4-8344a04ae2ab,Organically Grown Pomegranate (Anar),Fruits,489,0.25,0.05,200,98,118,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+eb496c79-234b-4fd8-af9f-e05797720f58,Organically Grown Radish (Mooli),Vegetables,82,0.25,0.05,300,25,30,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+0aa4a78c-3e35-4e8a-8c42-4e0b265683ca,Organically Grown Raw Mango,Vegetables,255,0.25,0.05,200,51,67,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+fb0baf51-02ac-41fb-bc09-3ae59a6db086,Organically Grown Raw Papaya,Vegetables,83,0.25,0.05,700,58,72,14,Average weight estimate (16 Nov); please check against what the stores actually sell
+8415d5f8-34fa-4aac-b108-541857383665,Organically Grown Raw Turmeric,Vegetables,96,0.25,0.05,,,,,By weight only
+dfa5a94f-3d2d-456a-ae67-241358e234d9,Organically Grown Red Bell Pepper,Vegetables,408,0.25,0.05,180,73,84,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+f51d34a4-2300-411d-933c-f8be6f77b242,Organically Grown Red Carrot (Gajor),Vegetables,80,0.25,0.05,100,8,11,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+3b6a0b6e-1722-4768-a920-7efd43200644,Organically Grown Ridge Gourd,Vegetables,130,0.25,0.05,200,26,30,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+5e582398-d0e6-4bd9-9d27-28419bbd2261,Organically Grown Spinach (Without Roots),Vegetables,68,0.25,0.05,,,,,By weight only
+5e3d79fc-7ca6-41c5-b45d-ec4ea9860240,Organically Grown Sweet Lime (Mitha Lebu),Fruits,107,0.25,0.05,180,19,22,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+39741fd5-fb80-4990-a186-c881ac3b0485,Organically Grown Sweet Potato,Vegetables,82,0.25,0.05,200,16,20,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+4dccdbf2-0d09-4596-9aea-9ecb443ddd77,Organically Grown Tomato (Desi) (Tamatar),Vegetables,74,0.25,0.05,,,,,By weight only
+e3c257a4-f299-4f26-b09a-00f8b6dab0de,Organically Grown Tomato (Hybrid) (Tamatar),Vegetables,52,0.25,0.05,,,,,By weight only
+a01610a5-62ca-4bf7-b361-ed1dc0896cf1,Organically Grown Yellow Bell Pepper,Vegetables,424,0.25,0.05,180,76,94,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+7c71e192-dd86-4302-8a68-7ce51b13ce08,Organically Grown- Lady Finger (Bhindi),Vegetables,144,0.25,0.05,,,,,By weight only
+0a8b7e59-6d81-4bd7-bd61-5486e50333b6,Packham Pear - South Africa (Nashpati),Fruits,520,0.25,0.05,200,104,111,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+29952877-7cc3-4238-ab79-3fe3eb014893,Papaya (Pepe),Fruits,124,0.25,0.05,800,99,123,12,Average weight estimate (16 Nov); please check against what the stores actually sell
+cbdda6f9-1b25-4d69-a59a-4250cf6308df,Parsley,Vegetables,800,0.25,0.05,,,,,By weight only
+db3a5dbf-2c78-421f-abd4-c75203ec0af3,Peach,Fruits,384,0.25,0.05,120,46,57,83,Average weight estimate (16 Nov); please check against what the stores actually sell
+7eff2e8b-f6df-46b0-a151-072f6ba4911d,Pear Beauty - South Africa (Nashpati),Fruits,668,0.25,0.05,200,134,176,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+973a8a45-ad3e-474e-80d0-b90b66acf219,Peeled Garlic (Rasun),Vegetables,430,0.25,0.05,,,,,By weight only
+e6868706-3dd0-45b8-8a12-f57579bf312a,Pineapple (Anaras),Fruits,162,0.25,0.05,1000,162,187,10,Average weight estimate (16 Nov); please check against what the stores actually sell
+fb043e0d-b52e-457b-b019-2c65dc097122,Pineapple Cut (Anaras),Fruits,320,0.25,0.05,,,,,By weight only
+99be689d-a61a-4413-a21d-c68de9a670c8,Plum Imported,Fruits,735,0.25,0.05,70,51,65,142,Average weight estimate (16 Nov); please check against what the stores actually sell
+03e84236-4d80-4884-afd7-ab925c4a6c62,Pointed Gourd (250 g) (Potol),Vegetables,76,0.25,0.05,,,,,By weight only
+daee9522-0d93-46c4-a745-aaf19cfd3c90,Pomegranate - 1 piece (175-225 g) (Anar),Fruits,394,0.25,0.05,200,79,91,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+bd6fab1b-838f-448b-8068-22a4d62f7b9b,Pomegranate - 2 pieces (350-450 g) (Bedana),Fruits,354,0.25,0.05,200,71,86,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+7f2c7aa0-21ce-428a-b976-b77bd61ae8d6,Pomegranate - Peeled (Anar),Fruits,800,0.25,0.05,,,,,By weight only
+db01cb86-ee6b-4007-b8bc-375e6e449af1,Pomegranate - Small (Anar),Fruits,308,0.25,0.05,150,46,51,66,Average weight estimate (16 Nov); please check against what the stores actually sell
+a0ab0049-8dcb-45ae-a43b-8b3c88d0c6f6,Pomegranate Peeled (Anar),Fruits,1070,0.25,0.05,,,,,By weight only
+2a6e7c1a-a148-44f7-bbf1-a68e12a39d31,Potato - New Crop (Alu),Vegetables,76,0.25,0.05,,,,,By weight only
+fc3437df-0a70-4920-92f2-3c519740a743,Premium Kinnaur Apple by Farmpik,Fruits,440,0.25,0.05,180,79,85,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+debab5d7-1ee7-43ad-9ab6-5f0794cb500e,Premium Mini Orange,Fruits,590,0.25,0.05,80,47,51,125,Average weight estimate (16 Nov); please check against what the stores actually sell
+2085d54f-ffe3-49ba-8595-7d5f92301807,Pumpkin Portion (Kumro),Vegetables,90,0.25,0.05,,,,,By weight only
+0f54c1cc-b7d8-40db-8d31-dec2c2ca203f,Pumpkin Yellow (Cut) (Kumro),Vegetables,135,0.25,0.05,,,,,By weight only
+a2e0b8f7-ed65-4b64-961e-304b917fc738,Radish (Mooli),Vegetables,104,0.25,0.05,300,31,42,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+42dea043-31cf-4892-939a-4c7c97a71425,Raspuri/Gola Mango (Aam),Fruits,160,0.25,0.05,250,40,45,40,Average weight estimate (16 Nov); please check against what the stores actually sell
+1cc491fc-358c-49dd-a279-10fdab7c14e3,Ratnagiri Alphonso Mango,Fruits,949,0.25,0.05,250,237,276,40,Average weight estimate (16 Nov); please check against what the stores actually sell
+9b7ef299-626c-4b78-82dd-44a9ec176ccc,Raw Mango (Kacha Aam),Fruits,105,0.25,0.05,200,21,26,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+49065fed-d961-4d5a-94c5-a08cec75a8b3,Raw Papaya (Kacha Pepe),Vegetables,78,0.25,0.05,700,55,69,14,Average weight estimate (16 Nov); please check against what the stores actually sell
+16804554-220d-41fe-b769-280f020c1d9e,Raw Turmeric (Kacha Haluda),Vegetables,88,0.25,0.05,,,,,By weight only
+057f91c8-df7a-444c-ae59-9ad4db376be0,Red Amaranthus Leaves (Laal Shak),Vegetables,48,0.25,0.05,,,,,By weight only
+64fd6609-cd98-4373-911a-e9a04dc3d772,Red Apple Ber,Fruits,57,0.25,0.05,,,,,By weight only
+dd6c89e2-1c5f-4604-a9b5-2cbfef385abf,Red Bell Pepper,Vegetables,384,0.25,0.05,180,69,85,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+6f2ba542-1817-4cc7-a549-0d08ee612231,Red Cabbage (Bandhakopi),Vegetables,167,0.25,0.05,600,100,120,16,Average weight estimate (16 Nov); please check against what the stores actually sell
+bd188f69-9f8a-4e8f-854e-709f7a13eb5b,Red Carrot - 500 g (Gajor),Vegetables,110,0.25,0.05,100,11,15,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+930eed5e-5963-4d57-83ae-5b1dee018664,Red Grapes - Premium Crunchy (Angur),Fruits,575,0.25,0.05,,,,,By weight only
+3d03e89e-909c-4941-aad2-a06699e61be1,Red Lettuce,Vegetables,290,0.25,0.05,200,58,70,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+11f3b652-7402-42f7-b400-6a26ceefb5c5,Red Potato (Alu),Vegetables,30,0.25,0.05,,,,,By weight only
+c72549f8-4356-4828-a6e9-777497a3bdd2,Red Radish (Mooli),Vegetables,66,0.25,0.05,,,,,By weight only
+72cfa801-34ab-4708-b5b9-fc284b6bd473,Red-Globe Grapes (Angur),Fruits,810,0.25,0.05,,,,,By weight only
+55ef1240-656d-4274-b0fd-670f556a1c63,Ridge Gourd (Jhinge),Vegetables,82,0.25,0.05,200,16,18,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+d1783655-9584-4bdc-846f-7de2dc9ff346,Rocket Leaves (Arugula),Vegetables,420,0.25,0.05,,,,,By weight only
+c025b6a0-eb8a-4b81-80f1-75d2c6194f45,Romaine Lettuce,Vegetables,330,0.25,0.05,300,99,117,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+4d65eb94-10e0-441a-ab67-e8619f428145,Royal Gala Apple - Imported (Appl),Fruits,680,0.25,0.05,170,116,133,58,Average weight estimate (16 Nov); please check against what the stores actually sell
+ed0ead37-50d1-4821-972e-6bf5efdb94e1,Sambhar Onion (Peyaj),Vegetables,48,0.25,0.05,,,,,By weight only
+12cc7f32-9f86-43cd-a840-d753ea902c95,Sapota (Chikoo),Fruits,205,0.25,0.05,80,16,23,125,Average weight estimate (16 Nov); please check against what the stores actually sell
+d4db9523-a3f3-47b8-8b46-e7ee611ad201,Shimeji Mushroom - white,Vegetables,1664,0.25,0.05,,,,,By weight only
+25a25d3f-d143-4d26-a738-f049595419ff,Shimeji Mushroom Brown,Vegetables,1696,0.25,0.05,,,,,By weight only
+d762d5b4-99c1-41f3-9d57-707eb9f64ea7,Shimla Apple,Fruits,318,0.25,0.05,180,57,73,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+15e04214-3468-462d-bec5-8b9333f0f779,Sindhura Mango (Sinduri Ama),Fruits,430,0.25,0.05,250,108,139,40,Average weight estimate (16 Nov); please check against what the stores actually sell
+9d7e666e-b8ad-47ff-bd73-e477e29852b6,Small Shimla Apple (Appl),Fruits,326,0.25,0.05,130,42,49,76,Average weight estimate (16 Nov); please check against what the stores actually sell
+690dfc9a-b1a4-47d0-a112-4140521c2640,Snake Gourd (Chichinge),Vegetables,98,0.25,0.05,300,29,41,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+0f7fc933-0084-4eca-8c11-76a55c872614,Snow Peas,Vegetables,1000,0.25,0.05,,,,,By weight only
+b8f207cc-3216-4f62-a2e1-75cc65b2a897,Spinach (Palak),Vegetables,60,0.25,0.05,,,,,By weight only
+1ffc435b-7d14-4efc-815a-deb904f4c72e,Sponge Gourd,Vegetables,72,0.25,0.05,200,14,16,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+5662e963-3009-4957-a704-5a11e56f46bb,Spring Onion,Vegetables,127,0.25,0.05,,,,,By weight only
+07c307ba-1734-4dfc-a2a0-88d28768f4a4,Star Fruit,Fruits,140,0.25,0.05,100,14,16,100,Average weight estimate (16 Nov); please check against what the stores actually sell
+6ec2e140-115c-4277-8542-cb0926357af5,Strawberry - Valentine Gift (Mahabaleshwar),Fruits,906,0.25,0.05,,,,,By weight only
+4f8811c1-ca1f-44b1-9b40-997f139c02b5,Strawberry (Mahabaleshwar),Fruits,380,0.25,0.05,,,,,By weight only
+7dd9dd6f-f1f0-4f76-a242-0177fb8954e7,Striped Muskmelon,Fruits,132,0.25,0.05,1000,132,182,10,Average weight estimate (16 Nov); please check against what the stores actually sell
+941d77cb-4bb7-4147-a2c7-07290b3f6ebf,Sweet Lime (4 pieces) (Mitha Lebu),Fruits,84,0.25,0.05,125,11,14,80,Average weight estimate (16 Nov); please check against what the stores actually sell
+40bb9eda-619f-4a8c-bc83-4dc32e14ce11,Sweet Lime (Mosambi) (Mitha Lebu),Fruits,60,0.25,0.05,200,12,17,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+1adad39b-a3f5-446b-8b8b-5abe51038a3d,Sweet Potato (Misti Alu),Vegetables,40,0.25,0.05,200,8,11,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+e14e6f00-38fc-4b09-823c-fda7cb9abcf2,Turnip (Shalgam),Vegetables,38,0.25,0.05,150,6,8,66,Average weight estimate (16 Nov); please check against what the stores actually sell
+c83ae881-4734-49f0-8a1e-1171d7d6c98b,Unpeeled Green Chana,Vegetables,165,0.25,0.05,,,,,By weight only
+5c9a2b06-e7fb-424f-8374-90de11231926,Valencia Navel Orange (Imported) (Naranga),Fruits,300,0.25,0.05,220,66,84,45,Average weight estimate (16 Nov); please check against what the stores actually sell
+64afeb63-a75f-4385-9543-eff8d9d431f0,Valencia Orange (Naranga),Fruits,333,0.25,0.05,200,67,70,50,Average weight estimate (16 Nov); please check against what the stores actually sell
+01ea552f-f219-45c6-bd33-b116e3161f7e,Washington Red Delicious Apple (Appl),Fruits,776,0.25,0.05,220,171,192,45,Average weight estimate (16 Nov); please check against what the stores actually sell
+614fac89-50f4-43bf-90aa-20e2e8b76f17,Water Apple - Pink,Fruits,185,0.25,0.05,,,,,By weight only
+c805e350-929d-4e8d-a2a9-a48752612b7b,Water Apple - White,Fruits,160,0.25,0.05,,,,,By weight only
+55edf6c5-1aa8-49e7-9a24-058ee13fb2f8,White Onion (Peyaj),Vegetables,68,0.25,0.05,,,,,By weight only
+b609aa33-d7ae-487c-8802-30e5df4e3cc6,White Oyster Mushroom (Chhata),Vegetables,360,0.25,0.05,,,,,By weight only
+72e85fd5-3302-41d9-bb01-e18cfcb95d16,Yam Bean (Shakalu) (Ratalu (Shakalu)),Vegetables,78,0.25,0.05,300,23,30,33,Average weight estimate (16 Nov); please check against what the stores actually sell
+98d4a321-b9b3-4e81-a296-fafa63c140d5,Yellaki Banana (Kola),Fruits,96,0.25,0.05,50,5,7,200,Average weight estimate (16 Nov); please check against what the stores actually sell
+7912d670-3f87-416e-929c-198f57516713,Yellow Bell Pepper,Vegetables,336,0.25,0.05,180,60,73,55,Average weight estimate (16 Nov); please check against what the stores actually sell
+dcab34c5-e8a1-44d2-be78-63bfa1fb7797,Yellow Zucchini,Vegetables,275,0.25,0.05,200,55,66,50,Average weight estimate (16 Nov); please check against what the stores actually sell

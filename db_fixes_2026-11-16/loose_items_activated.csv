@@ -1,0 +1,108 @@
+﻿product_id,name,category,old_unit,old_mrp,old_price,old_min_qty,new_is_loose,new_is_active,new_unit,new_mrp,new_price,new_min_qty,kind,note
+a879c0a1-7ca3-443f-9acd-05d9739bb6ac,Alphonso Mango Ratnagiri,Fruits,350 g,349.0,300,1,true,true,kg,997,857,0.25,weight: converted to per kg,Was priced per 350 g; now per kg
+f76d4ed3-efba-470b-8ee0-cd923892f253,Apple Ber,Fruits,250 g,16.0,14,1,true,true,kg,64,56,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+e69d7cf2-4115-4fb5-b51f-b13ae441ff0e,Baby Banana (Kola),Fruits,4pcs,37.0,33,1,false,true,4pcs,37.0,33,1,counted: no longer loose,"Counted item, sold per pack as listed"
+f647bf3f-3da9-46ed-b3e1-fc6e9d16f3a9,Blueberry,Fruits,125 g,252.0,234,1,true,true,kg,2016,1872,0.25,weight: converted to per kg,Was priced per 125 g; now per kg
+ca9954b6-db01-425c-88eb-018356ee8fa3,Brown Coconut Chunks (Narkel),Fruits,100 g,56.0,39,1,true,true,kg,560,390,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+c1184410-a18d-4934-a69d-83fe4a559c64,Cape Gooseberry (Mahabaleshwar),Fruits,90 g,62.0,50,1,true,true,kg,689,556,0.25,weight: converted to per kg,Was priced per 90 g; now per kg
+928be56f-5d5c-4490-81ed-4570b77fdedf,Chilean Cherry,Fruits,125 g,318.0,261,1,true,true,kg,2544,2088,0.25,weight: converted to per kg,Was priced per 125 g; now per kg
+ab39afbc-9b9b-4342-8406-796073ea9814,Dragon Fruit (Dragon Phal),Fruits,300 g,134.0,123,1,true,true,kg,447,410,0.25,weight: converted to per kg,Was priced per 300 g; now per kg
+5aae45cd-a182-4a1d-adef-06b7b1298db1,Fuji Apple - Imported (Appl),Fruits,250 g,214.0,201,1,true,true,kg,856,804,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+ea341d79-1a5f-46ba-a473-94acddb1ea54,Granny Smith USA Apple (250-300 g),Fruits,250-300g,148.0,117,1,true,true,kg,592,468,0.25,weight: converted to per kg,Was priced per 250-300g; now per kg
+f30b7d5e-c015-4b04-bba3-0dc6d350f87e,Grapefruit,Fruits,200 g,103.0,94,1,true,true,kg,515,470,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+5d9164cb-4f05-46c5-ad61-07b7dbb44d5a,Groundnuts,Fruits,250 g,47.0,40,1,true,true,kg,188,160,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+4abc86ad-d0cb-45ee-8516-72557f09e41c,Guava (Pyara),Fruits,500 g,65.0,49,1,true,true,kg,130,98,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+59dc5440-ea00-489d-8c68-b58bc0a2c57f,Kinnow Orange (Naranga),Fruits,500 g,114.0,89,1,true,true,kg,228,178,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+bd7c9b42-8176-4414-8e79-dbc4b12788fb,Mini Orange (Imported) (Naranga),Fruits,200 g,103.0,83,1,true,true,kg,515,415,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+2a038b23-5112-4e40-ab01-595f815dfece,Nagpur - Orange (Naranga),Fruits,500 g,106.0,100,1,true,true,kg,212,200,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+82f06da1-d9d3-4faa-b1ef-640c1fe8fc1b,Organically Grown Brown Coconut (Brown Narkel),Fruits,1 pc,88.0,79,1,false,true,1 pc,88.0,79,1,counted: no longer loose,"Counted item, sold per pack as listed"
+eebd2744-b1e1-44b2-a1d9-43e16a8c3c69,Organically Grown Guava,Fruits,500 g,76.0,55,1,true,true,kg,152,110,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+b49ad73d-4897-496d-8ee9-fd0c6cded3be,Organically Grown Kiran Watermelon,Fruits,1.8kg,140.0,125,1,true,true,kg,78,69,0.25,weight: converted to per kg,Was priced per 1.8kg; now per kg
+4b965ff9-404c-422e-86a4-8344a04ae2ab,Organically Grown Pomegranate (Anar),Fruits,350 g,206.0,171,1,true,true,kg,589,489,0.25,weight: converted to per kg,Was priced per 350 g; now per kg
+29952877-7cc3-4238-ab79-3fe3eb014893,Papaya (Pepe),Fruits,700 g,108.0,87,1,true,true,kg,154,124,0.25,weight: converted to per kg,Was priced per 700 g; now per kg
+db3a5dbf-2c78-421f-abd4-c75203ec0af3,Peach,Fruits,250 g,118.0,96,1,true,true,kg,472,384,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+7eff2e8b-f6df-46b0-a151-072f6ba4911d,Pear Beauty - South Africa (Nashpati),Fruits,250 g,220.0,167,1,true,true,kg,880,668,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+8b7c6703-04a2-4446-8ea2-bc614c9bdf21,Peeled Pomegranate - Snack Pack,Fruits,80 g,82.0,69,1,false,true,80 g,82.0,69,1,packaged: no longer loose,"Packaged product, sold per pack as listed"
+fb043e0d-b52e-457b-b019-2c65dc097122,Pineapple Cut (Anaras),Fruits,200 g,73.0,64,1,true,true,kg,365,320,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+99be689d-a61a-4413-a21d-c68de9a670c8,Plum Imported,Fruits,200 g,186.0,147,1,true,true,kg,930,735,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+db01cb86-ee6b-4007-b8bc-375e6e449af1,Pomegranate - Small (Anar),Fruits,500 g,171.0,154,1,true,true,kg,342,308,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+a0ab0049-8dcb-45ae-a43b-8b3c88d0c6f6,Pomegranate Peeled (Anar),Fruits,100 g,116.0,107,1,true,true,kg,1160,1070,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+fc3437df-0a70-4920-92f2-3c519740a743,Premium Kinnaur Apple by Farmpik,Fruits,250 g,118.0,110,1,true,true,kg,472,440,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+9b7ef299-626c-4b78-82dd-44a9ec176ccc,Raw Mango (Kacha Aam),Fruits,200 g,26.0,21,1,true,true,kg,130,105,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+930eed5e-5963-4d57-83ae-5b1dee018664,Red Grapes - Premium Crunchy (Angur),Fruits,200 g,135.0,115,1,true,true,kg,675,575,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+4d65eb94-10e0-441a-ab67-e8619f428145,Royal Gala Apple - Imported (Appl),Fruits,225 g,176.0,153,1,true,true,kg,782,680,0.25,weight: converted to per kg,Was priced per 225 g; now per kg
+d762d5b4-99c1-41f3-9d57-707eb9f64ea7,Shimla Apple,Fruits,500 g,204.0,159,1,true,true,kg,408,318,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+4f8811c1-ca1f-44b1-9b40-997f139c02b5,Strawberry (Mahabaleshwar),Fruits,200 g,93.0,76,1,true,true,kg,465,380,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+941d77cb-4bb7-4147-a2c7-07290b3f6ebf,Sweet Lime (4 pieces) (Mitha Lebu),Fruits,500 g,56.0,42,1,true,true,kg,112,84,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+40bb9eda-619f-4a8c-bc83-4dc32e14ce11,Sweet Lime (Mosambi) (Mitha Lebu),Fruits,1 kg,86.0,60,1,true,true,kg,86,60,0.25,weight: converted to per kg,Was priced per 1 kg; now per kg
+5924780b-8fbc-4d81-a6a0-837c8e6dc897,Thai Guava,Fruits,1 pc,69.0,52,1,false,true,1 pc,69.0,52,1,counted: no longer loose,"Counted item, sold per pack as listed"
+d0fe2bf5-90ba-4f16-91c9-e25cc3837454,Wood Apple,Fruits,1 pc,36.0,27,1,false,true,1 pc,36.0,27,1,counted: no longer loose,"Counted item, sold per pack as listed"
+98d4a321-b9b3-4e81-a296-fafa63c140d5,Yellaki Banana (Kola),Fruits,500 g,69.0,48,1,true,true,kg,138,96,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+63d2a866-9636-4581-b8d6-e550febc85ae,Loose Basmati Rice,"Rice, Atta, Dal and Maida",piece,500,450,1,true,true,kg,120,105,0.25,priced from market rate: per kg,"Priced per kg from Kolkata market rates (16 Nov): loose 1121 basmati dealer quotes ₹82-95/kg, bb Royal 1 kg ₹84 (MRP ₹99), India Gate Dubar ₹131; GST 5% -> 0% (unbranded loose staple)"
+cc336940-08ca-4cd9-83c6-7994ae3b6c36,Loose Shorshe (Black),Spices,piece,0,0,1,true,true,kg,150,130,0.25,priced from market rate: per kg,"Was ₹0. Priced per kg from Kolkata market rates (16 Nov): loose black mustard ~₹100/kg dealer, retail packs ₹113-220/kg; GST stays 5% (HSN 1207)"
+6c565a06-194d-4221-b323-9f9e57f0ea79,Baby Onion (Peeled) (Peyaj),Vegetables,250 g,34.0,29,1,true,true,kg,136,116,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+94af6b69-fceb-49ff-829e-74792649b4e3,Bitter Gourd (Uchhe),Vegetables,250 g,29.0,24,1,true,true,kg,116,96,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+efdf968a-0348-4245-b58e-ceeea6713cb4,Bok Choy,Vegetables,200 g,68.0,55,1,true,true,kg,340,275,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+82b535ca-61ef-4f34-b579-0598ee9f86c3,Broccoli Florets,Vegetables,100 g,69.0,49,1,true,true,kg,690,490,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+dd5f92ef-f6fa-4966-b29b-852c16680829,Brown Chana Sprouts,Vegetables,150 g,37.0,29,1,true,true,kg,247,193,0.25,weight: converted to per kg,Was priced per 150 g; now per kg
+e27cd293-67be-45bb-9e0f-990130e21ee5,Button Mushroom,Vegetables,180 g,83.0,67,1,true,true,kg,461,372,0.25,weight: converted to per kg,Was priced per 180 g; now per kg
+f8141beb-4fb8-4b3b-9caa-a4a0a804cee7,Cabbage (Bandhakopi),Vegetables,400 g,26.0,22,1,true,true,kg,65,55,0.25,weight: converted to per kg,Was priced per 400 g; now per kg
+7eb090b0-cd1b-4203-889b-b60d2c409cfd,Cauliflower Florets (Phoolkobi),Vegetables,200 g,58.0,46,1,true,true,kg,290,230,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+49120896-1cef-4db7-ad6b-469c0c8a64e6,Chenopodium (Bathua),Vegetables,250 g,21.0,17,1,true,true,kg,84,68,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+c4bd3f0a-5bcd-4081-99de-bc0d0d91b198,Chopped Garlic (Rasun),Vegetables,100 g,51.0,40,1,true,true,kg,510,400,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+cb986be7-cb7d-475a-a60b-126842868bf1,Coriander Bunch (Dhaniya Patti),Vegetables,100 g,13.0,10,1,true,true,kg,130,100,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+ea01ae94-527b-4e6d-815c-d08d7627a812,Cowpea Beans (Sheem),Vegetables,250 g,26.0,20,1,true,true,kg,104,80,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+e55b577c-c6fe-4114-b03b-71d1a81bf22a,Forest Bitter Gourd,Vegetables,200 g,26.0,20,1,true,true,kg,130,100,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+34a41c4c-3b6d-455d-93d6-f8f01e7fba6b,French Beans - 250 g (Sheem),Vegetables,250 g,26.0,19,1,true,true,kg,104,76,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+f02d9892-95f4-4df7-b9bd-762ab73f288f,French Beans Cut (Sheem),Vegetables,250 g,70.0,60,1,true,true,kg,280,240,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+f017eb85-5580-481f-9a77-4dbb8695fd0a,Fresh Thyme,Vegetables,10 g,36.0,27,1,true,true,kg,3600,2700,0.25,weight: converted to per kg,Was priced per 10 g; now per kg
+40348030-c5f2-4d23-bcd1-319067f3296e,Giloy Stick,Vegetables,25 g,8.0,6,1,true,true,kg,320,240,0.25,weight: converted to per kg,Was priced per 25 g; now per kg
+d139fb20-a1b2-4e28-9990-fdb995c44629,Gondhoraj Lime,Vegetables,2-3pcs,50.0,37,1,false,true,2-3pcs,50.0,37,1,counted: no longer loose,"Counted item, sold per pack as listed"
+fb53b426-068d-424b-bc39-20f2cc104512,Green Brinjal (Beguni),Vegetables,500 g,45.0,32,1,true,true,kg,90,64,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+d71b526e-0f07-423a-8867-5b7323969b5d,Green Lettuce,Vegetables,100 g,45.0,34,1,true,true,kg,450,340,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+21567a5e-4c34-4811-be9e-aa8c1c4dbaf5,Green Zucchini,Vegetables,200 g,65.0,51,1,true,true,kg,325,255,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+c125f169-d433-4487-a118-ee401ec5144e,Hybrid Tomato (Tamatar),Vegetables,500 g,18.0,13,1,true,true,kg,36,26,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+b1b04135-7475-4904-ae71-b7960d90c607,Hybrid Tomato 500 g (Tamatar),Vegetables,500 g,25.0,22,1,true,true,kg,50,44,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+abd3238c-7d68-4885-aa61-4e76b0ff5a91,Iceberg Lettuce,Vegetables,250 g,76.0,58,1,true,true,kg,304,232,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+ae116ddd-efb4-4ef6-8ee6-d039a818c6a9,Kaffir Lime Leaves (Makroot) (Lime Pata (Makroot)),Vegetables,10 g,23.0,16,1,true,true,kg,2300,1600,0.25,weight: converted to per kg,Was priced per 10 g; now per kg
+ece19ca2-9c33-47ca-a62f-65db3c29b5bb,Lady Finger Diced (Bhindi),Vegetables,200 g,50.0,38,1,true,true,kg,250,190,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+ccb8b97e-8855-4866-9b3a-c41ba1c952d8,Long Purple Brinjal (Lomba Begun),Vegetables,500 g,45.0,36,1,true,true,kg,90,72,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+c30f2280-6ff9-48f4-961a-90d1d942482d,Mango Ginger (Adrak),Vegetables,100 g,19.0,17,1,true,true,kg,190,170,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+34eb9a29-12e8-4553-9ccc-f20f7afc7b00,Mint Leaves (Pudina Pata),Vegetables,100 g,15.0,13,1,true,true,kg,150,130,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+f0a86235-106b-42b7-ae7e-669489936091,Mix Cherry Tomatoes (Cherry Tamatar),Vegetables,100 g,51.0,41,1,true,true,kg,510,410,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+b4d65dda-406f-4d74-907c-797687e299f3,Mixed Sprouts,Vegetables,200 g,44.0,37,1,true,true,kg,220,185,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+c1817d93-17f9-464e-a0a7-8d3ae349175e,Neem Leaves (Neem Pata),Vegetables,1pack,10.0,8,1,false,true,1pack,10.0,8,1,counted: no longer loose,"Counted item, sold per pack as listed"
+be66a30c-a1e4-4de4-afd7-c49ac93d1376,New Jyoti Potato (Alu),Vegetables,1 kg,26.0,23,1,true,true,kg,26,23,0.25,weight: converted to per kg,Was priced per 1 kg; now per kg
+79c0c3cc-bbe9-4f95-babd-e89fd26b80d5,Onion - Sukhsagar (Peyaj),Vegetables,1 kg,28.0,22,1,true,true,kg,28,22,0.25,weight: converted to per kg,Was priced per 1 kg; now per kg
+90d098a0-94ab-40f4-9365-bd438f61d222,Organically Grown Beetroot (Chukandar),Vegetables,250 g,30.0,23,1,true,true,kg,120,92,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+a27247d0-3de8-4655-b20a-40050f336ae4,Organically Grown Bitter Gourd,Vegetables,250 g,70.0,50,1,true,true,kg,280,200,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+15d33ae9-48de-479d-940b-47eee86a8b22,Organically Grown Bottle Gourd (Chal Kumra),Vegetables,400 g,51.0,40,1,true,true,kg,128,100,0.25,weight: converted to per kg,Was priced per 400 g; now per kg
+faf072e3-0666-4697-ac6e-d739db19ce8d,Organically Grown Cabbage (Bandhakopi),Vegetables,400 g,33.0,27,1,true,true,kg,83,68,0.25,weight: converted to per kg,Was priced per 400 g; now per kg
+59d6c2da-0b4f-491e-a0f2-9510067bee88,Organically Grown Carrot (Gajor),Vegetables,250 g,28.0,20,1,true,true,kg,112,80,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+792a962c-7e84-4fcb-8b3f-5bc4ed59cc7c,Organically Grown Ginger (Adrak),Vegetables,100 g,28.0,24,1,true,true,kg,280,240,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+d98bd766-fe73-4920-8d04-18f9095b3c0c,Organically Grown Green Cucumber (Shorshe),Vegetables,500 g,51.0,36,1,true,true,kg,102,72,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+eb496c79-234b-4fd8-af9f-e05797720f58,Organically Grown Radish (Mooli),Vegetables,500 g,50.0,41,1,true,true,kg,100,82,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+fb0baf51-02ac-41fb-bc09-3ae59a6db086,Organically Grown Raw Papaya,Vegetables,400 g,41.0,33,1,true,true,kg,103,83,0.25,weight: converted to per kg,Was priced per 400 g; now per kg
+f51d34a4-2300-411d-933c-f8be6f77b242,Organically Grown Red Carrot (Gajor),Vegetables,500 g,53.0,40,1,true,true,kg,106,80,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+a01610a5-62ca-4bf7-b361-ed1dc0896cf1,Organically Grown Yellow Bell Pepper,Vegetables,125 g,65.0,53,1,true,true,kg,520,424,0.25,weight: converted to per kg,Was priced per 125 g; now per kg
+7c71e192-dd86-4302-8a68-7ce51b13ce08,Organically Grown- Lady Finger (Bhindi),Vegetables,250 g,48.0,36,1,true,true,kg,192,144,0.25,weight: converted to per kg,Was priced per 250 g; now per kg
+cbdda6f9-1b25-4d69-a59a-4250cf6308df,Parsley,Vegetables,25 g,26.0,20,1,true,true,kg,1040,800,0.25,weight: converted to per kg,Was priced per 25 g; now per kg
+9e560084-3f3e-4888-9143-ba587aa1bac8,Raw Banana (Kacha Kela),Vegetables,6pcs,63.0,52,1,false,true,6pcs,63.0,52,1,counted: no longer loose,"Counted item, sold per pack as listed"
+49065fed-d961-4d5a-94c5-a08cec75a8b3,Raw Papaya (Kacha Pepe),Vegetables,400 g,39.0,31,1,true,true,kg,98,78,0.25,weight: converted to per kg,Was priced per 400 g; now per kg
+dd6c89e2-1c5f-4604-a9b5-2cbfef385abf,Red Bell Pepper,Vegetables,125 g,59.0,48,1,true,true,kg,472,384,0.25,weight: converted to per kg,Was priced per 125 g; now per kg
+6f2ba542-1817-4cc7-a549-0d08ee612231,Red Cabbage (Bandhakopi),Vegetables,300 g,60.0,50,1,true,true,kg,200,167,0.25,weight: converted to per kg,Was priced per 300 g; now per kg
+bd188f69-9f8a-4e8f-854e-709f7a13eb5b,Red Carrot - 500 g (Gajor),Vegetables,500 g,76.0,55,1,true,true,kg,152,110,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+3d03e89e-909c-4941-aad2-a06699e61be1,Red Lettuce,Vegetables,100 g,35.0,29,1,true,true,kg,350,290,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+c72549f8-4356-4828-a6e9-777497a3bdd2,Red Radish (Mooli),Vegetables,500 g,39.0,33,1,true,true,kg,78,66,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+55ef1240-656d-4274-b0fd-670f556a1c63,Ridge Gourd (Jhinge),Vegetables,500 g,46.0,41,1,true,true,kg,92,82,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+c025b6a0-eb8a-4b81-80f1-75d2c6194f45,Romaine Lettuce,Vegetables,100 g,39.0,33,1,true,true,kg,390,330,0.25,weight: converted to per kg,Was priced per 100 g; now per kg
+a9ad621f-e6af-4505-a38e-718645f9446c,Round Bottle Gourd (Gol Lau),Vegetables,1 pc,44.0,37,1,false,true,1 pc,44.0,37,1,counted: no longer loose,"Counted item, sold per pack as listed"
+d4db9523-a3f3-47b8-8b46-e7ee611ad201,Shimeji Mushroom - white,Vegetables,125 g,219.0,208,1,true,true,kg,1752,1664,0.25,weight: converted to per kg,Was priced per 125 g; now per kg
+690dfc9a-b1a4-47d0-a112-4140521c2640,Snake Gourd (Chichinge),Vegetables,500 g,69.0,49,1,true,true,kg,138,98,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+b8f207cc-3216-4f62-a2e1-75cc65b2a897,Spinach (Palak),Vegetables,200 g,17.0,12,1,true,true,kg,85,60,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
+e2eac677-2fdc-4afc-8e4f-1e202f2936c8,Sweet Corn - Packet (Mitha Corn),Vegetables,180 g,49.0,35,1,false,true,180 g,49.0,35,1,packaged: no longer loose,"Packaged product, sold per pack as listed"
+e14e6f00-38fc-4b09-823c-fda7cb9abcf2,Turnip (Shalgam),Vegetables,500 g,26.0,19,1,true,true,kg,52,38,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+55edf6c5-1aa8-49e7-9a24-058ee13fb2f8,White Onion (Peyaj),Vegetables,500 g,41.0,34,1,true,true,kg,82,68,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+b609aa33-d7ae-487c-8802-30e5df4e3cc6,White Oyster Mushroom (Chhata),Vegetables,125 g,51.0,45,1,true,true,kg,408,360,0.25,weight: converted to per kg,Was priced per 125 g; now per kg
+72e85fd5-3302-41d9-bb01-e18cfcb95d16,Yam Bean (Shakalu) (Ratalu (Shakalu)),Vegetables,500 g,50.0,39,1,true,true,kg,100,78,0.25,weight: converted to per kg,Was priced per 500 g; now per kg
+dcab34c5-e8a1-44d2-be78-63bfa1fb7797,Yellow Zucchini,Vegetables,200 g,66.0,55,1,true,true,kg,330,275,0.25,weight: converted to per kg,Was priced per 200 g; now per kg
