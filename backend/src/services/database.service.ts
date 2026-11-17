@@ -22,6 +22,13 @@ import type {
   OrderStatus
 } from '../types/database.types.js';
 
+/** Checkout refused: the client's total is below the server's prices. Sent as 409 PRICE_CHANGED. */
+export const CHECKOUT_PRICE_MISMATCH_MESSAGE =
+  'Order total does not match item prices. Please refresh your cart and try again.';
+/** The same, for a customer app too old to know a loose item's daily area price. Sent as 409 PRICE_CHANGED. */
+export const CHECKOUT_UPDATE_APP_MESSAGE =
+  "A loose item in your cart costs more today. Please update the Near & Now app from the Play Store to see today's price, then place your order again.";
+
 /** Same rules as auth verify-otp / frontend — match app_users.customers phone storage variants. */
 function customerPhoneLookupVariants(phone: string): string[] {
   const raw = String(phone).trim();
@@ -912,7 +919,14 @@ export class DatabaseService {
       latitude?: number;
       longitude?: number;
     };
-  }) {
+  }, client: {
+    /**
+     * The customer app's build number (X-App-Build header). Builds from
+     * 2026-11-17 on send it and price loose items at their area price; null =
+     * an older app (or the website), which only knows the catalogue price.
+     */
+    appBuild?: number | null;
+  } = {}) {
     if (!isSupabaseServiceRoleConfigured) {
       throw new Error(
         'Server is missing SUPABASE_SERVICE_ROLE_KEY (or VITE_SUPABASE_SERVICE_ROLE_KEY). Add it to backend/.env or repo root .env and restart the API — orders require the service role to bypass RLS.'
@@ -1042,12 +1056,16 @@ export class DatabaseService {
     const hasLoose = (masterPriceRows || []).some((row: any) => row.is_loose);
     const loosePrices = hasLoose ? await take(loosePricesP) : new Map<string, number>();
     const masterById = new Map<string, OrderLineMaster>();
+    // Whether a loose item in the cart costs more here today than its
+    // catalogue price: an app that only knows catalogue prices can't show it.
+    let loosePriceAboveCatalogue = false;
     for (const row of masterPriceRows || []) {
       // A master product the admin delisted is hidden from the catalogue
       // (productRowsToProducts drops inactive masters) but was still orderable
       // from a stale cart. Treat it as unavailable. (2026-10-04 audit)
       if ((row as any).is_active === false) continue;
       const regionPrice = (row as any).is_loose ? loosePrices.get(row.id) : undefined;
+      if (regionPrice != null && regionPrice > Number((row as any).discounted_price)) loosePriceAboveCatalogue = true;
       masterById.set(row.id, (regionPrice != null ? { ...row, discounted_price: regionPrice } : row) as OrderLineMaster);
     }
 
@@ -1173,7 +1191,14 @@ export class DatabaseService {
     const trustedFloor =
       trustedSubtotal + PLATFORM_FEE + HANDLING_FEE + trustedDeliveryFee - trustedDiscountAmount + trustedTipAmount;
     if (orderData.order_total < trustedFloor - 1) {
-      throw new Error('Order total does not match item prices. Please refresh your cart and try again.');
+      // A customer app from before the daily loose prices (2026-11-17) sends
+      // no build number and prices loose items at the catalogue price, so its
+      // total is short whenever today's area price is higher. "Refresh your
+      // cart" can't help it; updating the app does.
+      if (client.appBuild == null && loosePriceAboveCatalogue) {
+        throw new Error(CHECKOUT_UPDATE_APP_MESSAGE);
+      }
+      throw new Error(CHECKOUT_PRICE_MISMATCH_MESSAGE);
     }
     // Ceiling: never charge more than the server's total. Customer app builds
     // from before 2026-11-08 add GST on top of the catalogue price and so send

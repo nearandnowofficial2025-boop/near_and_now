@@ -186,10 +186,12 @@ export class ShopkeeperController {
       // ?active=true also returns offers another shop took in the last 2
       // minutes as alloc_status 'taken', so the app can say "Taken by another
       // shop" once (app builds before 2026-11-17 ignore that status).
+      // 'cancelled': the order was cancelled while shops were answering
+      // (trg_customer_orders_close_offers, 2026-11-17).
       const offerStatuses =
         active === 'true' ? ['pending', 'accepted', 'lost'] :
-        history === 'true' ? ['declined', 'lost', 'expired'] :
-        ['pending', 'accepted', 'declined', 'lost', 'expired'];
+        history === 'true' ? ['declined', 'lost', 'expired', 'cancelled'] :
+        ['pending', 'accepted', 'declined', 'lost', 'expired', 'cancelled'];
       const takenSince = new Date(Date.now() - 2 * 60_000).toISOString();
 
       const [{ data: allocationRows, error }, { data: offerRows, error: offersError }] = await Promise.all([
@@ -333,6 +335,7 @@ export class ShopkeeperController {
             if (active === 'true') return null; // the order was cancelled while shops were answering
           }
           const allocStatus =
+            o.status === 'cancelled' ? 'cancelled' :
             !live && (o.status === 'pending' || o.status === 'accepted') ? 'cancelled' :
             o.status === 'pending' ? 'pending_acceptance' :
             o.status === 'accepted' ? 'held' :

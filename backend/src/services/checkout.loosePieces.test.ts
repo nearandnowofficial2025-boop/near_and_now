@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Request } from 'express';
 import { supabaseAdmin } from '../config/database.js';
-import { databaseService } from './database.service.js';
+import { databaseService, CHECKOUT_PRICE_MISMATCH_MESSAGE, CHECKOUT_UPDATE_APP_MESSAGE } from './database.service.js';
 import { notificationService } from './notification.service.js';
 import { OrdersController } from '../controllers/orders.controller.js';
 import { installFakeSupabase, type Call, type Result } from '../test/fakeSupabase.js';
@@ -148,6 +148,62 @@ describe('placeCheckoutOrder with loose items', () => {
     const fake = install();
     await expect(databaseService.placeCheckoutOrder(order([item]) as never)).rejects.toThrow(message);
     expect(fake.on('rpc:place_broadcast_order')).toHaveLength(0);
+  });
+
+  describe('a total below the server price (review fix 2026-11-17)', () => {
+    // 1 kg onions: catalogue ₹43, today's area price ₹47. Fees: ₹9.5 + ₹5.5.
+    const onion = [{ product_id: ONION, name: 'Loose Onions', price: 43, quantity: 1, unit: 'kg' }];
+    const atCatalogue = 43 + 15;
+
+    const placeAt = async (total: number, regionPrices: Record<string, number>, appBuild: number | null) => {
+      const fake = install(regionPrices);
+      const attempt = databaseService.placeCheckoutOrder({ ...order(onion), order_total: total } as never, { appBuild });
+      return { attempt, fake };
+    };
+
+    it('an app from before the daily prices (no build number) is told to update when a loose price went up', async () => {
+      const { attempt, fake } = await placeAt(atCatalogue, { [ONION]: 47 }, null);
+      await expect(attempt).rejects.toThrow(CHECKOUT_UPDATE_APP_MESSAGE);
+      expect(fake.on('rpc:place_broadcast_order')).toHaveLength(0);
+    });
+
+    it('a current app (it sends its build number) gets "refresh your cart"', async () => {
+      const { attempt } = await placeAt(atCatalogue, { [ONION]: 47 }, 31);
+      await expect(attempt).rejects.toThrow(CHECKOUT_PRICE_MISMATCH_MESSAGE);
+    });
+
+    it('a short total with no loose price above the catalogue gets "refresh your cart", whatever the app', async () => {
+      await expect((await placeAt(atCatalogue - 10, {}, null)).attempt).rejects.toThrow(CHECKOUT_PRICE_MISMATCH_MESSAGE);
+      await expect((await placeAt(atCatalogue - 10, { [ONION]: 40 }, null)).attempt).rejects.toThrow(CHECKOUT_PRICE_MISMATCH_MESSAGE);
+    });
+
+    it('the old app still places the order when the area price is lower (charged the server total)', async () => {
+      const { attempt, fake } = await placeAt(atCatalogue, { [ONION]: 40 }, null);
+      await expect(attempt).resolves.toBeTruthy();
+      const payload = fake.on('rpc:place_broadcast_order')[0].payload as { p_customer_order: { total_amount: number } };
+      expect(payload.p_customer_order.total_amount).toBe(55); // 40 + 15
+    });
+
+    it('the route reads X-App-Build and answers 409 PRICE_CHANGED, so apps show the words (they hide 5xx text)', async () => {
+      const send = async (headers: Record<string, string>) => {
+        install({ [ONION]: 47 });
+        const res: { statusCode?: number; body?: unknown; status(c: number): typeof res; json(b: unknown): typeof res } = {
+          status(c) { this.statusCode = c; return this; },
+          json(b) { this.body = b; return this; },
+        };
+        const req = { customerId: '00000000-0000-0000-0000-000000000001', headers, body: { ...order(onion), order_total: atCatalogue } } as unknown as Request;
+        await new OrdersController().placeCheckout(req, res as never);
+        return res;
+      };
+      const old = await send({});
+      expect(old.statusCode).toBe(409);
+      expect(old.body).toEqual({ error: CHECKOUT_UPDATE_APP_MESSAGE, code: 'PRICE_CHANGED' });
+      const current = await send({ 'x-app-build': '31' });
+      expect(current.statusCode).toBe(409);
+      expect(current.body).toEqual({ error: CHECKOUT_PRICE_MISMATCH_MESSAGE, code: 'PRICE_CHANGED' });
+      const junk = await send({ 'x-app-build': 'abc' });
+      expect((junk.body as { error: string }).error).toBe(CHECKOUT_UPDATE_APP_MESSAGE); // not a number = no build
+    });
   });
 
   it('the checkout route answers those refusals with 400, not 500', async () => {

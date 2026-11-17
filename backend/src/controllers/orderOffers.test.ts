@@ -53,6 +53,8 @@ describe("the shop's order list", () => {
     { id: 'f-held', order_id: 'o2', store_id: 's1', distance_km: 0.5, offered_item_ids: ['i3'], status: 'accepted', accepted_item_ids: ['i3'], visible_at: '2026-11-17T09:00:00Z', responded_at: '2026-11-17T09:01:00Z', created_at: '2026-11-17T09:00:00Z' },
     { id: 'f-lost', order_id: 'o3', store_id: 's1', distance_km: 2, offered_item_ids: ['i4'], status: 'lost', accepted_item_ids: ['i4'], visible_at: '2026-11-17T08:00:00Z', responded_at: '2026-11-17T08:01:00Z', created_at: '2026-11-17T08:00:00Z' },
     { id: 'f-cancelled', order_id: 'o4', store_id: 's1', distance_km: 2, offered_item_ids: ['i5'], status: 'pending', accepted_item_ids: [], visible_at: '2026-11-17T07:00:00Z', responded_at: null, created_at: '2026-11-17T07:00:00Z' },
+    // Closed by trg_customer_orders_close_offers when its order was cancelled.
+    { id: 'f-closed', order_id: 'o5', store_id: 's1', distance_km: 3, offered_item_ids: ['i6'], status: 'cancelled', accepted_item_ids: [], visible_at: '2026-11-17T06:00:00Z', responded_at: null, created_at: '2026-11-17T06:00:00Z' },
   ];
   function setup() {
     return installFakeSupabase(supabaseAdmin, (c: Call) => {
@@ -61,7 +63,7 @@ describe("the shop's order list", () => {
         const statuses = (c.filters.find(([m, col]) => m === 'in' && col === 'status')?.[2] as string[]) ?? [];
         return ok(offers.filter((o) => statuses.includes(o.status)));
       }
-      if (c.table === 'customer_orders') return ok([order('o1'), order('o2'), order('o3'), order('o4', 'order_cancelled')]);
+      if (c.table === 'customer_orders') return ok([order('o1'), order('o2'), order('o3'), order('o4', 'order_cancelled'), order('o5', 'order_cancelled')]);
       if (c.table === 'order_items') {
         const ids = (c.filters.find(([m, col]) => m === 'in' && col === 'id')?.[2] as string[]) ?? [];
         return ok(ids.map((id) => ({ id, customer_order_id: 'x', product_name: `Item ${id}`, quantity: 1, unit: 'kg', unit_price: 40, image_url: null, item_status: 'pending', assigned_store_id: null })));
@@ -88,10 +90,18 @@ describe("the shop's order list", () => {
     expect(byId['f-held']).toMatchObject({ alloc_status: 'held', offer_status: 'accepted', offered_at: null });
     expect(byId['f-lost']).toMatchObject({ alloc_status: 'rejected', offer_status: 'lost' });
     expect(byId['f-cancelled']).toMatchObject({ alloc_status: 'cancelled' });
+    expect(byId['f-closed']).toMatchObject({ alloc_status: 'cancelled', offer_status: 'cancelled' });
     // Only offers the shop could see, for its own stores.
     const q = fake.on('order_store_offers', 'select')[0];
     expect(hasFilter(q, 'in', 'store_id', ['s1'])).toBe(true);
     expect(hasFilter(q, 'not', 'visible_at', 'is', null)).toBe(true);
+  });
+
+  it('history includes offers closed because their order was cancelled', async () => {
+    const { fake, orders } = await list({ history: 'true' });
+    const q = fake.on('order_store_offers', 'select')[0];
+    expect(hasFilter(q, 'in', 'status', ['declined', 'lost', 'expired', 'cancelled'])).toBe(true);
+    expect(orders.find((o) => o.allocation_id === 'f-closed')).toMatchObject({ alloc_status: 'cancelled' });
   });
 
   it('?active=true asks for open offers plus ones taken in the last 2 minutes, and drops ones whose order was cancelled', async () => {

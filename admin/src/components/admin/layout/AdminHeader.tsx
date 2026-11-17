@@ -26,6 +26,7 @@ import { cn } from '../../../utils/cn';
 import { useToast } from '../../../context/ToastContext';
 import { useCurrentAdmin, useLogout } from '../../../hooks/useCurrentAdmin';
 import { resolveRoute } from '../../../routes/routeMeta';
+import { startVisiblePoll } from '../../../utils/visiblePoll';
 import {
   Avatar,
   Badge,
@@ -177,10 +178,8 @@ const AdminHeader = ({ onToggleSidebar, sidebarExpanded, sidebarId }: AdminHeade
     // pathname), so the bell badge is never stale — only the redundant
     // *second* interval is skipped.
     if (location.pathname === '/notifications') return;
-    const intervalId = setInterval(() => {
-      void fetchNotifications();
-    }, 15_000);
-    return () => clearInterval(intervalId);
+    // Paused while the tab is hidden; refreshed as soon as it is visible again.
+    return startVisiblePoll(() => void fetchNotifications(), 15_000);
   }, [fetchNotifications, location.pathname]);
 
   // Outside click / Escape close the notifications panel.

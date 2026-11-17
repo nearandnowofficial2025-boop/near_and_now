@@ -1,6 +1,10 @@
 import { Request, Response } from 'express';
 import { randomInt } from 'crypto';
-import { databaseService } from '../services/database.service.js';
+import {
+  databaseService,
+  CHECKOUT_PRICE_MISMATCH_MESSAGE,
+  CHECKOUT_UPDATE_APP_MESSAGE,
+} from '../services/database.service.js';
 import { supabaseAdmin } from '../config/database.js';
 import { notificationService } from '../services/notification.service.js';
 import { payRiderForDeliveredOrder } from './deliveryPartner.controller.js';
@@ -68,11 +72,21 @@ export class OrdersController {
         if (v.result === 'unavailable') console.warn('[placeCheckout] GSTIN not verified (accepted)', { gstin: v.gstin, reason: v.reason });
       }
 
-      const order = await databaseService.placeCheckoutOrder(body);
+      // Customer app builds from 2026-11-17 on send their build number; the
+      // checkout uses it to tell an outdated app to update (loose area prices).
+      const appBuild = Number(req.headers?.['x-app-build']);
+      const order = await databaseService.placeCheckoutOrder(body, {
+        appBuild: Number.isInteger(appBuild) && appBuild > 0 ? appBuild : null,
+      });
       res.status(201).json(order);
     } catch (error: unknown) {
       console.error('Error placing checkout order:', error);
       const msg = error instanceof Error ? error.message : 'Failed to place order';
+      // Prices moved under the cart: a 4xx, so every app shows the message
+      // (apps replace any 5xx with a generic "something went wrong").
+      if (msg === CHECKOUT_PRICE_MISMATCH_MESSAGE || msg === CHECKOUT_UPDATE_APP_MESSAGE) {
+        return res.status(409).json({ error: msg, code: 'PRICE_CHANGED' });
+      }
       const status =
         msg.includes('not available') ||
         msg.includes('No store') ||

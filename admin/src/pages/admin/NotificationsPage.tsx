@@ -16,6 +16,7 @@ import { getNotificationLink } from '../../utils/notificationLink';
 import { docTypeLabel } from '../../utils/docLabels';
 import { formatCurrency, formatDateTime, formatNumber, timeAgo } from '../../utils/format';
 import { cn } from '../../utils/cn';
+import { startVisiblePoll } from '../../utils/visiblePoll';
 import { useToast } from '../../context/ToastContext';
 import {
   PageHeader, Button, IconButton, Card, CardHeader, CardBody, CardFooter, FormField, Input, Textarea,
@@ -482,8 +483,8 @@ const NotificationsPage = () => {
     // reads PostgREST's request.headers GUC, which Realtime's postgres_changes feed
     // never populates (it's a WAL broadcast, not an HTTP request) — so a
     // postgres_changes subscription here would silently never receive events.
-    const intervalId = setInterval(() => fetchNotifications('poll'), 15_000);
-    return () => clearInterval(intervalId);
+    // Paused while the tab is hidden; refreshed as soon as it is visible again.
+    return startVisiblePoll(() => fetchNotifications('poll'), 15_000);
   }, [fetchNotifications]);
 
   const markAllRead = async () => {
