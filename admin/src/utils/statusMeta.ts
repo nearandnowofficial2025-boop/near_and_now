@@ -274,6 +274,8 @@ const NOTIFICATION_TYPE: StatusTable = {
   new_user: { label: 'New customer', tone: 'info' },
   product_updated: { label: 'Product updated', tone: 'neutral' },
   store_added: { label: 'Store added', tone: 'brand' },
+  loose_price_flags: { label: 'Loose prices flagged', tone: 'warning' },
+  pincode_needs_region: { label: 'Pincode needs a region', tone: 'warning' },
   store_status_changed: { label: 'Store status changed', tone: 'info' },
   store_image_added: { label: 'Store image added', tone: 'neutral' },
   store_image_removed: { label: 'Store image removed', tone: 'neutral' },

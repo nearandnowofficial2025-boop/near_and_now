@@ -89,7 +89,7 @@ describe('Item 17: radius queries are bounded in the database, exact check kept'
       if (c.table === 'order_store_allocations' && c.op === 'update') return ok([{ id: 'a1', store_id: 's-old' }]);
       if (c.table === 'order_store_allocations' && c.op === 'select') return ok([{ store_id: 's-old', status: 'rejected', accepted_item_ids: [] }]);
       if (c.table === 'order_items' && c.op === 'select' && c.columns === 'id') return ok([{ id: 'i1' }]);
-      if (c.table === 'order_items' && c.columns === 'id, product_id') return ok([{ id: 'i1', product_id: 'p-old' }]);
+      if (c.table === 'order_items' && c.columns === 'id, product_id, master_product_id') return ok([{ id: 'i1', product_id: 'p-old' }]);
       if (c.table === 'order_items' && c.op === 'update') return ok([{ id: 'i1', product_name: 'Milk', unit_price: 10, quantity: 1 }]);
       if (c.table === 'products') return ok([{ id: 'p-old', master_product_id: 'm1' }]);
       if (c.table === 'stores') return ok([]);
@@ -105,7 +105,8 @@ describe('Item 17: radius queries are bounded in the database, exact check kept'
     expect(hasFilter(q, 'is', 'deleted_at', null)).toBe(true);
     expect(boxFilters(q, 'latitude', 'longitude')).toBe(true);
     const maxLat = (q: Call) => q.filters.find(([f, col]) => f === 'lte' && col === 'latitude')![2] as number;
-    expect(maxLat(q)).toBeCloseTo(boundingBox(KOLKATA.lat, KOLKATA.lng, 8).maxLat, 6);
+    // 4 km since 2026-11-17 (it was 8 km): declined items stay within the placement radius.
+    expect(maxLat(q)).toBeCloseTo(boundingBox(KOLKATA.lat, KOLKATA.lng, 4).maxLat, 6);
   });
 
   it('admin broadcast filters driver locations by freshness and box in the query, not in JS', async () => {

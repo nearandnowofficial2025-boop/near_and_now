@@ -74,43 +74,46 @@ exports[`placeCheckoutOrder > returns the same order and writes the same payload
   "tip_amount": 0,
   "delivery_otp": "####"
  },
- "p_store_chunks": [
+ "p_items": [
   {
-   "store_id": "S2",
-   "subtotal": 100,
-   "delivery_fee": 0,
-   "items": [
-    {
-     "product_id": "p-s2-3",
-     "product_name": "Ghee",
-     "unit": null,
-     "image_url": null,
-     "unit_price": 100,
-     "quantity": 1
-    }
+   "master_product_id": "00000000-0000-4000-8000-000000000001",
+   "product_name": "Milk",
+   "unit": null,
+   "image_url": null,
+   "unit_price": 40,
+   "quantity": 2
+  },
+  {
+   "master_product_id": "00000000-0000-4000-8000-000000000002",
+   "product_name": "Rice (loose)",
+   "unit": null,
+   "image_url": null,
+   "unit_price": 25.5,
+   "quantity": 3
+  },
+  {
+   "master_product_id": "00000000-0000-4000-8000-000000000003",
+   "product_name": "Ghee",
+   "unit": null,
+   "image_url": null,
+   "unit_price": 100,
+   "quantity": 1
+  }
+ ],
+ "p_offers": [
+  {
+   "store_id": "S1",
+   "distance_km": 0.8,
+   "master_product_ids": [
+    "00000000-0000-4000-8000-000000000001",
+    "00000000-0000-4000-8000-000000000002"
    ]
   },
   {
-   "store_id": "S1",
-   "subtotal": 156.5,
-   "delivery_fee": 0,
-   "items": [
-    {
-     "product_id": "p-s1-1",
-     "product_name": "Milk",
-     "unit": null,
-     "image_url": null,
-     "unit_price": 40,
-     "quantity": 2
-    },
-    {
-     "product_id": "p-s1-2",
-     "product_name": "Rice (loose)",
-     "unit": null,
-     "image_url": null,
-     "unit_price": 25.5,
-     "quantity": 3
-    }
+   "store_id": "S2",
+   "distance_km": 2.1,
+   "master_product_ids": [
+    "00000000-0000-4000-8000-000000000003"
    ]
   }
  ]

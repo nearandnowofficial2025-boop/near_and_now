@@ -78,6 +78,8 @@ const TYPE_ICON: Record<string, IconComponent> = {
   system: AlertCircle,
   product_updated: Package,
   store_added: Package,
+  loose_price_flags: IndianRupee,
+  pincode_needs_region: AlertCircle,
   store_status_changed: Wifi,
   rider_status_changed: Wifi,
   document_uploaded: FileText,

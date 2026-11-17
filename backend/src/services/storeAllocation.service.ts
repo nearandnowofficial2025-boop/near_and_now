@@ -23,14 +23,13 @@ import { fetchAllRows } from '../utils/fetchAllRows.js';
 export const PLACEMENT_RADIUS_KM = 4;
 
 /**
- * How far a declined item may travel to find a second store before it is
- * written off as unavailable. Wider than the placement radius on purpose
- * (this value predates this module): a slightly longer pickup beats a refund.
- * Reallocation plans over every live store within this radius with the same
- * objective as placement — fewest stores, then shortest total distance — so a
- * far store only wins when it saves the rider a stop.
+ * How far a declined item may travel to find another store before it is
+ * written off as unavailable. 4 km, the same as placement: the product owner's
+ * rule (2026-11-17) while few stores are onboarded (it was 8 km). Reallocation
+ * plans over every live store within this radius — fewest stores, then
+ * shortest total distance.
  */
-export const REALLOCATION_MAX_RADIUS_KM = 8;
+export const REALLOCATION_MAX_RADIUS_KM = 4;
 
 /**
  * Live stores (active, approved, not deleted, with coordinates) whose distance

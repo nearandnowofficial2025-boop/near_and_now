@@ -4,6 +4,8 @@ import { paymentService } from '../services/payment.service.js';
 import { resolveOrderLine } from '../utils/quantity.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
+import { getLoosePricesNear } from '../services/loosePrices.service.js';
+import { PLACEMENT_RADIUS_KM } from '../services/storeAllocation.service.js';
 
 // The customer-facing confirmation screen's own countdown is 30s
 // (ADD_MORE_WINDOW_SECONDS in nearandnowcustomerapp); this is a server-side
@@ -15,8 +17,10 @@ const ADD_ITEMS_WINDOW_MS = 35_000;
 
 type SubmittedItem = { product_id?: string; quantity?: number; sell_by?: 'piece' };
 type TrustedItem = {
-  store_order_id: string;
-  product_id: string; // per-store products.id, not master_product_id
+  /** null: shops are still answering the order; the line waits with the others (2026-11-17). */
+  store_order_id: string | null;
+  product_id: string | null; // per-store products.id, not master_product_id (null while waiting)
+  master_product_id?: string;
   product_name: string;
   unit: string;
   image_url: string | null;
@@ -36,10 +40,75 @@ async function resolveTrustedItems(
   customerOrderId: string,
   submitted: SubmittedItem[]
 ): Promise<{ items: TrustedItem[]; error?: string }> {
-  const [{ data: storeOrders }, { data: allocations }] = await Promise.all([
+  const [{ data: storeOrders }, { data: allocations }, { data: openOffers, error: offersErr }, { data: orderRow }] = await Promise.all([
     supabaseAdmin.from('store_orders').select('id, store_id').eq('customer_order_id', customerOrderId),
     supabaseAdmin.from('order_store_allocations').select('store_id, status').eq('order_id', customerOrderId),
+    supabaseAdmin.from('order_store_offers').select('store_id, status').eq('order_id', customerOrderId).in('status', ['pending', 'accepted']),
+    supabaseAdmin.from('customer_orders').select('delivery_latitude, delivery_longitude').eq('id', customerOrderId).maybeSingle(),
   ]);
+  if (offersErr) throw offersErr;
+
+  const masterProductIds = [...new Set(submitted.map((it) => it.product_id).filter(Boolean))] as string[];
+  if (masterProductIds.length === 0) {
+    return { items: [], error: 'No items to add.' };
+  }
+  const { data: masterRows, error: masterError } = await supabaseAdmin
+    .from('master_products')
+    .select('id, name, unit, image_url, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g, is_active')
+    .in('id', masterProductIds);
+  if (masterError) throw new Error('Failed to verify product prices');
+  // Loose items: the customer pays the region price of the nearest shop that
+  // has them, the same price the app showed (daily loose prices, 2026-11-17).
+  let loosePrices = new Map<string, number>();
+  const lat = Number((orderRow as any)?.delivery_latitude);
+  const lng = Number((orderRow as any)?.delivery_longitude);
+  if ((masterRows ?? []).some((m: any) => m.is_loose) && Number.isFinite(lat) && Number.isFinite(lng)) {
+    loosePrices = await getLoosePricesNear(lat, lng, PLACEMENT_RADIUS_KM);
+  }
+  const masterById = new Map((masterRows ?? []).map((row: any) => {
+    const regionPrice = row.is_loose ? loosePrices.get(row.id) : undefined;
+    return [row.id, regionPrice != null ? { ...row, discounted_price: regionPrice } : row];
+  }));
+
+  // Shops are still answering: the add-on lines wait with the order's other
+  // lines and join the offers of shops that haven't answered yet and sell
+  // them (apply_order_addition_request). At least one such shop must sell
+  // each item, or the add-on is refused here, before any payment.
+  if ((openOffers ?? []).length) {
+    const askable = ((openOffers ?? []) as Array<{ store_id: string; status: string }>)
+      .filter((o) => o.status === 'pending').map((o) => o.store_id);
+    const { data: stocked, error: stockErr } = askable.length
+      ? await supabaseAdmin.from('products').select('master_product_id')
+        .in('store_id', askable).in('master_product_id', masterProductIds).eq('is_active', true).is('deleted_at', null)
+      : { data: [], error: null };
+    if (stockErr) throw new Error('Failed to verify product availability');
+    const sellable = new Set(((stocked ?? []) as Array<{ master_product_id: string }>).map((r) => r.master_product_id));
+    const items: TrustedItem[] = [];
+    for (const sub of submitted) {
+      const master = sub.product_id ? masterById.get(sub.product_id) : undefined;
+      if (!master || master.is_active === false) return { items: [], error: 'Product is no longer available.' };
+      if (!sellable.has(master.id)) {
+        return { items: [], error: `"${master.name}" can't be added now: the shops still answering this order don't sell it.` };
+      }
+      try {
+        const line = resolveOrderLine(master, sub, master.name);
+        items.push({
+          store_order_id: null,
+          product_id: null,
+          master_product_id: master.id,
+          product_name: master.name,
+          unit: line.unit ?? master.unit,
+          image_url: master.image_url ?? null,
+          unit_price: line.unitPrice,
+          quantity: line.quantity,
+          subtotal: line.unitPrice * line.quantity,
+        });
+      } catch (err: any) {
+        return { items: [], error: err?.message || `Invalid quantity for "${master.name}".` };
+      }
+    }
+    return { items };
+  }
 
   // Only stores still part of the order can take more items: a store that
   // declined (or timed out) has its allocation 'rejected' and its row closed,
@@ -59,11 +128,6 @@ async function resolveTrustedItems(
     return { items: [], error: 'This order has no stores to add items to.' };
   }
 
-  const masterProductIds = [...new Set(submitted.map((it) => it.product_id).filter(Boolean))] as string[];
-  if (masterProductIds.length === 0) {
-    return { items: [], error: 'No items to add.' };
-  }
-
   const { data: productRows, error: productsError } = await supabaseAdmin
     .from('products')
     .select('id, store_id, master_product_id')
@@ -71,13 +135,6 @@ async function resolveTrustedItems(
     .in('master_product_id', masterProductIds)
     .eq('is_active', true);
   if (productsError) throw new Error('Failed to verify product availability');
-
-  const { data: masterRows, error: masterError } = await supabaseAdmin
-    .from('master_products')
-    .select('id, name, unit, image_url, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g')
-    .in('id', masterProductIds);
-  if (masterError) throw new Error('Failed to verify product prices');
-  const masterById = new Map((masterRows ?? []).map((row: any) => [row.id, row]));
 
   // Prefer a store this order already has more items from, so an item
   // available at more than one of the order's stores doesn't get assigned to
@@ -420,20 +477,33 @@ export async function settleAdditionFromWebhook(
 }
 
 async function notifyStoresOfAddedItems(orderId: string, items: TrustedItem[]) {
-  const storeOrderIds = [...new Set(items.map((it) => it.store_order_id).filter(Boolean))];
-  if (!storeOrderIds.length) return;
-  const [{ data: storeOrders }, { data: order }] = await Promise.all([
-    supabaseAdmin.from('store_orders').select('id, store_id').in('id', storeOrderIds),
+  const storeOrderIds = [...new Set(items.map((it) => it.store_order_id).filter((id): id is string => !!id))];
+  const waitingCount = items.filter((it) => !it.store_order_id).length;
+  if (!storeOrderIds.length && !waitingCount) return;
+  const [{ data: storeOrders }, { data: order }, { data: pendingOffers }] = await Promise.all([
+    storeOrderIds.length
+      ? supabaseAdmin.from('store_orders').select('id, store_id').in('id', storeOrderIds)
+      : Promise.resolve({ data: [] as any[] }),
     supabaseAdmin.from('customer_orders').select('order_code').eq('id', orderId).maybeSingle(),
+    // Lines added while shops are still answering went onto their offers.
+    waitingCount
+      ? supabaseAdmin.from('order_store_offers').select('store_id').eq('order_id', orderId).eq('status', 'pending')
+      : Promise.resolve({ data: [] as any[] }),
   ]);
   const countByStoreOrder = new Map<string, number>();
-  for (const it of items) countByStoreOrder.set(it.store_order_id, (countByStoreOrder.get(it.store_order_id) ?? 0) + 1);
+  for (const it of items) {
+    if (it.store_order_id) countByStoreOrder.set(it.store_order_id, (countByStoreOrder.get(it.store_order_id) ?? 0) + 1);
+  }
+  const code = (order as any)?.order_code || orderId;
   const { notificationService } = await import('../services/notification.service.js');
-  await Promise.all(
-    ((storeOrders ?? []) as Array<{ id: string; store_id: string }>).map((so) =>
-      notificationService.notifyShopkeeperItemsAdded(so.store_id, orderId, (order as any)?.order_code || orderId, countByStoreOrder.get(so.id) ?? 0)
-    )
-  );
+  await Promise.all([
+    ...((storeOrders ?? []) as Array<{ id: string; store_id: string }>).map((so) =>
+      notificationService.notifyShopkeeperItemsAdded(so.store_id, orderId, code, countByStoreOrder.get(so.id) ?? 0)
+    ),
+    ...((pendingOffers ?? []) as Array<{ store_id: string }>).map((o) =>
+      notificationService.notifyShopkeeperItemsAdded(o.store_id, orderId, code, waitingCount)
+    ),
+  ]);
 }
 
 /**

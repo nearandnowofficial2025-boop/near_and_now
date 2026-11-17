@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { ShopkeeperController, requireShopkeeper, requireShopkeeperAuth } from '../controllers/shopkeeper.controller.js';
 import { submitProductSubmission, listMyProductSubmissions } from '../controllers/productSubmissions.controller.js';
+import { getShopLoosePrices, saveShopLoosePrice, submitShopLoosePrices } from '../controllers/loosePrices.controller.js';
 
 const router = Router();
 const ctrl = new ShopkeeperController();
@@ -22,5 +23,10 @@ router.post('/allocations/:allocationId/reject',     requireShopkeeper, ctrl.rej
 // directly to master_products (see backend/src/controllers/productSubmissions.controller.ts).
 router.post('/product-submissions', requireShopkeeper, submitProductSubmission);
 router.get('/product-submissions',  requireShopkeeper, listMyProductSubmissions);
+
+// Daily loose prices (2026-11-17): set tomorrow's prices until the cut-off.
+router.get('/loose-prices',                            requireShopkeeper, getShopLoosePrices);
+router.post('/loose-prices/items/:masterProductId',    requireShopkeeper, saveShopLoosePrice);
+router.post('/loose-prices/submit',                    requireShopkeeper, submitShopLoosePrices);
 
 export default router;

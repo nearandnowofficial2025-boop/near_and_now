@@ -16,6 +16,11 @@ export function getNotificationLink(type: string, data: Record<string, any> | nu
       return d.user_id ? `/customers/${d.user_id}` : '/customers';
     case 'product_updated':
       return d.product_id ? `/products/edit/${d.product_id}` : '/products';
+    // Daily loose prices (2026-11-17): flagged prices at the cut-off, and a
+    // shop in a pincode no price region covers yet.
+    case 'loose_price_flags':
+    case 'pincode_needs_region':
+      return '/loose-prices';
     case 'verification_submitted':
     case 'store_added':
     case 'document_uploaded':

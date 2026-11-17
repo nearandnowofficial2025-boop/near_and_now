@@ -4,6 +4,8 @@ import { supabaseAdmin } from '../config/database.js';
 import { verifySignupTicket } from '../utils/signupTicket.js';
 import { fileMatchesDeclaredExt } from '../utils/fileSignature.js';
 import { sendError } from '../utils/httpError.js';
+import { runInBackground } from '../utils/background.js';
+import { alertIfPincodeUnassigned } from '../services/loosePrices.service.js';
 import { selectStoreBillingRow } from '../utils/storeBilling.js';
 import { createImageUploadUrl } from '../services/imageUploadUrls.js';
 import {
@@ -379,6 +381,21 @@ export async function updateProductActiveState(req: Request, res: Response) {
  * Complete shopkeeper registration after OTP verification.
  * Inserts app_users with role 'shopkeeper'.
  */
+const PINCODE_RE = /^[1-9]\d{5}$/;
+
+/**
+ * The shop's pincode (it decides the shop's loose price region, 2026-11-17):
+ * the one entered at sign-up, else the last six-digit number in the address
+ * (app builds before that don't send one). `invalid` when one was entered but
+ * isn't six digits.
+ */
+function storePincode(given: unknown, address: string | null): { pincode: string | null; invalid: boolean } {
+  const g = typeof given === 'string' || typeof given === 'number' ? String(given).trim() : '';
+  if (g) return PINCODE_RE.test(g) ? { pincode: g, invalid: false } : { pincode: null, invalid: true };
+  const all = (address ?? '').match(/\b[1-9]\d{5}\b/g);
+  return { pincode: all ? all[all.length - 1] : null, invalid: false };
+}
+
 export async function signupComplete(req: Request, res: Response) {
   try {
     const {
@@ -392,7 +409,8 @@ export async function signupComplete(req: Request, res: Response) {
       owner_email,
       latitude,
       longitude,
-      signupTicket
+      signupTicket,
+      pincode: pincodeInput
     } = req.body;
 
     if (!phone || !ownerName || !storeName) {
@@ -412,6 +430,10 @@ export async function signupComplete(req: Request, res: Response) {
     const name = String(ownerName).trim();
     const storeNameTrim = String(storeName).trim();
     const address = storeAddress ? String(storeAddress).trim() : null;
+    const pin = storePincode(pincodeInput, address);
+    if (pin.invalid) {
+      return res.status(400).json({ success: false, error: 'Pincode must be 6 digits' });
+    }
     void radiusKm;
     const lat = latitude != null ? Number(latitude) : null;
     const lng = longitude != null ? Number(longitude) : null;
@@ -444,6 +466,7 @@ export async function signupComplete(req: Request, res: Response) {
         name: storeNameTrim,
         phone,
         address: address || '',
+        pincode: pin.pincode,
         latitude: lat ?? 0,
         longitude: lng ?? 0,
         is_active: false  // Start offline - shopkeeper must go online manually
@@ -454,6 +477,8 @@ export async function signupComplete(req: Request, res: Response) {
       await supabaseAdmin.from('app_users').delete().eq('id', newUser.id);
       return sendError(res, 'storeOwner.signupComplete', describeSignupDbError('store', storeError), storeError, undefined, { success: false });
     }
+    // A pincode in no price region yet: admin is told to add it to one.
+    if (pin.pincode) runInBackground('[signup] pincode region check', () => alertIfPincodeUnassigned(pin.pincode!));
 
     const token = crypto.randomUUID();
     const { password_hash: _, ...userWithoutPassword } = newUser;
@@ -505,9 +530,13 @@ export async function createStore(req: Request, res: Response) {
     // so it comes from the owner's existing store / account, never the body.
     // A different number goes through the profile-change review like any
     // other store's.
-    const { name, address, latitude, longitude } = (req.body ?? {}) as Record<string, unknown>;
+    const { name, address, latitude, longitude, pincode: pincodeInput } = (req.body ?? {}) as Record<string, unknown>;
     const storeName = typeof name === 'string' ? name.trim() : '';
     const storeAddress = typeof address === 'string' ? address.trim() : '';
+    const pin = storePincode(pincodeInput, storeAddress);
+    if (pin.invalid) {
+      return res.status(400).json({ success: false, error: 'Pincode must be 6 digits' });
+    }
     const lat = Number(latitude);
     const lng = Number(longitude);
 
@@ -553,6 +582,7 @@ export async function createStore(req: Request, res: Response) {
         owner_id: userId,
         name: storeName,
         address: storeAddress,
+        pincode: pin.pincode,
         phone: storePhone,
         latitude: lat,
         longitude: lng,
@@ -564,6 +594,7 @@ export async function createStore(req: Request, res: Response) {
       .select('*')
       .single();
     if (insertErr) throw insertErr;
+    if (pin.pincode) runInBackground('[createStore] pincode region check', () => alertIfPincodeUnassigned(pin.pincode!));
 
     await notifyAdmins(
       'store_added',

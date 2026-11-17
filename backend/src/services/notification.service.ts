@@ -131,7 +131,9 @@ export class NotificationService {
     title: string,
     body: string,
     data: object = {},
-    sound: string = 'default'
+    sound: string = 'default',
+    /** Android channel. null = the app's standard channel (no order chime). */
+    channelId: string | null = ORDER_ALERT_CHANNEL_ID
   ): Promise<BatchPushResult> {
     const result: BatchPushResult = { sent: 0, failed: 0, errors: [] };
     if (!recipients.length) return result;
@@ -155,7 +157,7 @@ export class NotificationService {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(chunk.map((r) => ({
-            to: r.token, sound, title, body, data, channelId: ORDER_ALERT_CHANNEL_ID,
+            to: r.token, sound, title, body, data, ...(channelId ? { channelId } : {}),
           }))),
         }, UPSTREAM_TIMEOUTS_MS.expoPush);
         // Request-level failure (bad payload, Expo-side 4xx/5xx): no tickets at all.
@@ -323,6 +325,31 @@ export class NotificationService {
       if ((count ?? 0) > 1) atStore = ` at ${store.name}`;
     }
     return { store, atStore };
+  }
+
+  /**
+   * One informational message to many shops (loose prices): an in-app row per
+   * store in one insert, then one batched push on the standard channel (not
+   * the order chime). Never throws.
+   */
+  async notifyStoresGeneral(storeIds: string[], type: string, title: string, message: string, data: object = {}) {
+    const ids = [...new Set(storeIds)];
+    if (!ids.length) return;
+    try {
+      const { error: insertErr } = await supabaseAdmin.from('notifications').insert(
+        ids.map((id) => ({ recipient_type: 'store', recipient_id: id, type, title, message, data: { ...data, storeId: id } }))
+      );
+      if (insertErr) console.error('notifyStoresGeneral: failed to persist notifications:', insertErr);
+      const { data: stores, error } = await supabaseAdmin
+        .from('stores').select('id, expo_push_token').in('id', ids).not('expo_push_token', 'is', null);
+      if (error) throw error;
+      const recipients = ((stores ?? []) as Array<{ id: string; expo_push_token: string }>)
+        .filter((s) => s.expo_push_token?.startsWith('ExponentPushToken'))
+        .map((s) => ({ token: s.expo_push_token, staleTokenTarget: { table: 'stores' as const, idColumn: 'id', idValue: s.id } }));
+      if (recipients.length) await this.sendExpoPushBatch(recipients, title, message, { ...data, type }, 'default', null);
+    } catch (err) {
+      console.error('notifyStoresGeneral failed:', err);
+    }
   }
 
   async notifyShopkeeperNewOrder(storeId: string, orderId: string, orderCode: string) {

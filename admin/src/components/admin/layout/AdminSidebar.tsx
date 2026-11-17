@@ -99,6 +99,7 @@ const NAV_SECTIONS: NavSection[] = [
           // /stores/products and /stores/:storeId/products are catalog views,
           // not the Stores list — they light this entry only.
           { title: 'Store inventory', path: '/stores/products', patterns: ['/stores/:storeId/products'] },
+          { title: 'Loose prices', path: '/loose-prices' },
           { title: 'Product submissions', path: '/products/submissions' },
           { title: 'Reviews', path: '/products/reviews' },
         ],

@@ -870,8 +870,22 @@ const ORDER_SELECT = `
       unit_price,
       quantity
     )
+  ),
+  unassigned_items:order_items!order_items_customer_order_id_fkey (
+    id,
+    product_id,
+    product_name,
+    unit,
+    image_url,
+    unit_price,
+    quantity
   )
 `;
+// Lines with no store yet (2026-11-17: an order is offered to every nearby
+// store at once, so its lines wait without a store until one accepts; lines
+// nobody accepted are written off without ever getting one). Only those are
+// embedded a second time: every ORDER_SELECT query adds this filter.
+const UNASSIGNED_ONLY = ['unassigned_items.store_order_id', null] as const;
 
 // Shared order_items -> OrderItem mapping for every order read (list, scoped
 // and single), so the item shape cannot drift between them.
@@ -942,6 +956,10 @@ async function transformCustomerOrderRows(customerOrders: CustomerOrderRow[]): P
       const orderStoreIds = new Set<string>();
       let deliveryPartnerId: string | null = null;
 
+      // Lines still waiting for a store (or written off before any took them).
+      const unassigned = ((co as any).unassigned_items || []) as any[];
+      allItems.push(...unassigned);
+      itemsCount += unassigned.length;
       (co.store_orders || []).forEach((so: any) => {
         if (so.order_items) {
           allItems.push(...so.order_items);
@@ -992,6 +1010,7 @@ export async function getOrders(): Promise<Order[]> {
     const { data: customerOrders, error } = await getAdminClient()
       .from('customer_orders')
       .select(ORDER_SELECT)
+      .is(...UNASSIGNED_ONLY)
       .order('placed_at', { ascending: false });
 
     if (error) {
@@ -1025,6 +1044,7 @@ export async function getOrdersSince(days: number): Promise<Order[]> {
     const { data: customerOrders, error } = await getAdminClient()
       .from('customer_orders')
       .select(ORDER_SELECT)
+      .is(...UNASSIGNED_ONLY)
       .gte('placed_at', cutoff.toISOString())
       .order('placed_at', { ascending: false });
 
@@ -1060,6 +1080,7 @@ export async function getDashboardOrdersData(days: number): Promise<DashboardOrd
       getAdminClient()
         .from('customer_orders')
         .select(ORDER_SELECT)
+      .is(...UNASSIGNED_ONLY)
         .gte('placed_at', cutoff.toISOString())
         .order('placed_at', { ascending: false })
         .limit(5),
@@ -1091,6 +1112,7 @@ export async function getOrdersByCustomerId(customerId: string): Promise<Order[]
     const { data: customerOrders, error } = await getAdminClient()
       .from('customer_orders')
       .select(ORDER_SELECT)
+      .is(...UNASSIGNED_ONLY)
       .eq('customer_id', customerId)
       .order('placed_at', { ascending: false });
 
@@ -1138,6 +1160,7 @@ export async function getOrdersPaginated(options: {
     let query = getAdminClient()
       .from('customer_orders')
       .select(ORDER_SELECT, { count: 'exact' })
+      .is(...UNASSIGNED_ONLY)
       .order('placed_at', { ascending: false });
 
     if (status && status !== 'All') {
@@ -1209,6 +1232,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
     const { data: customerOrder, error } = await getAdminClient()
       .from('customer_orders')
       .select(ORDER_SELECT)
+      .is(...UNASSIGNED_ONLY)
       .eq('id', id)
       .single();
 
@@ -1226,6 +1250,10 @@ export async function getOrderById(id: string): Promise<Order | null> {
     const orderStoreIds = new Set<string>();
     let deliveryPartnerId: string | null = null;
 
+    // Lines still waiting for a store (or written off before any took them).
+    const unassigned = ((customerOrder as any).unassigned_items || []) as any[];
+    allItems.push(...unassigned);
+    itemsCount += unassigned.length;
     (customerOrder.store_orders || []).forEach((so: any) => {
       if (so.order_items) {
         allItems.push(...so.order_items);

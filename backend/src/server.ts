@@ -37,6 +37,8 @@ import adminSupportMessagesRoutes from './routes/adminSupportMessages.routes.js'
 import adminRiderPayoutsRoutes from './routes/adminRiderPayouts.routes.js';
 import adminCodCollectionsRoutes from './routes/adminCodCollections.routes.js';
 import adminStorePayoutsRoutes from './routes/adminStorePayouts.routes.js';
+import adminLoosePricesRoutes from './routes/adminLoosePrices.routes.js';
+import internalRoutes from './routes/internal.routes.js';
 import adminSecurityLogRoutes from './routes/adminSecurityLog.routes.js';
 import walletRoutes from './routes/wallet.routes.js';
 import reviewsRoutes from './routes/reviews.routes.js';
@@ -177,6 +179,8 @@ app.use('/api/admin', adminProductImagesRoutes);
 app.use('/api/admin', adminSupportMessagesRoutes);
 app.use('/api/admin', adminRiderPayoutsRoutes);
 app.use('/api/admin', adminCodCollectionsRoutes);
+app.use('/api/admin', adminLoosePricesRoutes);
+app.use('/api/internal', internalRoutes);
 app.use('/api/admin', adminStorePayoutsRoutes);
 app.use('/api/admin', adminSecurityLogRoutes);
 app.use('/api/admin', adminReviewsRoutes);

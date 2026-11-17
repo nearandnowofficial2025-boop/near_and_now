@@ -9,6 +9,7 @@ import { planAllocation } from '../services/allocationPlanner.js';
 import { fetchCandidateStores, fetchStoreStock, REALLOCATION_MAX_RADIUS_KM, withOrderLock } from '../services/storeAllocation.service.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
+import { runLooseDailyJobs } from '../services/loosePrices.service.js';
 
 declare module 'express' {
   interface Request {
@@ -179,35 +180,68 @@ export class ShopkeeperController {
 
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const { data: allocations, error } = await supabaseAdmin
-        .from('order_store_allocations')
-        .select('id, order_id, store_id, sequence_number, pickup_code, status, accepted_item_ids, accepted_at, created_at')
-        .in('store_id', storeIds)
-        .in('status', statuses)
-        .gte('created_at', sevenDaysAgo)
-        .order('created_at', { ascending: false });
+      // Offers (orders from 2026-11-17, every nearby shop asked at once) are
+      // listed alongside allocations in the same shape. An offer this shop won
+      // is not listed: its allocation is the shop's order from then on.
+      // ?active=true also returns offers another shop took in the last 2
+      // minutes as alloc_status 'taken', so the app can say "Taken by another
+      // shop" once (app builds before 2026-11-17 ignore that status).
+      const offerStatuses =
+        active === 'true' ? ['pending', 'accepted', 'lost'] :
+        history === 'true' ? ['declined', 'lost', 'expired'] :
+        ['pending', 'accepted', 'declined', 'lost', 'expired'];
+      const takenSince = new Date(Date.now() - 2 * 60_000).toISOString();
+
+      const [{ data: allocationRows, error }, { data: offerRows, error: offersError }] = await Promise.all([
+        supabaseAdmin
+          .from('order_store_allocations')
+          .select('id, order_id, store_id, sequence_number, pickup_code, status, accepted_item_ids, accepted_at, created_at')
+          .in('store_id', storeIds)
+          .in('status', statuses)
+          .gte('created_at', sevenDaysAgo)
+          .order('created_at', { ascending: false }),
+        (() => {
+          const q = supabaseAdmin
+            .from('order_store_offers')
+            .select('id, order_id, store_id, distance_km, offered_item_ids, status, accepted_item_ids, visible_at, responded_at, resolved_at, created_at')
+            .in('store_id', storeIds)
+            .in('status', offerStatuses)
+            .not('visible_at', 'is', null)
+            .gte('created_at', sevenDaysAgo);
+          return (active === 'true'
+            ? q.or(`status.in.(pending,accepted),resolved_at.gt.${takenSince}`)
+            : q
+          ).order('created_at', { ascending: false });
+        })(),
+      ]);
 
       if (error) {
         console.error('shopkeeper getIncomingOrders — allocation query failed:', JSON.stringify(error));
         throw error;
       }
-      if (!allocations?.length) return res.json({ success: true, orders: [] });
+      if (offersError) throw offersError;
+      const allocations = allocationRows ?? [];
+      const offers = (offerRows ?? []) as any[];
+      if (!allocations.length && !offers.length) return res.json({ success: true, orders: [] });
 
-      const orderIds = [...new Set(allocations.map((a: any) => a.order_id))];
+      const orderIds = [...new Set([...allocations.map((a: any) => a.order_id), ...offers.map((o) => o.order_id)])];
+      const offeredItemIds = [...new Set(offers.flatMap((o) => (o.offered_item_ids ?? []) as string[]))];
       // Payment times are only needed for offered_at on pending allocations,
       // so the usual poll (nothing waiting) costs no extra query.
       const pendingOrderIds = [...new Set(
         allocations.filter((a: any) => a.status === 'pending_acceptance').map((a: any) => a.order_id)
       )];
 
-      const [{ data: orders }, { data: items }, { data: storeRows }, { data: payments }] = await Promise.all([
+      const [{ data: orders }, { data: items }, { data: storeRows }, { data: payments }, { data: offerItems }] = await Promise.all([
         supabaseAdmin.from('customer_orders')
           .select('id, order_code, status, total_amount, delivery_address, delivery_latitude, delivery_longitude, placed_at, receiver_name, receiver_phone, receiver_address, payment_status, payment_method, updated_at')
           .in('id', orderIds),
-        supabaseAdmin.from('order_items')
-          .select('id, customer_order_id, product_name, quantity, unit, unit_price, image_url, item_status, assigned_store_id')
-          .in('customer_order_id', orderIds)
-          .in('assigned_store_id', storeIds),
+        allocations.length
+          ? supabaseAdmin.from('order_items')
+            .select('id, customer_order_id, product_name, quantity, unit, unit_price, image_url, item_status, assigned_store_id')
+            .in('customer_order_id', orderIds)
+            .in('assigned_store_id', storeIds)
+          : Promise.resolve({ data: [] as any[] }),
         supabaseAdmin.from('stores')
           .select('id, name, latitude, longitude')
           .in('id', storeIds),
@@ -215,6 +249,11 @@ export class ShopkeeperController {
           ? supabaseAdmin.from('customer_payments')
             .select('customer_order_id, paid_at')
             .in('customer_order_id', pendingOrderIds)
+          : Promise.resolve({ data: [] as any[] }),
+        offeredItemIds.length
+          ? supabaseAdmin.from('order_items')
+            .select('id, customer_order_id, product_name, quantity, unit, unit_price, image_url, item_status, assigned_store_id')
+            .in('id', offeredItemIds)
           : Promise.resolve({ data: [] as any[] }),
       ]);
 
@@ -281,7 +320,54 @@ export class ShopkeeperController {
         };
       });
 
-      res.json({ success: true, orders: result });
+      // Offers in the same shape. alloc_status: 'pending_acceptance' (answer
+      // now; the app rings), 'held' (answered, waiting for the outcome: app
+      // builds before 2026-11-17 don't list it), 'rejected' (history; the new
+      // app reads offer_status: lost = "Taken by another shop").
+      const offerItemsById = new Map(((offerItems ?? []) as any[]).map((i) => [i.id as string, i]));
+      const offerEntries = offers
+        .map((o) => {
+          const order = orderMap[o.order_id] || {};
+          const live = REALLOCATABLE_ORDER_STATUSES.has(String(order.status));
+          if (!live && (o.status === 'pending' || o.status === 'accepted')) {
+            if (active === 'true') return null; // the order was cancelled while shops were answering
+          }
+          const allocStatus =
+            !live && (o.status === 'pending' || o.status === 'accepted') ? 'cancelled' :
+            o.status === 'pending' ? 'pending_acceptance' :
+            o.status === 'accepted' ? 'held' :
+            o.status === 'lost' && active === 'true' ? 'taken' : 'rejected';
+          return {
+            allocation_id: o.id,
+            order_id: o.order_id,
+            store_id: o.store_id,
+            store_name: storeCoordsMap[o.store_id]?.name ?? null,
+            order_code: order.order_code,
+            alloc_status: allocStatus,
+            offer_status: o.status,
+            is_offer: true,
+            sequence_number: null,
+            pickup_code: null,
+            accepted_item_ids: o.accepted_item_ids || [],
+            customer_area: order.delivery_address,
+            customer_distance: o.distance_km != null ? `${Number(o.distance_km).toFixed(1)} km` : null,
+            placed_at: order.placed_at,
+            offered_at: o.status === 'pending' ? o.visible_at : null,
+            receiver_name: order.receiver_name || null,
+            receiver_phone: order.receiver_phone || null,
+            receiver_address: order.receiver_address || null,
+            items: ((o.offered_item_ids ?? []) as string[]).map((id) => offerItemsById.get(id)).filter(Boolean),
+            accepted_at: o.responded_at,
+            created_at: o.created_at,
+          };
+        })
+        .filter((e): e is NonNullable<typeof e> => !!e && isPaymentReady(orderMap[e.order_id] || {}));
+
+      const merged = offerEntries.length
+        ? [...result, ...offerEntries].sort((a: any, b: any) => Date.parse(b.placed_at ?? 0) - Date.parse(a.placed_at ?? 0))
+        : result;
+
+      res.json({ success: true, orders: merged });
     } catch (err) {
       return sendError(res, 'ShopkeeperController.getIncomingOrders', 'Could not load the orders', err);
     }
@@ -346,12 +432,20 @@ export class ShopkeeperController {
         return res.status(400).json({ error: 'Select at least one item to accept' });
       }
 
-      const { data: alloc } = await supabaseAdmin
-        .from('order_store_allocations')
-        .select('id, order_id, store_id, status')
-        .eq('id', allocationId)
-        .in('store_id', req.shopkeeperStoreIds!)
-        .maybeSingle();
+      // The id is an offer (orders from 2026-11-17: every nearby shop asked
+      // at once) or an allocation (older orders, reallocation, add-ons).
+      const [{ data: alloc }, isOffer] = await Promise.all([
+        supabaseAdmin
+          .from('order_store_allocations')
+          .select('id, order_id, store_id, status')
+          .eq('id', allocationId)
+          .in('store_id', req.shopkeeperStoreIds!)
+          .maybeSingle(),
+        findOwnOffer(allocationId, req.shopkeeperStoreIds!),
+      ]);
+      if (isOffer) {
+        return respondToOffer(req, res, allocationId, accepted_item_ids.filter((id): id is string => typeof id === 'string'));
+      }
 
       if (!alloc) return res.status(404).json({ error: 'Allocation not found' });
       if (alloc.status !== 'pending_acceptance') {
@@ -550,12 +644,17 @@ export class ShopkeeperController {
     try {
       const { allocationId } = req.params;
 
-      const { data: alloc } = await supabaseAdmin
-        .from('order_store_allocations')
-        .select('id, order_id, store_id, status')
-        .eq('id', allocationId)
-        .in('store_id', req.shopkeeperStoreIds!)
-        .maybeSingle();
+      const [{ data: alloc }, isOffer] = await Promise.all([
+        supabaseAdmin
+          .from('order_store_allocations')
+          .select('id, order_id, store_id, status')
+          .eq('id', allocationId)
+          .in('store_id', req.shopkeeperStoreIds!)
+          .maybeSingle(),
+        findOwnOffer(allocationId, req.shopkeeperStoreIds!),
+      ]);
+      // Declining an offer = answering it with no items.
+      if (isOffer) return respondToOffer(req, res, allocationId, []);
 
       if (!alloc) return res.status(404).json({ error: 'Allocation not found' });
       if (alloc.status !== 'pending_acceptance') return res.status(409).json({ error: 'Already responded' });
@@ -644,7 +743,7 @@ export async function expireStaleAllocations(orderId: string, customerId: string
   if (!isOrderPaymentReady(order as any)) return;
   if (!REALLOCATABLE_ORDER_STATUSES.has((order as any).status)) return;
 
-  await expireStaleAllocationsForOrder(orderId);
+  await Promise.all([expireStaleAllocationsForOrder(orderId), resolveOrderOffersIfDue(orderId)]);
 }
 
 // No ownership/payment check here — callers (expireStaleAllocations after its
@@ -990,12 +1089,12 @@ async function reallocateMissingItemsLocked(orderId: string, itemIds: string[]) 
   // an earlier run that already placed some of them.
   const { data: waitingRows, error: itemsErr } = await supabaseAdmin
     .from('order_items')
-    .select('id, product_id')
+    .select('id, product_id, master_product_id')
     .in('id', itemIds)
     .is('assigned_store_id', null)
     .neq('item_status', 'unavailable');
   if (itemsErr) throw itemsErr;
-  const waiting = (waitingRows || []) as Array<{ id: string; product_id: string | null }>;
+  const waiting = (waitingRows || []) as Array<{ id: string; product_id: string | null; master_product_id: string | null }>;
   if (!waiting.length) {
     await settleOrderAfterReallocation(orderId);
     return;
@@ -1005,7 +1104,11 @@ async function reallocateMissingItemsLocked(orderId: string, itemIds: string[]) 
   // its master product, which is what other stores are matched on.
   // product_id is NULL once the product was deleted from the catalogue;
   // such an item can't be matched anywhere and is written off below.
-  const waitingProductIds = [...new Set(waiting.map((i) => i.product_id).filter((id): id is string => !!id))];
+  // Lines carry their master since 2026-11-17; older ones resolve it from the
+  // store's products row.
+  const waitingProductIds = [...new Set(
+    waiting.filter((i) => !i.master_product_id).map((i) => i.product_id).filter((id): id is string => !!id)
+  )];
   const { data: productRows, error: productsErr } = waitingProductIds.length
     ? await supabaseAdmin.from('products').select('id, master_product_id').in('id', waitingProductIds)
     : { data: [], error: null };
@@ -1017,7 +1120,7 @@ async function reallocateMissingItemsLocked(orderId: string, itemIds: string[]) 
   const planItems: Array<{ key: string; masterProductId: string }> = [];
   const unresolvable: string[] = [];
   for (const it of waiting) {
-    const master = it.product_id ? masterByProduct.get(it.product_id) : undefined;
+    const master = it.master_product_id ?? (it.product_id ? masterByProduct.get(it.product_id) : undefined);
     if (master) planItems.push({ key: it.id, masterProductId: master });
     else unresolvable.push(it.id); // product row gone — nothing to match on
   }
@@ -1025,12 +1128,18 @@ async function reallocateMissingItemsLocked(orderId: string, itemIds: string[]) 
   // Every store that has ever had an allocation on this order is out: a store
   // that declined is not asked again, and UNIQUE(order_id, store_id) forbids a
   // second row anyway.
-  const { data: existingAllocs, error: allocsErr } = await supabaseAdmin
-    .from('order_store_allocations')
-    .select('store_id')
-    .eq('order_id', orderId);
+  // Shops that already had an offer for this order (and declined, lost, or
+  // let it expire) are not asked again either.
+  const [{ data: existingAllocs, error: allocsErr }, { data: offerStores, error: offerStoresErr }] = await Promise.all([
+    supabaseAdmin.from('order_store_allocations').select('store_id').eq('order_id', orderId),
+    supabaseAdmin.from('order_store_offers').select('store_id').eq('order_id', orderId),
+  ]);
   if (allocsErr) throw allocsErr;
-  const usedStoreIds = new Set<string>((existingAllocs || []).map((a: any) => a.store_id as string));
+  if (offerStoresErr) throw offerStoresErr;
+  const usedStoreIds = new Set<string>([
+    ...(existingAllocs || []).map((a: any) => a.store_id as string),
+    ...(offerStores || []).map((o: any) => o.store_id as string),
+  ]);
 
   let remaining = planItems;
   const lat = Number((order as any).delivery_latitude);
@@ -1156,6 +1265,119 @@ async function settleOrderAfterReallocation(orderId: string) {
   }
 }
 
+// ── Offers: every nearby shop is asked at once (2026-11-17) ───────────────────
+
+/** How long shops have to answer an order, from when they could first see it. */
+export const OFFER_WINDOW_SECONDS = STALE_ALLOCATION_MS / 1000;
+
+type OfferResolution = {
+  state: 'waiting' | 'won' | 'resolved' | 'nothing' | 'inactive';
+  order_id: string;
+  assigned?: Array<{ store_id: string; allocation_id: string; store_order_id: string; pickup_code: string; item_ids: string[] }>;
+  unplaced_item_ids?: string[];
+  lost_store_ids?: string[];
+  expired_store_ids?: string[];
+  my_store_id?: string;
+  my_status?: string;
+  my_accepted?: number;
+};
+
+/**
+ * After the database decided who gets an order (respond_to_order_offer /
+ * resolve_order_offers): write off what nobody accepted (refund, or off the
+ * cash bill), tell the customer, and dispatch the order to riders, or cancel
+ * it if no shop took anything. Nothing to do while shops are still answering.
+ */
+async function afterOfferResolution(r: OfferResolution) {
+  if (r.state !== 'won' && r.state !== 'resolved') return;
+  const orderId = r.order_id;
+  await withOrderLock(orderId, async () => {
+    if (r.unplaced_item_ids?.length) await flagUnresolvableItemsForRefund(orderId, r.unplaced_item_ids);
+    if (r.assigned?.length) {
+      runInBackground('order_confirmed notification', () => notificationService.sendOrderNotification(orderId, 'order_confirmed'));
+    }
+    await settleOrderAfterReallocation(orderId);
+  });
+}
+
+/** Database rule error → HTTP answer for the shop. */
+function offerErrorResponse(res: Response, err: { message?: string }) {
+  const msg = String(err?.message ?? '');
+  if (msg.includes('OFFER_NOT_FOUND')) return res.status(404).json({ error: 'Order not found' });
+  const already = msg.match(/ALREADY_RESPONDED:(\w+)/);
+  if (already) {
+    const status = already[1];
+    return res.status(409).json({
+      error: status === 'lost' ? 'Another shop took this order.' : status === 'expired' ? 'This order is no longer waiting for an answer.' : 'Already responded',
+      offer_status: status,
+    });
+  }
+  if (msg.includes('ORDER_NOT_ACTIVE')) return res.status(409).json({ error: 'This order is no longer active.' });
+  if (msg.includes('STORE_NOT_AVAILABLE')) return res.status(403).json({ error: 'This store is not currently approved to accept orders.' });
+  if (msg.includes('OFFER_NOT_VISIBLE')) return res.status(409).json({ error: 'Payment has not been completed for this order yet.' });
+  return null;
+}
+
+/**
+ * A shop answers an offer (accept some/all items, or decline with none).
+ * Returns the response it sent, or null when `offerId` isn't one of this
+ * shop's offers (the caller then treats the id as an allocation).
+ */
+async function respondToOffer(req: Request, res: Response, offerId: string, acceptedItemIds: string[]) {
+  const { data, error } = await supabaseAdmin.rpc('respond_to_order_offer', {
+    p_offer_id: offerId,
+    p_store_ids: req.shopkeeperStoreIds!,
+    p_accepted_item_ids: acceptedItemIds,
+    p_window_seconds: OFFER_WINDOW_SECONDS,
+  });
+  if (error) {
+    const sent = offerErrorResponse(res, error);
+    if (sent) return sent;
+    throw error;
+  }
+  const r = data as OfferResolution;
+  // Settling (write-offs, dispatch) runs after the answer; the shop needn't wait.
+  runInBackground('afterOfferResolution', () => afterOfferResolution(r));
+  const mine = r.assigned?.find((a) => a.store_id === r.my_store_id);
+  return res.json({
+    success: true,
+    offer_status: r.my_status,
+    pickup_code: mine?.pickup_code ?? null,
+    accepted: r.my_accepted ?? 0,
+    unavailable: 0,
+  });
+}
+
+/** Whether `id` is one of these stores' offers (offers and allocations share the accept/reject routes). */
+async function findOwnOffer(id: string, storeIds: string[]): Promise<boolean> {
+  if (!UUID_RE.test(String(id))) return false;
+  const { data, error } = await supabaseAdmin
+    .from('order_store_offers').select('id').eq('id', id).in('store_id', storeIds).maybeSingle();
+  if (error) throw error;
+  return !!data;
+}
+
+/** Resolves an order's offers if its window is over; used by the sweep and the order-tracking poll. */
+export async function resolveOrderOffersIfDue(orderId: string): Promise<boolean> {
+  const { data: open, error } = await supabaseAdmin
+    .from('order_store_offers')
+    .select('visible_at')
+    .eq('order_id', orderId)
+    .in('status', ['pending', 'accepted']);
+  if (error) throw error;
+  const visible = ((open ?? []) as Array<{ visible_at: string | null }>)
+    .map((o) => (o.visible_at ? Date.parse(o.visible_at) : NaN))
+    .filter(Number.isFinite);
+  if (!visible.length || Date.now() - Math.min(...visible) < STALE_ALLOCATION_MS) return false;
+  const { data, error: rpcErr } = await supabaseAdmin.rpc('resolve_order_offers', {
+    p_order_id: orderId,
+    p_window_seconds: OFFER_WINDOW_SECONDS,
+  });
+  if (rpcErr) throw rpcErr;
+  await afterOfferResolution(data as OfferResolution);
+  return true;
+}
+
 /**
  * Server-side sweep. The tracking-poll watchdogs below only run while a
  * customer has the tracking screen open, so a store that never answered — or
@@ -1183,8 +1405,8 @@ const SWEEP_ABANDONED_BATCH = 50;
 // left alone rather than mass-cancelled/notified on the first run.
 const SWEEP_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000;
 
-export async function sweepStuckOrders(): Promise<{ abandonedOrders: number; expiredOrders: number; rehomedOrders: number; settledOrders: number }> {
-  const result = { abandonedOrders: 0, expiredOrders: 0, rehomedOrders: 0, settledOrders: 0 };
+export async function sweepStuckOrders(): Promise<{ abandonedOrders: number; expiredOrders: number; rehomedOrders: number; settledOrders: number; resolvedOfferOrders: number }> {
+  const result = { abandonedOrders: 0, expiredOrders: 0, rehomedOrders: 0, settledOrders: 0, resolvedOfferOrders: 0 };
   const lookback = new Date(Date.now() - SWEEP_LOOKBACK_MS).toISOString();
   const liveStatuses = [...REALLOCATABLE_ORDER_STATUSES];
 
@@ -1223,7 +1445,7 @@ export async function sweepStuckOrders(): Promise<{ abandonedOrders: number; exp
   if (!orderIds.length) return result;
 
   const staleCutoff = new Date(Date.now() - STALE_ALLOCATION_MS).toISOString();
-  const [staleRes, waitingRes, acceptedRes] = await Promise.all([
+  const [staleRes, waitingRes, acceptedRes, offersRes] = await Promise.all([
     // 1. Stores that never answered.
     supabaseAdmin
       .from('order_store_allocations')
@@ -1246,10 +1468,46 @@ export async function sweepStuckOrders(): Promise<{ abandonedOrders: number; exp
       .in('order_id', orderIds)
       .eq('status', 'accepted')
       .lt('accepted_at', new Date(Date.now() - 60_000).toISOString()),
+    // 4. Offers still open (shops still answering, or a window just ended).
+    supabaseAdmin
+      .from('order_store_offers')
+      .select('order_id, visible_at')
+      .in('order_id', orderIds)
+      .in('status', ['pending', 'accepted']),
   ]);
   if (staleRes.error) throw staleRes.error;
   if (waitingRes.error) throw waitingRes.error;
   if (acceptedRes.error) throw acceptedRes.error;
+  if (offersRes.error) throw offersRes.error;
+
+  // Offers: a paid order whose shops can't see it yet (a payment path that
+  // didn't go through notifyStoresOrderPayable) is revealed now; an order
+  // whose window is over is decided. Orders with open offers are otherwise
+  // left alone: their items wait for a shop by design.
+  const openOfferOrders = new Set<string>();
+  const firstVisible = new Map<string, number>();
+  const hidden = new Set<string>();
+  for (const o of (offersRes.data || []) as Array<{ order_id: string; visible_at: string | null }>) {
+    openOfferOrders.add(o.order_id);
+    if (!o.visible_at) { hidden.add(o.order_id); continue; }
+    const t = Date.parse(o.visible_at);
+    firstVisible.set(o.order_id, Math.min(firstVisible.get(o.order_id) ?? t, t));
+  }
+  for (const orderId of hidden) {
+    try {
+      await databaseService.notifyStoresOrderPayable(orderId);
+    } catch (err) {
+      console.error('[sweepStuckOrders] reveal offers failed:', err, { orderId });
+    }
+  }
+  for (const [orderId, t] of firstVisible) {
+    if (Date.now() - t < STALE_ALLOCATION_MS) continue;
+    try {
+      if (await resolveOrderOffersIfDue(orderId)) result.resolvedOfferOrders++;
+    } catch (err) {
+      console.error('[sweepStuckOrders] offer resolution failed:', err, { orderId });
+    }
+  }
 
   const staleOrderIds = new Set(((staleRes.data || []) as any[]).map((a) => a.order_id as string));
   for (const orderId of staleOrderIds) {
@@ -1270,6 +1528,7 @@ export async function sweepStuckOrders(): Promise<{ abandonedOrders: number; exp
   }
   for (const [orderId, itemIds] of itemsByOrder) {
     if (staleOrderIds.has(orderId)) continue; // just handled by the expiry above
+    if (openOfferOrders.has(orderId)) continue; // shops are still answering (or just decided above)
     try {
       await reallocateMissingItems(orderId, itemIds);
       result.rehomedOrders++;
@@ -1280,7 +1539,7 @@ export async function sweepStuckOrders(): Promise<{ abandonedOrders: number; exp
 
   const acceptedOrderIds = new Set(((acceptedRes.data || []) as any[]).map((a) => a.order_id as string));
   for (const orderId of acceptedOrderIds) {
-    if (staleOrderIds.has(orderId) || itemsByOrder.has(orderId)) continue;
+    if (staleOrderIds.has(orderId) || itemsByOrder.has(orderId) || openOfferOrders.has(orderId)) continue;
     try {
       await withOrderLock(orderId, () => settleOrderAfterReallocation(orderId));
       result.settledOrders++;
@@ -1313,7 +1572,13 @@ export function triggerOrderSweep(): void {
   orderSweepInFlight = true;
   runInBackground('sweepStuckOrders', async () => {
     try {
-      await sweepStuckOrders();
+      try {
+        await sweepStuckOrders();
+      } finally {
+        // The 8 PM / 8:30 PM loose price jobs ride the same tick (cheap when
+        // nothing is due); the database scheduler also calls /api/internal/tick.
+        await runLooseDailyJobs().catch((err) => console.error('[triggerOrderSweep] loose daily jobs failed:', err));
+      }
     } finally {
       orderSweepInFlight = false;
     }

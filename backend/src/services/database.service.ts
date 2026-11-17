@@ -1,6 +1,5 @@
 import { supabase, supabaseAdmin, isSupabaseServiceRoleConfigured } from '../config/database.js';
 import { randomInt } from 'crypto';
-import { planAllocation } from './allocationPlanner.js';
 import { fetchCandidateStores, fetchStoreStock, PLACEMENT_RADIUS_KM } from './storeAllocation.service.js';
 import { reverseGeocode, forwardGeocode } from './geocoding.service.js';
 import { resolveOrderLine, type OrderLineMaster } from '../utils/quantity.js';
@@ -9,6 +8,7 @@ import { AppError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
 import { isInlineImage } from './productImageStorage.js';
 import { istDateString } from '../utils/istDate.js';
+import { getLoosePricesNear } from './loosePrices.service.js';
 import type {
   CustomerSavedAddress,
   Store,
@@ -1011,6 +1011,10 @@ export class DatabaseService {
     const couponRowP = orderData.coupon_id
       ? settled(supabaseAdmin.from('coupons').select('code').eq('id', orderData.coupon_id).maybeSingle())
       : null;
+    // Loose items sell at the price of the region of the nearest shop that has
+    // them (daily loose prices, 2026-11-17). Fetched alongside the reads above:
+    // one small database call, used only if the cart has a loose item.
+    const loosePricesP = settled(getLoosePricesNear(geocoded.lat, geocoded.lng, PLACEMENT_RADIUS_KM));
 
     const orderCode = await take(orderCodeP);
 
@@ -1035,13 +1039,16 @@ export class DatabaseService {
       throw new Error('Failed to verify product prices');
     }
 
+    const hasLoose = (masterPriceRows || []).some((row: any) => row.is_loose);
+    const loosePrices = hasLoose ? await take(loosePricesP) : new Map<string, number>();
     const masterById = new Map<string, OrderLineMaster>();
     for (const row of masterPriceRows || []) {
       // A master product the admin delisted is hidden from the catalogue
       // (productRowsToProducts drops inactive masters) but was still orderable
       // from a stale cart. Treat it as unavailable. (2026-10-04 audit)
       if ((row as any).is_active === false) continue;
-      masterById.set(row.id, row as OrderLineMaster);
+      const regionPrice = (row as any).is_loose ? loosePrices.get(row.id) : undefined;
+      masterById.set(row.id, (regionPrice != null ? { ...row, discounted_price: regionPrice } : row) as OrderLineMaster);
     }
 
     items = items.map((it) => {
@@ -1056,30 +1063,29 @@ export class DatabaseService {
       return { ...it, price: line.unitPrice, quantity: line.quantity, ...(line.unit ? { unit: line.unit } : {}) };
     });
 
-    // Which store fulfils which item (allocationPlanner.ts): a single store
-    // that stocks everything wins — the nearest such store — otherwise the
-    // fewest stores, then the shortest total distance, with deterministic
-    // tiebreaks. The old greedy loop had no "one store has it all" rule and
-    // broke ties on whatever row order the database returned. Stops come
-    // back farthest-first, which becomes the rider's pickup sequence.
-    const plan = planAllocation(
-      items.map((it, idx) => ({ key: idx, masterProductId: (it.product_id || it.id) as string })),
-      candidateStores,
-      storeStock.stock
+    // Who is asked (2026-11-17): EVERY live store within the radius that
+    // stocks at least one item gets an offer for the items it stocks, all at
+    // once. The first store to accept everything gets the whole order;
+    // otherwise, when the window ends, each item goes to the first store that
+    // accepted it (order_store_offers, respond_to_order_offer). Items no
+    // nearby store stocks fail here, before any write, as before.
+    const masterOf = (it: (typeof items)[number]) => (it.product_id || it.id) as string;
+    const orderMasters = [...new Set(items.map(masterOf))];
+    const unplacedItems = items.filter((it) =>
+      !candidateStores.some((s) => storeStock.stock.get(s.id)?.has(masterOf(it)))
     );
-
-    if (plan.unplaced.length > 0) {
-      // These items matched no nearby store at all. Fail before any writes
-      // happen, with the same clear message already used when there's no
-      // nearby store at all. (An older version dumped them on storeIds[0],
-      // which then failed a foreign key after earlier rows were committed.)
+    if (unplacedItems.length > 0) {
       throw new Error(
-        `Product(s) not available from any store near you: ${plan.unplaced.map((i) => items[i].name).join(', ')}`
+        `Product(s) not available from any store near you: ${unplacedItems.map((i) => i.name).join(', ')}`
       );
     }
-
-    const storeIdsToUse = plan.stops.map((s) => s.storeId);
-    const itemChunks = plan.stops.map((s) => s.itemKeys.map((i) => items[i]));
+    const offers = candidateStores
+      .map((s) => ({
+        store_id: s.id,
+        distance_km: Math.round(s.distanceKm * 1000) / 1000,
+        master_product_ids: orderMasters.filter((m) => storeStock.stock.get(s.id)?.has(m)),
+      }))
+      .filter((o) => o.master_product_ids.length > 0);
 
     const pm = orderData.payment_method?.toLowerCase() ?? '';
     // 'wallet' checked first and explicitly — without it, a wallet order's
@@ -1246,84 +1252,24 @@ export class DatabaseService {
       };
     }
 
-    // Resolve each store's items to real store-scoped product ids first —
-    // pure reads, no writes yet. If any item can't be resolved, this throws
-    // before a single row is written (matches the "fail before any writes
-    // happen" reasoning already established elsewhere in this function for
-    // the unassigned-items case above).
-    const storeChunks: Array<{
-      store_id: string;
-      subtotal: number;
-      delivery_fee: number;
-      items: Array<{
-        product_id: string;
-        product_name: string;
-        unit: string | null;
-        image_url: string | null;
-        unit_price: number;
-        quantity: number;
-      }>;
-    }> = [];
+    // The lines, with no store yet: a store's products row, store_orders row
+    // and allocation come with the assignment (_order_assign_items_to_store).
+    const orderItems = items.map((item) => ({
+      master_product_id: masterOf(item),
+      product_name: item.name,
+      unit: item.unit || null,
+      // The cart echoes the product's image_url. An inline data: image
+      // (custom products approved before those moved to Storage) would
+      // copy up to 1 MB into this row and into every order poll.
+      image_url: isInlineImage(item.image) ? null : item.image || null,
+      unit_price: item.price,
+      quantity: item.quantity,
+    }));
 
-    for (let i = 0; i < itemChunks.length; i++) {
-      const chunk = itemChunks[i];
-      const storeId = storeIdsToUse[i];
-      if (!chunk?.length || !storeId) continue;
-
-      const chunkSubtotal = chunk.reduce((sum, it) => sum + it.price * it.quantity, 0);
-      // trustedDeliveryFee is currently always 0, so this division is a no-op today,
-      // but keeps the per-store split correct if the promo ends and it's nonzero again.
-      const chunkDeliveryFee =
-        itemChunks.length > 1 ? trustedDeliveryFee / itemChunks.length : trustedDeliveryFee;
-
-      const chunkMasterIds = chunk
-        .map((item) => item.product_id || item.id)
-        .filter((id): id is string => id != null && id !== '');
-
-      if (chunkMasterIds.length === 0) continue;
-
-      const resolvedItems = chunk.map((item) => {
-        const masterId = item.product_id || item.id;
-        // order_items.product_id is the fulfilling store's own products row
-        // (FK → products.id). The planner only places an item on a store
-        // that stocks it, so this lookup always resolves; the old fallback
-        // to the raw master id — which is not a products.id — is gone.
-        const productId = masterId ? storeStock.productId(storeId, masterId) : undefined;
-        if (!productId) {
-          throw new Error(`Product "${item.name}" is not available from the store.`);
-        }
-        return {
-          product_id: productId,
-          product_name: item.name,
-          unit: item.unit || null,
-          // The cart echoes the product's image_url. An inline data: image
-          // (custom products approved before those moved to Storage) would
-          // copy up to 1 MB into this row and into every order poll.
-          image_url: isInlineImage(item.image) ? null : item.image || null,
-          unit_price: item.price,
-          quantity: item.quantity,
-        };
-      });
-
-      storeChunks.push({ store_id: storeId, subtotal: chunkSubtotal, delivery_fee: chunkDeliveryFee, items: resolvedItems });
-    }
-
-    // Every write below — customer_orders, every store's store_orders/
-    // order_items/order_store_allocations, and order_status_history — now
-    // happens inside one Postgres function call (place_multi_store_order,
-    // migration 20260930400000). A Postgres function body is implicitly one
-    // transaction: if any store's write fails partway through (e.g. an item
-    // resolves to a product id that fails a DB-level check this Node-side
-    // resolution above didn't catch), everything the function did rolls
-    // back automatically — including customer_orders and any earlier
-    // store(s) that had already succeeded. Previously each of these was a
-    // separate sequential Node round-trip with no transaction wrapping any
-    // of it, so a mid-request failure could leave some stores' orders fully
-    // committed and visible to those shopkeepers while the customer saw a
-    // failure and other stores got nothing at all. Verified live against
-    // production: a deliberately-broken second store leaves zero rows for
-    // the order (customer_orders included), not a partial one.
-    const { data: rpcResult, error: rpcError } = await supabaseAdmin.rpc('place_multi_store_order', {
+    // Every write below (the order, its lines, every store's offer and the
+    // status history) happens inside one Postgres function call, so it is one
+    // transaction: all of it or none of it (place_broadcast_order).
+    const { data: rpcResult, error: rpcError } = await supabaseAdmin.rpc('place_broadcast_order', {
       p_customer_order: {
         customer_id: orderData.user_id,
         order_code: orderCode,
@@ -1359,7 +1305,8 @@ export class DatabaseService {
         tip_amount: trustedTipAmount,
         delivery_otp: String(randomInt(1000, 10000)),
       },
-      p_store_chunks: storeChunks,
+      p_items: orderItems,
+      p_offers: offers,
     });
 
     if (rpcError || !rpcResult) {
@@ -1386,11 +1333,12 @@ export class DatabaseService {
     // again once the payment landed. Those stores are notified from
     // notifyStoresOrderPayable() when the order becomes paid (Razorpay verify
     // / webhook via updateOrderPaymentStatus, wallet via payOrderWithWallet).
-    // COD is visible immediately. (2026-10-04 audit)
+    // COD is visible immediately. (2026-10-04 audit) Every store with an
+    // offer is told at once (2026-11-17).
     if (paymentMethodEnum === 'cod') {
-      for (const chunk of storeChunks) {
+      for (const offer of offers) {
         runInBackground('[order placement] shopkeeper new-order notification', () =>
-          notificationService.notifyShopkeeperNewOrder(chunk.store_id, orderId, orderCode)
+          notificationService.notifyShopkeeperNewOrder(offer.store_id, orderId, orderCode)
         );
       }
     }
@@ -2347,11 +2295,19 @@ export class DatabaseService {
    * shopkeepers' incoming list — instead of at checkout, when it was hidden.
    */
   async notifyStoresOrderPayable(orderId: string): Promise<void> {
-    const [{ data: order }, { data: allocs }] = await Promise.all([
+    // Offers (orders placed from 2026-11-17) become visible now: the shops'
+    // 5-minute window starts at payment, not at checkout. Only the first call
+    // returns stores, so a repeated payment callback doesn't ping twice.
+    const [{ data: order }, { data: allocs }, { data: offerStores, error: offerErr }] = await Promise.all([
       supabaseAdmin.from('customer_orders').select('order_code').eq('id', orderId).maybeSingle(),
       supabaseAdmin.from('order_store_allocations').select('store_id').eq('order_id', orderId).eq('status', 'pending_acceptance'),
+      supabaseAdmin.rpc('order_offers_mark_visible', { p_order_id: orderId }),
     ]);
-    const storeIds = [...new Set(((allocs || []) as Array<{ store_id: string }>).map((a) => a.store_id))];
+    if (offerErr) console.error('[PAYMENT] order_offers_mark_visible failed:', offerErr, { orderId });
+    const storeIds = [...new Set([
+      ...((allocs || []) as Array<{ store_id: string }>).map((a) => a.store_id),
+      ...(((offerStores as string[] | null) ?? []) as string[]),
+    ])];
     if (!storeIds.length) return;
     const { notificationService } = await import('./notification.service.js');
     await Promise.all(

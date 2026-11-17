@@ -65,12 +65,14 @@ describe('placeCheckoutOrder: store selection', () => {
       if (c.table === 'products') return ok(opts.products);
       if (c.table === 'master_products') return ok(opts.masters.map(master));
       if (c.table === 'customer_orders' && c.op === 'select') return ok(null); // no recent duplicate
-      if (c.table === 'rpc:place_multi_store_order') return ok({ id: 'o1', placed_at: '2026-10-04T10:00:00Z', store_orders: [] });
+      if (c.table === 'rpc:place_broadcast_order') return ok({ id: 'o1', placed_at: '2026-10-04T10:00:00Z', offers: 1 });
       return undefined;
     });
   }
 
-  it('a 2.9 km store that stocks everything beats a 0.4 km store with one item (whole ring searched, one stop)', async () => {
+  // 2026-11-17: every live store within 4 km is asked at once (offers);
+  // the database decides who gets what (respond_to_order_offer).
+  it('offers every live store within 4 km that stocks an item, each for exactly the items it stocks, nearest first, in one call', async () => {
     const fake = setup({
       stores: [{ id: 'near-partial', km: 0.4 }, { id: 'full', km: 2.9 }],
       products: [
@@ -82,20 +84,28 @@ describe('placeCheckoutOrder: store selection', () => {
     const order = await databaseService.placeCheckoutOrder(baseOrder(['m1', 'm2', 'm3', 'm4'].map((m) => ({ product_id: U(m), name: m }))) as never);
 
     expect(order.id).toBe('o1');
-    const rpc = fake.on('rpc:place_multi_store_order')[0];
-    const chunks = (rpc.payload as { p_store_chunks: Array<{ store_id: string; items: Array<{ product_id: string }> }> }).p_store_chunks;
-    expect(chunks.map((c) => c.store_id)).toEqual(['full']);
-    // order_items.product_id is the fulfilling store's own products row.
-    expect(chunks[0].items.map((i) => i.product_id)).toEqual(['p-full-m1', 'p-full-m2', 'p-full-m3', 'p-full-m4']);
+    const calls = fake.on('rpc:place_broadcast_order');
+    expect(calls).toHaveLength(1);
+    const payload = calls[0].payload as {
+      p_items: Array<{ master_product_id: string; product_id?: string }>;
+      p_offers: Array<{ store_id: string; distance_km: number; master_product_ids: string[] }>;
+    };
+    expect(payload.p_offers.map((o) => o.store_id)).toEqual(['near-partial', 'full']);
+    expect(payload.p_offers[0].master_product_ids).toEqual([U('m1')]);
+    expect(payload.p_offers[1].master_product_ids).toEqual(['m1', 'm2', 'm3', 'm4'].map(U));
+    expect(payload.p_offers[0].distance_km).toBeCloseTo(0.4, 2);
+    // Lines carry their master product and no store yet.
+    expect(payload.p_items.map((i) => i.master_product_id)).toEqual(['m1', 'm2', 'm3', 'm4'].map(U));
+    expect(payload.p_items.every((i) => !('product_id' in i))).toBe(true);
     // Only live stores inside the 4 km box are even considered.
     const storesQuery = fake.on('stores', 'select')[0];
     expect(hasFilter(storesQuery, 'eq', 'is_approved', true)).toBe(true);
     expect(hasFilter(storesQuery, 'is', 'deleted_at', null)).toBe(true);
   });
 
-  it('splits across the fewest stores and puts the farthest stop first in the pickup sequence', async () => {
+  it('a store that stocks none of the items gets no offer; every other store in range is asked', async () => {
     const fake = setup({
-      stores: [{ id: 'P', km: 0.5 }, { id: 'Q', km: 3.0 }, { id: 'R', km: 1.0 }],
+      stores: [{ id: 'P', km: 0.5 }, { id: 'X', km: 0.7 }, { id: 'Q', km: 3.0 }, { id: 'R', km: 1.0 }],
       products: [
         { id: 'p-P-m1', store_id: 'P', master_product_id: U('m1') },
         { id: 'p-P-m2', store_id: 'P', master_product_id: U('m2') },
@@ -105,9 +115,9 @@ describe('placeCheckoutOrder: store selection', () => {
       masters: ['m1', 'm2', 'm3'].map(U),
     });
     await databaseService.placeCheckoutOrder(baseOrder([{ product_id: U('m1'), name: 'A' }, { product_id: U('m2'), name: 'B' }, { product_id: U('m3'), name: 'C' }]) as never);
-    const chunks = (fake.on('rpc:place_multi_store_order')[0].payload as { p_store_chunks: Array<{ store_id: string; items: Array<{ product_name: string }> }> }).p_store_chunks;
-    expect(chunks.map((c) => c.store_id)).toEqual(['Q', 'P']); // farthest first → sequence 1 = Q
-    expect(chunks[1].items.map((i) => i.product_name)).toEqual(['A', 'B']);
+    const offers = (fake.on('rpc:place_broadcast_order')[0].payload as { p_offers: Array<{ store_id: string; master_product_ids: string[] }> }).p_offers;
+    expect(offers.map((o) => o.store_id)).toEqual(['P', 'R', 'Q']); // X sells none of them
+    expect(offers.find((o) => o.store_id === 'P')!.master_product_ids).toEqual([U('m1'), U('m2')]);
   });
 
   it('fails before any write when an item is stocked by no nearby store, naming the item', async () => {
@@ -119,13 +129,13 @@ describe('placeCheckoutOrder: store selection', () => {
     await expect(
       databaseService.placeCheckoutOrder(baseOrder([{ product_id: U('m1'), name: 'Milk' }, { product_id: U('m-ghost'), name: 'Saffron' }]) as never)
     ).rejects.toThrow('Product(s) not available from any store near you: Saffron');
-    expect(fake.on('rpc:place_multi_store_order')).toHaveLength(0);
+    expect(fake.on('rpc:place_broadcast_order')).toHaveLength(0);
   });
 
   it('with no live store in range the order is refused before any write', async () => {
     const fake = setup({ stores: [], products: [], masters: [U('m1')] });
     await expect(databaseService.placeCheckoutOrder(baseOrder([{ product_id: U('m1'), name: 'Milk' }]) as never)).rejects.toThrow('No store available');
-    expect(fake.on('rpc:place_multi_store_order')).toHaveLength(0);
+    expect(fake.on('rpc:place_broadcast_order')).toHaveLength(0);
   });
 });
 
@@ -263,7 +273,7 @@ describe('reallocateMissingItems', () => {
         return ok({ status: o.orderStatus ?? 'pending_at_store', order_code: 'NN1', delivery_latitude: KOLKATA.lat, delivery_longitude: KOLKATA.lng });
       }
       if (c.table === 'customer_orders' && c.op === 'select') return ok({ status: o.orderStatus ?? 'pending_at_store', order_code: 'NN1', razorpay_payment_id: 'pay_1', payment_method: 'razorpay', payment_status: 'paid', total_amount: 100, refunded_amount: 0 });
-      if (c.table === 'order_items' && c.columns === 'id, product_id') return ok(o.waiting ?? []);
+      if (c.table === 'order_items' && c.columns === 'id, product_id, master_product_id') return ok(o.waiting ?? []);
       if (c.table === 'order_items' && c.op === 'select' && c.columns === 'id') {
         const ids = (c.filters.find(([m, col]) => m === 'in' && col === 'id')?.[2] as string[]) ?? [];
         const still = o.stillWaitingAfter ? ids.filter((id) => o.stillWaitingAfter!.includes(id)) : ids;
@@ -364,7 +374,7 @@ describe('reallocateMissingItems', () => {
       }
       if (c.table === 'customer_orders' && c.op === 'update') return ok([{ id: 'o1' }]);
       if (c.table === 'customer_orders' && c.op === 'select') return ok({ status: 'pending_at_store' });
-      if (c.table === 'order_items' && c.columns === 'id, product_id') return ok([{ id: 'i1', product_id: 'p-old-1' }]);
+      if (c.table === 'order_items' && c.columns === 'id, product_id, master_product_id') return ok([{ id: 'i1', product_id: 'p-old-1' }]);
       if (c.table === 'order_items' && c.op === 'select') return ok([{ id: 'i1' }]);
       if (c.table === 'order_items' && c.op === 'update') return ok([{ id: 'i1', product_name: 'Ghee', unit_price: 25, quantity: 2 }]);
       if (c.table === 'products') return ok([{ id: 'p-old-1', master_product_id: 'm1' }]);
@@ -394,7 +404,7 @@ describe('reallocateMissingItems', () => {
       }
       if (c.table === 'customer_orders' && c.op === 'update') return ok([{ id: 'o1' }]);
       if (c.table === 'customer_orders' && c.op === 'select') return ok({ status: 'pending_at_store' });
-      if (c.table === 'order_items' && c.columns === 'id, product_id') return ok([{ id: 'i1', product_id: 'p-old-1' }]);
+      if (c.table === 'order_items' && c.columns === 'id, product_id, master_product_id') return ok([{ id: 'i1', product_id: 'p-old-1' }]);
       if (c.table === 'order_items' && c.op === 'select') return ok([{ id: 'i1' }]);
       if (c.table === 'order_items' && c.op === 'update') return ok([{ id: 'i1', product_name: 'Ghee', unit_price: 25, quantity: 2 }]);
       if (c.table === 'products') return ok([{ id: 'p-old-1', master_product_id: 'm1' }]);
@@ -531,7 +541,7 @@ describe('sweepStuckOrders', () => {
       return undefined;
     });
     const result = await sweepStuckOrders();
-    expect(result).toEqual({ abandonedOrders: 0, expiredOrders: 0, rehomedOrders: 0, settledOrders: 0 });
+    expect(result).toEqual({ abandonedOrders: 0, expiredOrders: 0, rehomedOrders: 0, settledOrders: 0, resolvedOfferOrders: 0 });
 
     const live = fake.on('customer_orders', 'select').find((q) => q.columns === LIVE)!;
     expect(hasFilter(live, 'in', 'status', ['pending_at_store', 'store_accepted', 'preparing_order'])).toBe(true);
@@ -590,7 +600,7 @@ describe('placeCheckoutOrder: duplicate check and store notifications', () => {
       if (c.table === 'products') return ok([{ id: 'p1', store_id: 's1', master_product_id: U('m1') }]);
       if (c.table === 'master_products') return ok([master(U('m1'))]);
       if (c.table === 'customer_orders' && c.op === 'select') return ok(null);
-      if (c.table === 'rpc:place_multi_store_order') return ok({ id: 'o1', placed_at: '2026-10-04T10:00:00Z', store_orders: [] });
+      if (c.table === 'rpc:place_broadcast_order') return ok({ id: 'o1', placed_at: '2026-10-04T10:00:00Z', offers: 1 });
       return undefined;
     });
   }
@@ -848,7 +858,7 @@ describe('write-offs give back the discounted price, not the list price', () => 
       if (c.table === 'customer_orders' && c.columns?.includes('delivery_latitude')) return ok({ status: 'pending_at_store', order_code: 'NN1', delivery_latitude: KOLKATA.lat, delivery_longitude: KOLKATA.lng });
       if (c.table === 'customer_orders' && c.columns?.includes('refunded_amount')) return ok({ order_code: 'NN1', razorpay_payment_id: 'pay_1', payment_method: 'razorpay', payment_status: 'paid', total_amount: 105, subtotal_amount: 100, discount_amount: 10, refunded_amount: 0 });
       if (c.table === 'customer_orders') return ok({ status: 'pending_at_store' });
-      if (c.table === 'order_items' && c.columns === 'id, product_id') return ok([{ id: 'i1', product_id: 'p-old-1' }]);
+      if (c.table === 'order_items' && c.columns === 'id, product_id, master_product_id') return ok([{ id: 'i1', product_id: 'p-old-1' }]);
       if (c.table === 'order_items' && c.op === 'select') return ok([{ id: 'i1' }]);
       if (c.table === 'order_items' && c.op === 'update') return ok([{ id: 'i1', product_name: 'Ghee', unit_price: 10, quantity: 2 }]);
       if (c.table === 'products') return ok([{ id: 'p-old-1', master_product_id: 'm1' }]);

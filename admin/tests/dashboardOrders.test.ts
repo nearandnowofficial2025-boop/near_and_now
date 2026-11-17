@@ -42,11 +42,13 @@ describe('getDashboardOrdersData', () => {
     expect(data.daily).toEqual([{ day: '2026-10-04', sales: 1200, orders: 3 }]);
     expect(data.topProducts).toEqual([{ name: 'Milk', image: null, sold: 7, revenue: 420 }]);
     const recentQuery = fake.on('customer_orders').find((c) => c.filters.some(([m]) => m === 'limit'))!;
-    expect(recentQuery.filters.map(([m]) => m)).toEqual(['gte', 'order', 'limit']);
-    expect(recentQuery.filters[1]).toEqual(['order', 'placed_at', { ascending: false }]);
-    expect(recentQuery.filters[2]).toEqual(['limit', 5]);
+    // 'is' only narrows the second embed to lines with no store yet (2026-11-17).
+    expect(recentQuery.filters.map(([m]) => m)).toEqual(['is', 'gte', 'order', 'limit']);
+    expect(recentQuery.filters[0]).toEqual(['is', 'unassigned_items.store_order_id', null]);
+    expect(recentQuery.filters[2]).toEqual(['order', 'placed_at', { ascending: false }]);
+    expect(recentQuery.filters[3]).toEqual(['limit', 5]);
     const rpc = fake.on('rpc:get_admin_dashboard_sales')[0];
-    expect((rpc.payload as { p_since: string }).p_since).toBe(recentQuery.filters[0][2]);
+    expect((rpc.payload as { p_since: string }).p_since).toBe(recentQuery.filters[1][2]);
     expect(typeof (rpc.payload as { p_tz: string }).p_tz).toBe('string');
     // No full 90-day download on this path.
     expect(fake.on('customer_orders').filter((c) => !c.filters.some(([m]) => m === 'limit'))).toHaveLength(0);

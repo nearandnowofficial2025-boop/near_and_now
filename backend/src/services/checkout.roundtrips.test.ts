@@ -61,7 +61,7 @@ function setup(fails: Fail[] = []) {
           return ok([{ id: 'dup-1', payment_status: 'pending', total_amount: 246, subtotal_amount: 256.5, delivery_fee: 0, discount_amount: 25.65, gstin: null, gstin_business_name: null, receiver_name: null, receiver_phone: null, receiver_address: null, tip_amount: 0, created_at: '2026-10-05T09:59:50Z', order_code: 'NN20261005-0041' }]);
         }
         return ok([]);
-      case 'rpc:place_multi_store_order':
+      case 'rpc:place_broadcast_order':
         return ok({ id: 'order-1', placed_at: '2026-10-05T10:00:00Z' });
       case 'rpc:record_coupon_redemption_if_available':
         return ok(true);
@@ -108,7 +108,7 @@ describe('placeCheckoutOrder', () => {
     expect(error).toBeNull();
     expect(JSON.stringify(result, null, 1)).toMatchSnapshot('result');
     // delivery_otp is a fresh random 4-digit code per order: check its shape, then mask it.
-    const payload = structuredClone(fake.on('rpc:place_multi_store_order')[0].payload) as { p_customer_order: { delivery_otp: string } };
+    const payload = structuredClone(fake.on('rpc:place_broadcast_order')[0].payload) as { p_customer_order: { delivery_otp: string } };
     expect(payload.p_customer_order.delivery_otp).toMatch(/^\d{4}$/);
     payload.p_customer_order.delivery_otp = '####';
     expect(JSON.stringify(payload, null, 1)).toMatchSnapshot('place payload');
@@ -119,11 +119,11 @@ describe('placeCheckoutOrder', () => {
   it('charges catalogue prices as stored, with no GST added on top', async () => {
     const { fake, error } = await place();
     expect(error).toBeNull();
-    const payload = fake.on('rpc:place_multi_store_order')[0].payload as {
+    const payload = fake.on('rpc:place_broadcast_order')[0].payload as {
       p_customer_order: { subtotal_amount: number; total_amount: number };
-      p_store_chunks: Array<{ items: Array<{ product_name: string; unit_price: number }> }>;
+      p_items: Array<{ product_name: string; unit_price: number }>;
     };
-    const prices = Object.fromEntries(payload.p_store_chunks.flatMap((c) => c.items).map((i) => [i.product_name, i.unit_price]));
+    const prices = Object.fromEntries(payload.p_items.map((i) => [i.product_name, i.unit_price]));
     expect(prices).toEqual({ Milk: 40, 'Rice (loose)': 25.5, Ghee: 100 });
     expect(payload.p_customer_order.subtotal_amount).toBe(256.5);
     expect(payload.p_customer_order.total_amount).toBe(246);
@@ -136,7 +136,7 @@ describe('placeCheckoutOrder', () => {
     const { fake, result, error } = await place([], { ...ORDER, order_total: oldAppTotal });
     expect(error).toBeNull();
     expect(result?.order_total).toBe(246);
-    const co = (fake.on('rpc:place_multi_store_order')[0].payload as { p_customer_order: { total_amount: number } }).p_customer_order;
+    const co = (fake.on('rpc:place_broadcast_order')[0].payload as { p_customer_order: { total_amount: number } }).p_customer_order;
     expect(co.total_amount).toBe(246);
     // The double-tap check looks for the total actually stored, not the client's.
     const dedupes = fake.on('customer_orders', 'select').filter((c) => c.filters.some(([m, col]) => m === 'eq' && col === 'total_amount'));
@@ -152,7 +152,7 @@ describe('placeCheckoutOrder', () => {
   it('returns the recent duplicate instead of placing again', async () => {
     const { fake, result } = await place(['duplicate']);
     expect(JSON.stringify(result, null, 1)).toMatchSnapshot('duplicate result');
-    expect(fake.on('rpc:place_multi_store_order')).toHaveLength(0);
+    expect(fake.on('rpc:place_broadcast_order')).toHaveLength(0);
   });
 
   it('the same error wins at every failure point, alone and combined', async () => {
@@ -181,7 +181,7 @@ describe('placeCheckoutOrder', () => {
     for (const [name, [fails, order]] of Object.entries(cases)) {
       const { error, fake } = await place(fails, order);
       outcomes[name] = error;
-      expect(fake.on('rpc:place_multi_store_order'), name).toHaveLength(0);
+      expect(fake.on('rpc:place_broadcast_order'), name).toHaveLength(0);
     }
     expect(JSON.stringify(outcomes, null, 1)).toMatchSnapshot('errors');
   });
@@ -197,10 +197,10 @@ describe('placeCheckoutOrder', () => {
       ],
     });
     expect(error).toBeNull();
-    const payload = fake.on('rpc:place_multi_store_order')[0].payload as {
-      p_store_chunks: Array<{ items: Array<{ product_name: string; image_url: string | null }> }>;
+    const payload = fake.on('rpc:place_broadcast_order')[0].payload as {
+      p_items: Array<{ product_name: string; image_url: string | null }>;
     };
-    const images = Object.fromEntries(payload.p_store_chunks.flatMap((c) => c.items).map((i) => [i.product_name, i.image_url]));
+    const images = Object.fromEntries(payload.p_items.map((i) => [i.product_name, i.image_url]));
     expect(images).toEqual({ Milk: null, 'Rice (loose)': 'https://cdn.example.com/rice.jpg', Ghee: null });
   });
 
@@ -216,7 +216,7 @@ describe('placeCheckoutOrder', () => {
       notes: 'Ring the bell',
     });
     expect(error).toBeNull();
-    const co = (fake.on('rpc:place_multi_store_order')[0].payload as { p_customer_order: { payment_method: string; notes: string | null } }).p_customer_order;
+    const co = (fake.on('rpc:place_broadcast_order')[0].payload as { p_customer_order: { payment_method: string; notes: string | null } }).p_customer_order;
     expect(co.payment_method).toBe('cod');
     expect(co.notes).toBe('Ring the bell');
   });
@@ -230,7 +230,7 @@ describe('placeCheckoutOrder', () => {
       split_upi_amount: 100,
     });
     expect(error).toBeNull();
-    const co = (fake.on('rpc:place_multi_store_order')[0].payload as { p_customer_order: { payment_method: string; notes: string } }).p_customer_order;
+    const co = (fake.on('rpc:place_broadcast_order')[0].payload as { p_customer_order: { payment_method: string; notes: string } }).p_customer_order;
     expect(co.payment_method).toBe('razorpay');
     expect(JSON.parse(co.notes)).toMatchObject({ split_upi_amount: 100 });
   });

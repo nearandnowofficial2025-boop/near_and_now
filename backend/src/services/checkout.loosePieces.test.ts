@@ -27,9 +27,12 @@ beforeEach(() => {
 });
 afterEach(() => vi.restoreAllMocks());
 
-function install() {
+/** `regionPrices`: what loose_prices_near returns (master id → today's per-kg price). */
+function install(regionPrices: Record<string, number> = {}) {
   return installFakeSupabase(supabaseAdmin, (c: Call): Result | undefined => {
     switch (c.table) {
+      case 'rpc:loose_prices_near':
+        return ok(Object.entries(regionPrices).map(([master_product_id, price]) => ({ master_product_id, price })));
       case 'rpc:generate_next_order_number':
         return ok('NN20261116-0001');
       case 'stores':
@@ -48,7 +51,7 @@ function install() {
         ]);
       case 'customer_orders':
         return ok([]);
-      case 'rpc:place_multi_store_order':
+      case 'rpc:place_broadcast_order':
         return ok({ id: 'order-1', placed_at: '2026-11-16T10:00:00Z' });
       default:
         return undefined;
@@ -71,17 +74,17 @@ const order = (items: Array<Record<string, unknown>>) => ({
 
 type Line = { product_name: string; unit: string | null; unit_price: number; quantity: number };
 
-async function place(items: Array<Record<string, unknown>>) {
-  const fake = install();
+async function place(items: Array<Record<string, unknown>>, regionPrices: Record<string, number> = {}) {
+  const fake = install(regionPrices);
   try {
     const result = await databaseService.placeCheckoutOrder(order(items) as never);
-    const payload = fake.on('rpc:place_multi_store_order')[0]?.payload as {
+    const payload = fake.on('rpc:place_broadcast_order')[0]?.payload as {
       p_customer_order: { subtotal_amount: number; total_amount: number };
-      p_store_chunks: Array<{ subtotal: number; items: Line[] }>;
+      p_items: Line[];
     };
-    return { result, payload, error: null as string | null };
+    return { result, payload, error: null as string | null, fake };
   } catch (e) {
-    return { result: null, payload: null, error: (e as Error).message };
+    return { result: null, payload: null, error: (e as Error).message, fake };
   }
 }
 
@@ -94,19 +97,44 @@ describe('placeCheckoutOrder with loose items', () => {
       { product_id: CHIPS, name: 'Chips', price: 1, quantity: 2, unit: '52 g' },
     ]);
     expect(error).toBeNull();
-    const lines = Object.fromEntries(payload!.p_store_chunks.flatMap((c) => c.items).map((l) => [l.product_name, l]));
+    const lines = Object.fromEntries(payload!.p_items.map((l) => [l.product_name, l]));
     expect(lines['Loose Onions']).toMatchObject({ unit_price: 43, quantity: 0.35, unit: 'kg' }); // float drift snapped to 0.35
     expect(lines['Shimla Apple']).toMatchObject({ unit_price: 57, quantity: 3, unit: 'pc (~180 g)' });
     expect(lines['Chips']).toMatchObject({ unit_price: 20, quantity: 2, unit: '52 g' });
     // 43 x 0.35 + 57 x 3 + 20 x 2 = 15.05 + 171 + 40
     expect(payload!.p_customer_order.subtotal_amount).toBeCloseTo(226.05, 6);
-    expect(payload!.p_store_chunks[0].subtotal).toBeCloseTo(226.05, 6);
   });
 
   it('the same apple bought by weight is priced per kg, with the app unit kept', async () => {
     const { payload, error } = await place([{ product_id: APPLE, name: 'Shimla Apple', price: 1, quantity: 1.25, unit: 'kg' }]);
     expect(error).toBeNull();
-    expect(payload!.p_store_chunks[0].items[0]).toMatchObject({ unit_price: 318, quantity: 1.25, unit: 'kg' });
+    expect(payload!.p_items[0]).toMatchObject({ unit_price: 318, quantity: 1.25, unit: 'kg' });
+  });
+
+  // Daily loose prices (2026-11-17): a loose item sells at the region price
+  // of the nearest shop that has it (loose_prices_near), by weight and by the
+  // piece; packaged items keep the catalogue price.
+  it('charges the region price for loose items, by weight and by the piece; packaged items keep the catalogue price', async () => {
+    const { payload, error, fake } = await place([
+      { product_id: ONION, name: 'Loose Onions', price: 1, quantity: 0.5, unit: 'kg' },
+      { product_id: APPLE, name: 'Shimla Apple', price: 1, quantity: 2, sell_by: 'piece' },
+      { product_id: CHIPS, name: 'Chips', price: 1, quantity: 1, unit: '52 g' },
+    ], { [ONION]: 41, [APPLE]: 300, [CHIPS]: 999 });
+    expect(error).toBeNull();
+    const lines = Object.fromEntries(payload!.p_items.map((l) => [l.product_name, l]));
+    expect(lines['Loose Onions']).toMatchObject({ unit_price: 41, quantity: 0.5 });
+    expect(lines['Shimla Apple']).toMatchObject({ unit_price: 54, quantity: 2, unit: 'pc (~180 g)' }); // 300 x 0.18
+    expect(lines['Chips']).toMatchObject({ unit_price: 20 }); // never a region price
+    // One lookup, at the delivery location, within the placement radius.
+    const lookups = fake.on('rpc:loose_prices_near');
+    expect(lookups).toHaveLength(1);
+    expect(lookups[0].payload).toMatchObject({ p_lat: KOLKATA.lat, p_lng: KOLKATA.lng, p_radius_km: 4 });
+  });
+
+  it('a loose item with no region price keeps the catalogue price', async () => {
+    const { payload, error } = await place([{ product_id: ONION, name: 'Loose Onions', price: 1, quantity: 1, unit: 'kg' }], { [APPLE]: 300 });
+    expect(error).toBeNull();
+    expect(payload!.p_items[0]).toMatchObject({ unit_price: 43 });
   });
 
   it.each([
@@ -119,7 +147,7 @@ describe('placeCheckoutOrder with loose items', () => {
   ])('refuses %s before anything is written', async (_label, item, message) => {
     const fake = install();
     await expect(databaseService.placeCheckoutOrder(order([item]) as never)).rejects.toThrow(message);
-    expect(fake.on('rpc:place_multi_store_order')).toHaveLength(0);
+    expect(fake.on('rpc:place_broadcast_order')).toHaveLength(0);
   });
 
   it('the checkout route answers those refusals with 400, not 500', async () => {
