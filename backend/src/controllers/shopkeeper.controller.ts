@@ -926,7 +926,10 @@ async function flagUnresolvableItemsForRefund(orderId: string, itemIds: string[]
   const ids = (stillWaiting || []).map((i: any) => i.id as string);
   if (!ids.length) return;
 
-  console.error(
+  // A normal outcome (no shop nearby has the item), not a fault: a warning, so
+  // it stays out of the production error feed. Admin is told below (refund /
+  // COD bill notification). (review 2026-11-17)
+  console.warn(
     `[reallocateMissingItems] Order ${orderId}: ${ids.length} item(s) could not be reallocated within ${REALLOCATION_MAX_RADIUS_KM} km — IDs: ${ids.join(', ')}`
   );
 

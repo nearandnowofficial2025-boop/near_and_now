@@ -101,6 +101,9 @@ function notifIcon(type: string): NotifIcon {
 // Icon chip colours come from notificationTypeMeta's tone, limited to
 // brand / gray / blue / green — warning and danger tones render gray here;
 // the bell is a feed, not an alert surface.
+/** Unread ids fetched for the bell badge (it shows 1–9 or "9+"); see fetchNotifications. */
+const BADGE_UNREAD_PROBE = 20;
+
 const CHIP_TONE: Record<BadgeTone, string> = {
   brand: 'bg-brand-50 text-brand-700',
   info: 'bg-blue-50 text-blue-700',
@@ -143,18 +146,24 @@ const AdminHeader = ({ onToggleSidebar, sidebarExpanded, sidebarId }: AdminHeade
         .order('created_at', { ascending: false })
         .limit(8);
       // The list is capped at 8, so counting unread rows in it undercounts
-      // (and the badge could even vanish while unread items exist). An exact
-      // head-only count alongside — same filter as NotificationsPage.
-      const countQuery = adminId
+      // (and the badge could even vanish while unread items exist). The badge
+      // only shows 1–9 or "9+", so it needs at most a handful of unread ids,
+      // newest first: the query stops once it has them instead of counting
+      // every unread row in the table on each poll (3,000+ for most admins,
+      // review 2026-11-17). 20, not 10, so marking a few read one by one
+      // between polls (each lowers the count locally) still shows "9+".
+      const unreadQuery = adminId
         ? client
             .from('admin_notifications')
-            .select('id', { count: 'exact', head: true })
+            .select('id')
             .not('read_by', 'cs', `{${adminId}}`)
+            .order('created_at', { ascending: false })
+            .limit(BADGE_UNREAD_PROBE)
         : null;
 
-      const [listRes, countRes] = await Promise.all([listQuery, countQuery]);
+      const [listRes, unreadRes] = await Promise.all([listQuery, unreadQuery]);
       if (listRes.data) setNotifications(listRes.data as DbNotification[]);
-      if (countRes && !countRes.error && countRes.count != null) setServerUnread(countRes.count);
+      if (unreadRes && !unreadRes.error && Array.isArray(unreadRes.data)) setServerUnread(unreadRes.data.length);
     } catch (err) {
       console.error('Failed to load notifications:', err);
     } finally {
@@ -288,7 +297,7 @@ const AdminHeader = ({ onToggleSidebar, sidebarExpanded, sidebarId }: AdminHeade
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <IconButton
-            aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+            aria-label={unreadCount > 0 ? `Notifications, ${unreadLabel} unread` : 'Notifications'}
             aria-haspopup="dialog"
             aria-expanded={notifOpen}
             aria-controls={notifOpen ? notifPanelId : undefined}
