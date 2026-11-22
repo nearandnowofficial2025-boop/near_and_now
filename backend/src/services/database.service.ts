@@ -1019,7 +1019,7 @@ export class DatabaseService {
     const pricesP = settled(
       supabaseAdmin
         .from('master_products')
-        .select('id, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g, is_active')
+        .select('id, discounted_price, gst_rate, is_loose, min_quantity, max_quantity, piece_weight_g, is_active, fees_waived')
         .in('id', masterProductIds)
     );
     const couponRowP = orderData.coupon_id
@@ -1059,11 +1059,14 @@ export class DatabaseService {
     // Whether a loose item in the cart costs more here today than its
     // catalogue price: an app that only knows catalogue prices can't show it.
     let loosePriceAboveCatalogue = false;
+    // Internal payment-test items (master_products.fees_waived, 2026-11-19).
+    const feesWaivedMasters = new Set<string>();
     for (const row of masterPriceRows || []) {
       // A master product the admin delisted is hidden from the catalogue
       // (productRowsToProducts drops inactive masters) but was still orderable
       // from a stale cart. Treat it as unavailable. (2026-10-04 audit)
       if ((row as any).is_active === false) continue;
+      if ((row as any).fees_waived === true) feesWaivedMasters.add(row.id);
       const regionPrice = (row as any).is_loose ? loosePrices.get(row.id) : undefined;
       if (regionPrice != null && regionPrice > Number((row as any).discounted_price)) loosePriceAboveCatalogue = true;
       masterById.set(row.id, (regionPrice != null ? { ...row, discounted_price: regionPrice } : row) as OrderLineMaster);
@@ -1186,8 +1189,14 @@ export class DatabaseService {
     // prices (GST already inside them) + PLATFORM_FEE + HANDLING_FEE +
     // trustedDeliveryFee (currently always 0) - trustedDiscountAmount +
     // tip_amount. Clients round the total to the rupee, hence the ₹1 margin.
-    const PLATFORM_FEE = 9.5;
-    const HANDLING_FEE = 5.5;
+    // Both fees are ₹0 when every line is an internal payment-test item
+    // (master_products.fees_waived) so a live Razorpay test charges only the
+    // item price. One normal item in the cart and both fees apply as usual.
+    // A client that still adds the fees sends a higher order_total, and the
+    // ceiling below charges the server total instead.
+    const feesWaived = items.length > 0 && items.every((it) => feesWaivedMasters.has((it.product_id || it.id) as string));
+    const PLATFORM_FEE = feesWaived ? 0 : 9.5;
+    const HANDLING_FEE = feesWaived ? 0 : 5.5;
     const trustedFloor =
       trustedSubtotal + PLATFORM_FEE + HANDLING_FEE + trustedDeliveryFee - trustedDiscountAmount + trustedTipAmount;
     if (orderData.order_total < trustedFloor - 1) {

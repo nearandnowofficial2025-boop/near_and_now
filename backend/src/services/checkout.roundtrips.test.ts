@@ -257,3 +257,51 @@ describe('placeCheckoutOrder', () => {
     expect(fake.roundTrips()).toBe(7);
   });
 });
+
+// Internal payment-test items (master_products.fees_waived, 2026-11-19): a
+// cart of only those pays no platform/handling fee; one normal item and both
+// fees apply as usual.
+describe('placeCheckoutOrder — fees_waived test items', () => {
+  const withTestItem = (c: Call): Result | undefined =>
+    c.table === 'master_products'
+      ? ok([
+          { id: U(1), discounted_price: 1, gst_rate: 0, is_loose: false, min_quantity: 1, max_quantity: 5, is_active: true, fees_waived: true },
+          { id: U(3), discounted_price: 100, gst_rate: 12, is_loose: false, min_quantity: 1, max_quantity: 5, is_active: true, fees_waived: false },
+        ])
+      : setup()(c);
+  const TEST_ORDER = { ...ORDER, coupon_id: undefined, items: [{ product_id: U(1), name: 'Payment Test Item ₹1', price: 1, quantity: 1 }] };
+
+  async function placeWith(order: Record<string, unknown>) {
+    const fake = installFakeSupabase(supabaseAdmin, withTestItem);
+    try {
+      const result = await databaseService.placeCheckoutOrder(order as never);
+      return { fake, result, error: null as string | null };
+    } catch (e) {
+      return { fake, result: null, error: (e as Error).message };
+    }
+  }
+  const totalOf = (fake: ReturnType<typeof installFakeSupabase>) =>
+    (fake.on('rpc:place_broadcast_order')[0].payload as { p_customer_order: { total_amount: number } }).p_customer_order.total_amount;
+
+  it('charges only the item price for a cart of test items', async () => {
+    const { fake, error } = await placeWith({ ...TEST_ORDER, order_total: 1 });
+    expect(error).toBeNull();
+    expect(totalOf(fake)).toBe(1);
+  });
+
+  it('charges the item price when an app that still adds the fees sends ₹16', async () => {
+    const { fake, result, error } = await placeWith({ ...TEST_ORDER, order_total: 16 });
+    expect(error).toBeNull();
+    expect(result?.order_total).toBe(1);
+    expect(totalOf(fake)).toBe(1);
+  });
+
+  it('keeps both fees when a normal item is in the cart', async () => {
+    const mixed = { ...TEST_ORDER, items: [...TEST_ORDER.items, { product_id: U(3), name: 'Ghee', price: 1, quantity: 1 }] };
+    const ok116 = await placeWith({ ...mixed, order_total: 116 });
+    expect(ok116.error).toBeNull();
+    expect(totalOf(ok116.fake)).toBe(116);
+    const short = await placeWith({ ...mixed, order_total: 101 });
+    expect(short.error).toMatch(/does not match item prices/);
+  });
+});

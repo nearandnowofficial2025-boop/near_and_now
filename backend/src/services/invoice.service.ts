@@ -327,17 +327,18 @@ async function fetchOrderData(orderId: string) {
   }
 
   const masterIds = [...new Set(Array.from(masterIdByProduct.values()))];
-  const masterInfoById = new Map<string, { gst_rate: number; is_loose: boolean; hsn_code: string }>();
+  const masterInfoById = new Map<string, { gst_rate: number; is_loose: boolean; hsn_code: string; fees_waived?: boolean }>();
   if (masterIds.length) {
     const { data: masterRows } = await supabaseAdmin
       .from('master_products')
-      .select('id, gst_rate, is_loose, hsn_code')
+      .select('id, gst_rate, is_loose, hsn_code, fees_waived')
       .in('id', masterIds);
     for (const m of masterRows || []) {
       masterInfoById.set((m as any).id, {
         gst_rate: Number((m as any).gst_rate) || 0,
         is_loose: Boolean((m as any).is_loose),
         hsn_code: ((m as any).hsn_code || '').trim(),
+        fees_waived: (m as any).fees_waived === true,
       });
     }
   }
@@ -358,7 +359,11 @@ async function fetchOrderData(orderId: string) {
     // Loose products carry no per-item GST (matches checkout pricing rule).
     it.gst_rate = info?.is_loose ? 0 : (info?.gst_rate ?? 0);
     it.hsn_code = info?.hsn_code || '';
+    it.fees_waived = (info as { fees_waived?: boolean } | undefined)?.fees_waived === true;
   }
+  // Checkout charged no platform/handling fee when every line was an internal
+  // payment-test item (master_products.fees_waived; placeCheckoutOrder).
+  const feesWaived = allItems.length > 0 && allItems.every((it: any) => it.fees_waived === true);
 
   // Group items by their own store order — this is what actually drives the
   // per-store invoice pages.
@@ -403,7 +408,7 @@ async function fetchOrderData(orderId: string) {
 
   return {
     order, customer, appUser, storeOrders, itemsByStoreOrder, storesById,
-    deliveryPartner, payment,
+    deliveryPartner, payment, feesWaived,
   };
 }
 
@@ -540,7 +545,8 @@ function buildInvoiceData(raw: Awaited<ReturnType<typeof fetchOrderData>>): Invo
   const handlingFeeBase = round2(handlingFeeWithGst / (1 + feeGstRate));
   const handlingFeeGst = round2(handlingFeeWithGst - handlingFeeBase);
 
-  const feeLines: FeeLine[] = [
+  // No fee lines when checkout waived both fees (fetchOrderData's feesWaived).
+  const feeLines: FeeLine[] = raw.feesWaived ? [] : [
     {
       label: 'Platform / Processing Fee',
       total: platformFeeWithGst,
@@ -569,7 +575,7 @@ function buildInvoiceData(raw: Awaited<ReturnType<typeof fetchOrderData>>): Invo
   const cgstTotal = round2(itemsCgstTotal + feesCgstTotal);
   const sgstTotal = round2(itemsSgstTotal + feesSgstTotal);
   const igstTotal = itemsIgstTotal;
-  const taxableAmount = round2(itemsTaxableAmount + platformFeeBase + handlingFeeBase);
+  const taxableAmount = round2(itemsTaxableAmount + feeLines.reduce((s, f) => s + f.base, 0));
 
   const computedSubtotal = round2(itemsSubtotal + feesTotal + deliveryFee + tipAmount - discountAmount);
 
