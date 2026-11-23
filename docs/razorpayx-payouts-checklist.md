@@ -13,7 +13,7 @@ Legend: ✅ done · ⏳ waiting on someone · ❌ to do
 | RazorpayX business account | ✅ Activated (live mode) |
 | Plan / source account / balance | ⏳ Blocked — "Add account" needs a plan upgrade. Support ticket raised 23 Nov ("Payouts Related") |
 | Store payout code (bank account) | ✅ Built, deployed, switched **off** (`STORE_PAYOUTS_ENABLED` not set) |
-| Store payout code (UPI ID) | ✅ Built + tested 23 Nov, committed + pushed (backend/admin deploy on push) — **migration not applied yet**, shopkeeper build pending |
+| Store payout code (UPI ID) | ✅ Built, tested, pushed, deployed; migration applied 23 Nov — shopkeeper app build pending |
 | Dept Store payout details | ❌ None yet (fake bank details cleared 23 Nov) |
 | Rider payouts | ✅ Manual (admin pays by UPI, then "Mark paid"); no RazorpayX |
 | Live payments | ✅ Production on live Razorpay keys since 23 Nov; 0 live payments so far |
@@ -60,8 +60,9 @@ Set these on the `near-and-now-backend` project, Production only, then redeploy:
 
 ## 4. Clean-up before switching payouts on ⚠️
 
-- ❌ **Old test store orders.** A payout batch picks up *every* delivered, never-paid store order. 9 such orders exist from Sept–Oct testing. Dept Store has 2: NN20260903-0004 (**₹4,999.05**, paid with a test-mode payment) and NN20260903-0003 (₹16.80, COD). Mark all 9 as already settled before enabling, or the first real payout pays ~₹5k for fake orders.
-- ❌ **Old test rider payouts.** 6 pending rows (₹102 total, Sept test deliveries) show as "owed" on the Rider payouts page. Mark them settled (or leave and ignore).
+- ✅ **Old test store orders — written off 23 Nov.** The 9 delivered Sept–Oct test store orders (₹9,887.82 in total, incl. Dept Store ₹4,999.05 and Ranjit ₹4,340.67) each got a `store_payouts` line with status `written_off`, so no payout batch will ever pick them up. Nothing was paid.
+- ✅ **Old test rider payouts — written off 23 Nov.** The 6 pending rows (₹102) are now `written_off` with a note; they no longer show on the admin's Pending list. Riders' earnings history is unchanged. The 1 genuinely paid row was not touched.
+- Note: `written_off` is a status only this clean-up uses; the code itself only writes `pending`/`paid`.
 - ✅ Dept Store's fake bank details (10-digit account, branch "Eue8e88") cleared 23 Nov; backup kept locally.
 
 ---
@@ -82,8 +83,8 @@ Safety nets already in the code: one open payout per store, the batch id as idem
 
 ### UPI support (added 23 Nov) — rollout order
 1. ✅ Committed + pushed backend/admin (near-and-now) and the shopkeeper app. The backend is safe to run **before** the migration: without the column, stores simply have no UPI ID and the bank flow is unchanged.
-2. ❌ Apply migration `supabase/migrations/20261123000000_store_payout_upi.sql` to production (adds `stores.payout_upi_id`, `store_payout_accounts.method/vpa`, and lets the review step apply/remove a UPI ID). Apply with `supabase db query --linked -f <file>` + `supabase migration repair --status applied 20261123000000` (plain `db push` trips on an older history gap).
-3. ❌ New shopkeeper app build (the Billing screen's UPI field and "UPI transfers" card) — **only after step 2**, otherwise an approved UPI ID is silently not saved. Old builds keep working — they just can't enter a UPI ID.
+2. ✅ (applied 23 Nov, recorded in migration history) Apply migration `supabase/migrations/20261123000000_store_payout_upi.sql` to production (adds `stores.payout_upi_id`, `store_payout_accounts.method/vpa`, and lets the review step apply/remove a UPI ID). Apply with `supabase db query --linked -f <file>` + `supabase migration repair --status applied 20261123000000` (plain `db push` trips on an older history gap).
+3. ❌ New shopkeeper app build (the Billing screen's UPI field and "UPI transfers" card) — safe now that step 2 is done. Old builds keep working — they just can't enter a UPI ID.
 
 ---
 
