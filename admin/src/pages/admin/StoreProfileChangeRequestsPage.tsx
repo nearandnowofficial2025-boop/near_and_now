@@ -75,13 +75,15 @@ const FIELD_LABELS: Record<string, string> = {
   bank_branch_name: 'Bank branch',
   bank_account_holder_name: 'Account holder name',
   bank_passbook_storage_path: 'Passbook/cheque photo',
+  payout_upi_id: 'UPI ID',
 };
 
 /** Values an admin must read character by character — shown in a monospace face. */
-const MONO_FIELDS = new Set(['bank_account_number', 'bank_ifsc_code', 'phone']);
+const MONO_FIELDS = new Set(['bank_account_number', 'bank_ifsc_code', 'phone', 'payout_upi_id']);
 
+/** Fields that decide where a store's payouts go. */
 function isBankField(field: string): boolean {
-  return field.startsWith('bank_');
+  return field.startsWith('bank_') || field === 'payout_upi_id';
 }
 
 /**
@@ -367,7 +369,8 @@ function RequestPanel({ request: req, canEdit, acting, onApprove, onReject }: Re
                         MONO_FIELDS.has(field) && 'font-mono',
                       )}
                     >
-                      {diff.new}
+                      {/* An emptied UPI ID removes it on approval. */}
+                      {diff.new || (field === 'payout_upi_id' ? '(removed)' : diff.new)}
                     </Td>
                   </>
                 )}
@@ -584,7 +587,7 @@ const StoreProfileChangeRequestsPage = () => {
           {touchesBank ? (
             <p className="font-medium text-gray-900">
               This changes payout details. Verify the account number and IFSC against the passbook or cheque
-              photo before approving.
+              photo, and that any UPI ID belongs to the store owner, before approving.
             </p>
           ) : null}
         </div>

@@ -137,11 +137,13 @@ export async function getStoreBillingInfo(req: Request, res: Response) {
         bankIfscCode: store.bank_ifsc_code ?? null,
         bankBranchName: store.bank_branch_name ?? null,
         bankAccountHolderName: store.bank_account_holder_name ?? null,
+        payoutUpiId: store.payout_upi_id ?? null,
         passbookUrl,
         pendingBankAccountNumber: pendingChanges.bank_account_number?.new ?? null,
         pendingBankIfscCode: pendingChanges.bank_ifsc_code?.new ?? null,
         pendingBankBranchName: pendingChanges.bank_branch_name?.new ?? null,
         pendingBankAccountHolderName: pendingChanges.bank_account_holder_name?.new ?? null,
+        pendingPayoutUpiId: pendingChanges.payout_upi_id?.new ?? null,
         pendingPassbookUrl,
       },
     });

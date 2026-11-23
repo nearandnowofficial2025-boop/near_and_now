@@ -5,13 +5,13 @@ import { installFakeSupabase } from '../test/fakeSupabase.js';
 
 afterEach(() => vi.restoreAllMocks());
 
-describe('selectStoreBillingRow (deploy before or after migration 20261028000000)', () => {
+describe('selectStoreBillingRow (deploy before or after migrations 20261028000000 / 20261123000000)', () => {
   it('reads the holder name when the column exists', async () => {
     const fake = installFakeSupabase(supabaseAdmin, () => ({ data: { owner_id: 'u1', bank_account_holder_name: 'Ramesh Das' }, error: null }));
     const { data } = await selectStoreBillingRow('s1', 'owner_id');
     expect(data).toEqual({ owner_id: 'u1', bank_account_holder_name: 'Ramesh Das' });
     expect(fake.calls).toHaveLength(1);
-    expect(fake.calls[0].columns).toBe('owner_id, bank_account_holder_name');
+    expect(fake.calls[0].columns).toBe('owner_id, bank_account_holder_name, payout_upi_id');
   });
 
   it('falls back to the old columns while the migration is not applied yet', async () => {
@@ -24,7 +24,7 @@ describe('selectStoreBillingRow (deploy before or after migration 20261028000000
     const { data, error } = await selectStoreBillingRow('s1', 'owner_id');
     expect(error).toBeNull();
     expect(data).toEqual({ owner_id: 'u1' });
-    expect(fake.calls.map((c) => c.columns)).toEqual(['owner_id, bank_account_holder_name', 'owner_id']);
+    expect(fake.calls.map((c) => c.columns)).toEqual(['owner_id, bank_account_holder_name, payout_upi_id', 'owner_id']);
   });
 
   it('passes other errors straight through', async () => {

@@ -1,7 +1,7 @@
 /**
  * RazorpayX store payouts (2026-10-28): bank registration + penny-drop check,
- * batch preparation, the send path's double-pay protections, payout webhooks
- * and the switched-off default. RazorpayX is a recorded fetch stub — nothing
+ * UPI ID registration + lookup (2026-11-23), batch preparation, the send
+ * path's double-pay protections, payout webhooks and the switched-off default. RazorpayX is a recorded fetch stub — nothing
  * here reaches the network.
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -14,15 +14,19 @@ import {
   bankFingerprint,
   cancelBatch,
   listForAdmin,
+  listForStore,
+  maskUpiId,
+  missingPayoutFields,
   namesMatch,
   prepareBatches,
-  registerStoreBankAccount,
+  registerStorePayoutAccount,
   sendBatch,
+  upiFingerprint,
 } from './storePayouts.service.js';
 import { installFakeSupabase, hasFilter, type Call, type Result } from '../test/fakeSupabase.js';
 
 const ok = (data: unknown): Result => ({ data, error: null });
-const ENV_KEYS = ['STORE_PAYOUTS_ENABLED', 'RAZORPAYX_ACCOUNT_NUMBER', 'RAZORPAYX_KEY_ID', 'RAZORPAYX_KEY_SECRET', 'STORE_COMMISSION_PERCENT', 'STORE_PAYOUT_HOLD_HOURS', 'RAZORPAYX_WEBHOOK_SECRET'] as const;
+const ENV_KEYS = ['STORE_PAYOUTS_ENABLED', 'RAZORPAYX_ACCOUNT_NUMBER', 'RAZORPAYX_KEY_ID', 'RAZORPAYX_KEY_SECRET', 'STORE_COMMISSION_PERCENT', 'STORE_PAYOUT_HOLD_HOURS', 'RAZORPAYX_WEBHOOK_SECRET', 'STORE_PAYOUT_MODE'] as const;
 let savedEnv: Record<string, string | undefined> = {};
 
 type Req = { method: string; path: string; body: any; headers: Record<string, string> };
@@ -89,7 +93,7 @@ describe('switched off (default)', () => {
   it('refuses every money action with the reason, and touches neither the DB nor RazorpayX', async () => {
     delete process.env.STORE_PAYOUTS_ENABLED;
     const fake = installFakeSupabase(supabaseAdmin);
-    await expect(registerStoreBankAccount('s1', 'a1')).rejects.toMatchObject({ status: 503, message: expect.stringContaining('not enabled') });
+    await expect(registerStorePayoutAccount('s1', 'a1')).rejects.toMatchObject({ status: 503, message: expect.stringContaining('not enabled') });
     await expect(prepareBatches(undefined, 'a1')).rejects.toMatchObject({ status: 503 });
     await expect(sendBatch('batch-1', 'a1')).rejects.toMatchObject({ status: 503 });
     expect(fake.calls).toHaveLength(0);
@@ -102,14 +106,20 @@ describe('switched off (default)', () => {
     const page = await listForAdmin();
     expect(page.enabled).toBe(false);
     expect(page.blocked_reason).toContain('not enabled');
-    expect(page.stores[0]).toMatchObject({ store_id: 's1', missing_bank_fields: [], account: null });
+    expect(page.stores[0]).toMatchObject({ store_id: 's1', available_methods: ['bank_account'], missing_payout_fields: [], upi_id: null, account: null });
   });
 });
 
-describe('registerStoreBankAccount', () => {
+describe('registerStorePayoutAccount', () => {
   it('needs the approved holder name, account number and IFSC first', async () => {
     installFakeSupabase(supabaseAdmin, (c) => (c.table === 'stores' ? ok({ ...STORE, bank_account_holder_name: null }) : undefined));
-    await expect(registerStoreBankAccount('s1', 'a1')).rejects.toMatchObject({ status: 400, message: expect.stringContaining('account holder name') });
+    await expect(registerStorePayoutAccount('s1', 'a1')).rejects.toMatchObject({ status: 400, message: expect.stringContaining('account holder name') });
+    expect(requests).toHaveLength(0);
+  });
+
+  it('a store with neither a full bank account nor a UPI ID cannot be registered', async () => {
+    installFakeSupabase(supabaseAdmin, (c) => (c.table === 'stores' ? ok({ ...STORE, bank_ifsc_code: null }) : undefined));
+    await expect(registerStorePayoutAccount('s1', 'a1')).rejects.toMatchObject({ status: 400, message: expect.stringContaining('IFSC (or a UPI ID)') });
     expect(requests).toHaveLength(0);
   });
 
@@ -127,14 +137,14 @@ describe('registerStoreBankAccount', () => {
       return undefined;
     });
 
-    const account = await registerStoreBankAccount('s1', 'a1');
+    const account = await registerStorePayoutAccount('s1', 'a1');
 
     expect(requests.map((r) => `${r.method} ${r.path}`)).toEqual(['POST /contacts', 'POST /fund_accounts', 'POST /fund_accounts/validations']);
     expect(requests[0].body).toMatchObject({ name: 'Maa Tara Stores', type: 'vendor', reference_id: 's1', email: 'owner@example.com' });
     expect(requests[1].body).toEqual({ contact_id: 'cont_1', account_type: 'bank_account', bank_account: { name: 'Ramesh Kumar Das', ifsc: 'SBIN0001234', account_number: '123456789012' } });
     expect(requests[2].body).toMatchObject({ account_number: '7878780080316316', fund_account: { id: 'fa_1' }, amount: 100 });
     const saved = fake.on('store_payout_accounts', 'upsert')[0].payload as Record<string, unknown>;
-    expect(saved).toMatchObject({ store_id: 's1', account_last4: '9012', bank_fingerprint: FP, validation_status: 'pending', validation_id: 'fav_1' });
+    expect(saved).toMatchObject({ store_id: 's1', method: 'bank_account', vpa: null, account_last4: '9012', ifsc: 'SBIN0001234', bank_fingerprint: FP, validation_status: 'pending', validation_id: 'fav_1' });
     expect(JSON.stringify(saved)).not.toContain('123456789012');
     expect(account.validation_status).toBe('pending');
   });
@@ -145,7 +155,7 @@ describe('registerStoreBankAccount', () => {
       if (c.table === 'store_payout_accounts') return ok(verifiedAccount());
       return undefined;
     });
-    const account = await registerStoreBankAccount('s1', 'a1');
+    const account = await registerStorePayoutAccount('s1', 'a1');
     expect(account.validation_status).toBe('verified');
     expect(requests).toHaveLength(0);
   });
@@ -355,5 +365,241 @@ describe('cancelBatch', () => {
     await expect(cancelBatch('batch-1')).rejects.toMatchObject({ message: expect.stringContaining('already has this payout') });
     expect(current).toMatchObject({ status: 'processing', razorpayx_payout_id: 'pout_1' });
     expect(fake.on('store_payouts', 'delete')).toHaveLength(0);
+  });
+});
+
+// ── UPI ID payouts (2026-11-23) ──────────────────────────────────────────────
+
+const UPI_STORE = { ...STORE, bank_account_number: null, bank_ifsc_code: null, payout_upi_id: 'ramesh.das@okhdfcbank' };
+const UPI_FP = upiFingerprint('ramesh.das@okhdfcbank', 'Ramesh Kumar Das');
+const verifiedUpiAccount = (over: Record<string, unknown> = {}) =>
+  verifiedAccount({ method: 'vpa', vpa: 'ramesh.das@okhdfcbank', account_last4: null, ifsc: null, bank_fingerprint: UPI_FP, razorpayx_fund_account_id: 'fa_upi', ...over });
+
+describe('missingPayoutFields / maskUpiId', () => {
+  it.each([
+    [{ ...STORE }, []],
+    [{ ...UPI_STORE }, []],
+    [{ ...STORE, bank_account_holder_name: null }, ['account holder name']],
+    [{ ...UPI_STORE, bank_account_holder_name: null }, ['account holder name']],
+    [{ ...STORE, bank_account_number: null, bank_ifsc_code: null }, ['bank account or UPI ID']],
+    [{ ...STORE, bank_ifsc_code: null }, ['IFSC (or a UPI ID)']],
+    [{ ...STORE, bank_account_number: null }, ['account number (or a UPI ID)']],
+    [{ ...STORE, bank_ifsc_code: null, payout_upi_id: 'x@ybl' }, []],
+  ])('%o → %o', (store, expected) => {
+    expect(missingPayoutFields(store as never)).toEqual(expected);
+  });
+
+  it('masks a UPI ID down to its first two characters and handle', () => {
+    expect(maskUpiId('ramesh.das@okhdfcbank')).toBe('ra•••@okhdfcbank');
+    expect(maskUpiId('9@ybl')).toBe('9•••@ybl');
+    expect(maskUpiId(null)).toBeNull();
+  });
+});
+
+describe('registerStorePayoutAccount — UPI', () => {
+  function upiWorld(store: Record<string, unknown>, existing: unknown = null) {
+    return installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'stores') return ok(store);
+      if (c.table === 'app_users') return ok({ email: 'owner@example.com' });
+      if (c.table === 'store_payout_accounts' && c.op === 'select') return ok(existing);
+      if (c.table === 'store_payout_accounts' && c.op === 'upsert') return ok({ ...(c.payload as object) });
+      return undefined;
+    });
+  }
+  const routes = {
+    'POST /contacts': () => ({ body: { id: 'cont_1' } }),
+    'POST /fund_accounts/validations': () => ({ body: { id: 'fav_2', status: 'created' } }),
+    'POST /fund_accounts': () => ({ body: { id: 'fa_upi' } }),
+    'PATCH /fund_accounts/': () => ({ body: { id: 'fa_1', active: false } }),
+  };
+
+  it('a UPI-only store: vpa fund account, validation with no money (no amount), row stores the UPI ID and no bank fields', async () => {
+    stubRazorpayX(routes);
+    const fake = upiWorld(UPI_STORE);
+
+    const account = await registerStorePayoutAccount('s1', 'a1');
+
+    expect(requests.map((r) => `${r.method} ${r.path}`)).toEqual(['POST /contacts', 'POST /fund_accounts', 'POST /fund_accounts/validations']);
+    expect(requests[1].body).toEqual({ contact_id: 'cont_1', account_type: 'vpa', vpa: { address: 'ramesh.das@okhdfcbank' } });
+    expect(requests[2].body).toEqual({ account_number: '7878780080316316', fund_account: { id: 'fa_upi' }, notes: { store_id: 's1' } });
+    const saved = fake.on('store_payout_accounts', 'upsert')[0].payload as Record<string, unknown>;
+    expect(saved).toMatchObject({ method: 'vpa', vpa: 'ramesh.das@okhdfcbank', account_last4: null, ifsc: null, bank_fingerprint: UPI_FP, holder_name: 'Ramesh Kumar Das', validation_status: 'pending' });
+    expect(account.method).toBe('vpa');
+  });
+
+  it('a store with both: bank by default, UPI when asked for', async () => {
+    const both = { ...STORE, payout_upi_id: 'ramesh.das@okhdfcbank' };
+    stubRazorpayX(routes);
+    let fake = upiWorld(both);
+    await registerStorePayoutAccount('s1', 'a1');
+    expect((fake.on('store_payout_accounts', 'upsert')[0].payload as Record<string, unknown>).method).toBe('bank_account');
+    expect(requests[1].body).toMatchObject({ account_type: 'bank_account' });
+
+    stubRazorpayX(routes);
+    fake = upiWorld(both);
+    await registerStorePayoutAccount('s1', 'a1', 'vpa');
+    expect((fake.on('store_payout_accounts', 'upsert')[0].payload as Record<string, unknown>).method).toBe('vpa');
+    expect(requests[1].body).toMatchObject({ account_type: 'vpa' });
+  });
+
+  it('asking for UPI when the store has none (or for a bank it lacks) is refused before RazorpayX', async () => {
+    upiWorld(STORE);
+    await expect(registerStorePayoutAccount('s1', 'a1', 'vpa')).rejects.toMatchObject({ status: 400, message: expect.stringContaining('no approved UPI ID') });
+    upiWorld(UPI_STORE);
+    await expect(registerStorePayoutAccount('s1', 'a1', 'bank_account')).rejects.toMatchObject({ status: 400, message: expect.stringContaining('bank details are missing') });
+    expect(requests).toHaveLength(0);
+  });
+
+  it('switching a verified bank account to UPI keeps the contact, adds a vpa fund account and retires the bank one', async () => {
+    stubRazorpayX(routes);
+    const fake = upiWorld({ ...STORE, payout_upi_id: 'ramesh.das@okhdfcbank' }, verifiedAccount());
+
+    await registerStorePayoutAccount('s1', 'a1', 'vpa');
+
+    expect(requests.map((r) => `${r.method} ${r.path}`)).toEqual(['POST /fund_accounts', 'PATCH /fund_accounts/fa_1', 'POST /fund_accounts/validations']);
+    expect(requests[0].body).toMatchObject({ contact_id: 'cont_1', account_type: 'vpa' });
+    expect(fake.on('store_payout_accounts', 'upsert')[0].payload).toMatchObject({ method: 'vpa', razorpayx_fund_account_id: 'fa_upi', validation_status: 'pending' });
+  });
+
+  it('the same UPI ID already registered: nothing to do; without asking, a verified bank account stays', async () => {
+    upiWorld(UPI_STORE, verifiedUpiAccount());
+    expect(await registerStorePayoutAccount('s1', 'a1')).toMatchObject({ method: 'vpa', validation_status: 'verified' });
+    upiWorld({ ...STORE, payout_upi_id: 'ramesh.das@okhdfcbank' }, verifiedAccount());
+    expect(await registerStorePayoutAccount('s1', 'a1')).toMatchObject({ validation_status: 'verified', bank_fingerprint: FP });
+    expect(requests).toHaveLength(0);
+  });
+
+  it('the UPI lookup result is booked like a penny drop (name compared with the holder name)', async () => {
+    const pending = verifiedUpiAccount({ validation_status: 'pending', validated_name: null });
+    const fake = installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'store_payout_accounts' && c.op === 'select') return ok(pending);
+      if (c.table === 'store_payout_accounts' && c.op === 'update') return ok([{ ...pending, ...(c.payload as object) }]);
+      return undefined;
+    });
+    await applyValidationResult({ id: 'fav_1', status: 'completed', results: { account_status: 'active', registered_name: 'RAMESH KUMAR DAS' } });
+    expect(fake.on('store_payout_accounts', 'update')[0].payload).toMatchObject({ validation_status: 'verified' });
+  });
+});
+
+describe('sendBatch — UPI', () => {
+  function world(store: Record<string, unknown>, account: Record<string, unknown>, batch = draftBatch()) {
+    let current = { ...batch };
+    return installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'store_payout_batches' && c.op === 'select') return ok(current);
+      if (c.table === 'store_payout_batches' && c.op === 'update') { current = { ...current, ...(c.payload as object) }; return ok([current]); }
+      if (c.table === 'store_payout_accounts') return ok(account);
+      if (c.table === 'stores') return ok(store);
+      return undefined;
+    });
+  }
+
+  it('pays a verified UPI ID by mode UPI (whatever STORE_PAYOUT_MODE says) and records the mode', async () => {
+    process.env.STORE_PAYOUT_MODE = 'NEFT';
+    stubRazorpayX({ 'POST /payouts': () => ({ body: { id: 'pout_1', status: 'pending', reference_id: 'batch-1' } }) });
+    const fake = world(UPI_STORE, verifiedUpiAccount());
+
+    const batch = await sendBatch('batch-1', 'a1');
+
+    expect(requests[0].body).toMatchObject({ fund_account_id: 'fa_upi', amount: 13500, mode: 'UPI', reference_id: 'batch-1' });
+    expect(fake.on('store_payout_batches', 'update')[0].payload).toMatchObject({ mode: 'UPI', razorpayx_fund_account_id: 'fa_upi' });
+    // RazorpayX now holds every API payout as `pending` until approved on the dashboard.
+    expect(batch).toMatchObject({ status: 'processing', razorpayx_status: 'pending' });
+    delete process.env.STORE_PAYOUT_MODE;
+  });
+
+  it('refuses when the UPI ID changed after verification', async () => {
+    world({ ...UPI_STORE, payout_upi_id: 'someone.else@ybl' }, verifiedUpiAccount());
+    await expect(sendBatch('batch-1', 'a1')).rejects.toMatchObject({ message: expect.stringContaining('UPI ID changed') });
+    expect(requests).toHaveLength(0);
+  });
+
+  it('a bank account change does not block a store paid by UPI', async () => {
+    stubRazorpayX({ 'POST /payouts': () => ({ body: { id: 'pout_1', status: 'processing', reference_id: 'batch-1' } }) });
+    world({ ...UPI_STORE, bank_account_number: '111111111111', bank_ifsc_code: 'HDFC0000001' }, verifiedUpiAccount());
+    await expect(sendBatch('batch-1', 'a1')).resolves.toMatchObject({ status: 'processing' });
+  });
+
+  it('refuses a UPI payout over ₹1,00,000', async () => {
+    world(UPI_STORE, verifiedUpiAccount(), draftBatch({ amount: 100000.5 }));
+    await expect(sendBatch('batch-1', 'a1')).rejects.toMatchObject({ message: expect.stringContaining('UPI payouts are limited') });
+    expect(requests).toHaveLength(0);
+  });
+
+  it('a bank-account store still pays by the configured mode (regression)', async () => {
+    process.env.STORE_PAYOUT_MODE = 'NEFT';
+    stubRazorpayX({ 'POST /payouts': () => ({ body: { id: 'pout_1', status: 'processing', reference_id: 'batch-1' } }) });
+    world(STORE, verifiedAccount());
+    await sendBatch('batch-1', 'a1');
+    expect(requests[0].body).toMatchObject({ mode: 'NEFT', fund_account_id: 'fa_1' });
+    delete process.env.STORE_PAYOUT_MODE;
+  });
+});
+
+describe('read models with UPI', () => {
+  it('admin page: methods on offer, masked UPI IDs, and a changed UPI ID flagged', async () => {
+    const stores = [
+      { ...STORE, payout_upi_id: 'ramesh.das@okhdfcbank' },
+      { ...UPI_STORE, id: 's2', payout_upi_id: 'new.id@ybl' },
+    ];
+    installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'stores') return ok(stores);
+      if (c.table === 'store_payout_accounts') return ok([verifiedAccount(), verifiedUpiAccount({ store_id: 's2' })]);
+      return ok([]);
+    });
+    const page = await listForAdmin();
+    expect(page.stores[0]).toMatchObject({
+      available_methods: ['bank_account', 'vpa'], upi_id: 'ra•••@okhdfcbank',
+      account: { method: 'bank_account', account_last4: '9012', upi_id: null, details_changed: false },
+    });
+    expect(page.stores[1]).toMatchObject({
+      available_methods: ['vpa'],
+      account: { method: 'vpa', upi_id: 'ra•••@okhdfcbank', details_changed: true },
+    });
+  });
+
+  it('a pre-UPI account row (no method column) still reads as a bank account', async () => {
+    const legacy = verifiedAccount();
+    expect('method' in legacy).toBe(false);
+    installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'stores') return ok([STORE]);
+      if (c.table === 'store_payout_accounts') return ok([legacy]);
+      return ok([]);
+    });
+    const page = await listForAdmin();
+    expect(page.stores[0].account).toMatchObject({ method: 'bank_account', details_changed: false });
+  });
+
+  it('shopkeeper history shows the method and only the masked UPI ID', async () => {
+    installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'store_payout_accounts') return ok(verifiedUpiAccount());
+      if (c.table === 'store_payout_batches') return ok([]);
+      return undefined;
+    });
+    const out = await listForStore('s1');
+    expect(out.account).toEqual({ status: 'verified', method: 'vpa', account_last4: null, upi_id: 'ra•••@okhdfcbank' });
+    expect(JSON.stringify(out)).not.toContain('ramesh.das@');
+  });
+});
+
+describe('deployed before migration 20261123000000', () => {
+  it('the admin page still loads without stores.payout_upi_id (no UPI IDs, bank flow unchanged)', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const fake = installFakeSupabase(supabaseAdmin, (c) => {
+      if (c.table === 'stores') {
+        return c.columns?.includes('payout_upi_id')
+          ? { data: null, error: { code: '42703', message: 'column stores.payout_upi_id does not exist' } }
+          : ok([STORE]);
+      }
+      if (c.table === 'store_payout_accounts') return ok([verifiedAccount()]);
+      return ok([]);
+    });
+    const page = await listForAdmin();
+    expect(page.stores[0]).toMatchObject({ available_methods: ['bank_account'], upi_id: null, account: { method: 'bank_account', details_changed: false } });
+    expect(fake.on('stores').map((c) => c.columns?.includes('payout_upi_id'))).toEqual([true, false]);
+  });
+
+  it('other read errors are not retried', async () => {
+    installFakeSupabase(supabaseAdmin, (c) => (c.table === 'stores' ? { data: null, error: { code: '57014', message: 'timeout' } } : ok([])));
+    await expect(listForAdmin()).rejects.toMatchObject({ code: '57014' });
   });
 });

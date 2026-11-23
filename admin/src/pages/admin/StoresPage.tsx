@@ -143,12 +143,16 @@ interface StoreBillingInfo {
   bankBranchName: string | null;
   /** Absent from backends older than 2026-10-28. */
   bankAccountHolderName?: string | null;
+  /** UPI ID for payouts — absent from backends older than 2026-11-23. */
+  payoutUpiId?: string | null;
   passbookUrl: string | null;
   /** Submitted but not yet approved — sit in store_profile_change_requests until an admin reviews them. */
   pendingBankAccountNumber: string | null;
   pendingBankIfscCode: string | null;
   pendingBankBranchName: string | null;
   pendingBankAccountHolderName?: string | null;
+  /** '' = the store asked to remove its UPI ID. */
+  pendingPayoutUpiId?: string | null;
   pendingPassbookUrl: string | null;
 }
 
@@ -366,14 +370,16 @@ const DocumentReviewModal = ({
   const hasBillingData =
     !!billingInfo && (
       !!billingInfo.bankAccountNumber || !!billingInfo.bankIfscCode || !!billingInfo.passbookUrl ||
-      !!billingInfo.bankAccountHolderName ||
+      !!billingInfo.bankAccountHolderName || !!billingInfo.payoutUpiId ||
       !!billingInfo.pendingBankAccountNumber || !!billingInfo.pendingBankIfscCode ||
-      !!billingInfo.pendingBankBranchName || !!billingInfo.pendingBankAccountHolderName || !!billingInfo.pendingPassbookUrl
+      !!billingInfo.pendingBankBranchName || !!billingInfo.pendingBankAccountHolderName || !!billingInfo.pendingPassbookUrl ||
+      billingInfo.pendingPayoutUpiId != null
     );
   const hasPendingBilling =
     !!billingInfo && (
       !!billingInfo.pendingBankAccountNumber || !!billingInfo.pendingBankIfscCode ||
-      !!billingInfo.pendingBankBranchName || !!billingInfo.pendingBankAccountHolderName || !!billingInfo.pendingPassbookUrl
+      !!billingInfo.pendingBankBranchName || !!billingInfo.pendingBankAccountHolderName || !!billingInfo.pendingPassbookUrl ||
+      billingInfo.pendingPayoutUpiId != null
     );
 
   return (
@@ -709,6 +715,10 @@ const DocumentReviewModal = ({
                       { label: 'IFSC code', value: billingInfo.bankIfscCode },
                       { label: 'Branch name', value: billingInfo.bankBranchName },
                       {
+                        label: 'UPI ID',
+                        value: billingInfo.payoutUpiId ? <span className="font-mono">{billingInfo.payoutUpiId}</span> : null,
+                      },
+                      {
                         label: 'Passbook / cheque photo',
                         fullWidth: true,
                         value: billingInfo.passbookUrl ? (
@@ -737,6 +747,9 @@ const DocumentReviewModal = ({
                     {billingInfo.pendingBankIfscCode && <li>IFSC: {billingInfo.pendingBankIfscCode}</li>}
                     {billingInfo.pendingBankBranchName && <li>Branch: {billingInfo.pendingBankBranchName}</li>}
                     {billingInfo.pendingBankAccountHolderName && <li>Account holder: {billingInfo.pendingBankAccountHolderName}</li>}
+                    {billingInfo.pendingPayoutUpiId != null && (
+                      <li>UPI ID: {billingInfo.pendingPayoutUpiId ? <span className="font-mono">{billingInfo.pendingPayoutUpiId}</span> : '(removed)'}</li>
+                    )}
                     {billingInfo.pendingPassbookUrl && (
                       <li>
                         <a href={billingInfo.pendingPassbookUrl} target="_blank" rel="noreferrer" className="font-medium underline">

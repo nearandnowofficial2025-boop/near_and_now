@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Landmark, RefreshCw, Send, ShieldCheck, Wallet, XCircle, CheckCircle } from 'lucide-react';
+import { Landmark, RefreshCw, Send, ShieldCheck, Smartphone, Wallet, XCircle, CheckCircle } from 'lucide-react';
 import { getAdminToken } from '../../services/adminSession';
 import { getCurrentAdmin } from '../../services/secureAdminAuth';
 import { hasPermission } from '../../services/adminAuthService';
@@ -36,22 +36,37 @@ function adminAuthHeaders(): Record<string, string> {
 }
 
 type AccountStatus = 'pending' | 'verified' | 'name_mismatch' | 'failed';
+type PayoutMethod = 'bank_account' | 'vpa';
 type BatchStatus = 'draft' | 'processing' | 'processed' | 'failed' | 'reversed' | 'cancelled';
 
 interface StoreRow {
   store_id: string;
   store_name: string | null;
-  missing_bank_fields: string[];
+  /** Approved payout methods the store can be registered with (empty → see missing_payout_fields). */
+  available_methods: PayoutMethod[];
+  missing_payout_fields: string[];
+  /** The store's approved UPI ID, masked. */
+  upi_id: string | null;
   account: {
     status: AccountStatus;
-    account_last4: string;
-    ifsc: string;
+    method: PayoutMethod;
+    account_last4: string | null;
+    ifsc: string | null;
+    upi_id: string | null;
     holder_name: string;
     validated_name: string | null;
     failure_reason: string | null;
     name_accepted: boolean;
-    bank_changed: boolean;
+    /** The approved details for the registered method changed since registering. */
+    details_changed: boolean;
   } | null;
+}
+
+const METHOD_LABEL: Record<PayoutMethod, string> = { bank_account: 'bank account', vpa: 'UPI ID' };
+
+/** "bank ••••9012 · SBIN0001234" or "UPI ra•••@okhdfcbank". */
+function accountLabel(a: NonNullable<StoreRow['account']>): string {
+  return a.method === 'vpa' ? `UPI ${a.upi_id ?? ''}` : `bank ••••${a.account_last4 ?? ''} · ${a.ifsc ?? ''}`;
 }
 
 interface BatchRow {
@@ -168,10 +183,12 @@ const StorePayoutsPage = () => {
     setBusyKey(null);
   };
 
-  const registerAccount = (s: StoreRow) =>
-    run(`register:${s.store_id}`, async () => {
-      await call(`/api/admin/store-payouts/accounts/${s.store_id}/register`, 'POST');
-      return `${s.store_name ?? 'Store'}: bank account registered, ₹1 check started`;
+  const registerAccount = (s: StoreRow, method: PayoutMethod) =>
+    run(`register:${s.store_id}:${method}`, async () => {
+      await call(`/api/admin/store-payouts/accounts/${s.store_id}/register`, 'POST', { method });
+      return method === 'vpa'
+        ? `${s.store_name ?? 'Store'}: UPI ID registered, checking it with the bank`
+        : `${s.store_name ?? 'Store'}: bank account registered, ₹1 check started`;
     });
 
   const refreshAccount = (s: StoreRow) =>
@@ -189,7 +206,9 @@ const StorePayoutsPage = () => {
             The bank has <span className="font-semibold text-gray-900">{s.account?.validated_name ?? '—'}</span> on this account; the store gave{' '}
             <span className="font-semibold text-gray-900">{s.account?.holder_name}</span>.
           </p>
-          <p className="text-gray-500">Only accept after checking the passbook photo shows the same person or business.</p>
+          <p className="text-gray-500">
+            Only accept after checking {s.account?.method === 'vpa' ? 'the UPI ID belongs to' : 'the passbook photo shows'} the same person or business.
+          </p>
         </div>
       ),
       confirmLabel: 'Accept name',
@@ -219,8 +238,8 @@ const StorePayoutsPage = () => {
           <p>
             <span className="font-semibold text-gray-900 tabular-nums">{formatCurrency(b.amount, { paise: true })}</span> to{' '}
             <span className="font-semibold text-gray-900">{b.store_name ?? 'this store'}</span>
-            {account ? <> (bank ••••{account.account_last4}, {account.ifsc})</> : null} for {formatNumber(b.line_count)} delivered order
-            {b.line_count === 1 ? '' : 's'}, by {data?.config.mode ?? 'IMPS'}.
+            {account ? <> ({accountLabel(account)})</> : null} for {formatNumber(b.line_count)} delivered order
+            {b.line_count === 1 ? '' : 's'}, by {account?.method === 'vpa' ? 'UPI' : data?.config.mode ?? 'IMPS'}.
           </p>
           <p className="text-gray-500">This sends real money from the RazorpayX account and cannot be undone here.</p>
         </div>
@@ -259,7 +278,7 @@ const StorePayoutsPage = () => {
   const batches = data?.batches ?? [];
   const blocked = data?.blocked_reason ?? null;
   const actionsOn = canEdit && !blocked;
-  const verifiedCount = stores.filter((s) => s.account?.status === 'verified' && !s.account.bank_changed).length;
+  const verifiedCount = stores.filter((s) => s.account?.status === 'verified' && !s.account.details_changed).length;
   const readyToSend = batches.filter((b) => b.status === 'draft');
   const paidLast = batches.filter((b) => b.status === 'processed').reduce((sum, b) => sum + Number(b.amount), 0);
 
@@ -267,7 +286,7 @@ const StorePayoutsPage = () => {
     <div className="space-y-6">
       <PageHeader
         title="Store payouts"
-        description="Pay stores their earnings by bank transfer through RazorpayX. Preparing a payout moves no money; only Send does."
+        description="Pay stores their earnings by bank transfer or UPI through RazorpayX. Preparing a payout moves no money; only Send does."
         actions={
           <>
             <Button variant="secondary" leftIcon={<RefreshCw />} onClick={() => load('refresh')} loading={refreshing} disabled={loading || refreshing}>
@@ -290,13 +309,13 @@ const StorePayoutsPage = () => {
 
       {blocked ? (
         <Alert tone="warning" title="Store payouts are switched off">
-          {blocked} Bank accounts and payouts below are read-only until the backend is configured.
+          {blocked} Payout accounts and payouts below are read-only until the backend is configured.
         </Alert>
       ) : null}
 
       {data ? (
         <StatGrid columns={3}>
-          <StatCard label="Stores ready for payouts" value={`${formatNumber(verifiedCount)} / ${formatNumber(stores.length)}`} hint="Bank account verified" icon={ShieldCheck} loading={loading} />
+          <StatCard label="Stores ready for payouts" value={`${formatNumber(verifiedCount)} / ${formatNumber(stores.length)}`} hint="Bank account or UPI ID verified" icon={ShieldCheck} loading={loading} />
           <StatCard label="Ready to send" value={formatNumber(readyToSend.length)} hint={formatCurrency(readyToSend.reduce((s, b) => s + Number(b.amount), 0), { paise: true })} icon={Send} loading={loading} />
           <StatCard
             label="Paid (shown below)"
@@ -328,7 +347,7 @@ const StorePayoutsPage = () => {
                 <TableSkeletonRows rows={4} cols={actionsOn ? 7 : 6} />
               ) : batches.length === 0 ? (
                 <TableEmptyRow colSpan={actionsOn ? 7 : 6}>
-                  <EmptyState compact icon={Wallet} title="No payouts yet" description="Verify stores' bank accounts below, then use Prepare payouts." />
+                  <EmptyState compact icon={Wallet} title="No payouts yet" description="Verify stores' bank accounts or UPI IDs below, then use Prepare payouts." />
                 </TableEmptyRow>
               ) : (
                 batches.map((b) => (
@@ -375,15 +394,15 @@ const StorePayoutsPage = () => {
 
       <Card>
         <CardHeader
-          title="Store bank accounts"
-          description="Registering sends the store's approved bank details to RazorpayX and a ₹1 test transfer confirms the account and the holder's name."
+          title="Store payout accounts"
+          description="Registering sends the store's approved bank account (checked with a ₹1 test transfer) or UPI ID (checked with a lookup, no money) to RazorpayX, which confirms the holder's name."
         />
         <TableContainer className="border-0 rounded-none">
           <Table>
             <THead>
               <Tr>
                 <Th>Store</Th>
-                <Th>Bank account</Th>
+                <Th>Payout account</Th>
                 <Th>Status</Th>
                 {actionsOn ? <Th align="right">Action</Th> : null}
               </Tr>
@@ -398,7 +417,23 @@ const StorePayoutsPage = () => {
               ) : (
                 stores.map((s) => {
                   const a = s.account;
-                  const ready = s.missing_bank_fields.length === 0;
+                  const methods = s.available_methods;
+                  // Register (again) when there's no usable account; otherwise offer the other approved method as a switch.
+                  const needsRegistration = !a || a.status === 'failed' || a.details_changed;
+                  const registerMethods = needsRegistration ? methods : methods.filter((m) => a && m !== a.method && a.status !== 'pending');
+                  const registerButtons = registerMethods.map((m, i) => (
+                    <Button
+                      key={m}
+                      size="sm"
+                      variant={needsRegistration && !a && i === 0 ? 'primary' : 'secondary'}
+                      leftIcon={m === 'vpa' ? <Smartphone /> : <Landmark />}
+                      onClick={() => registerAccount(s, m)}
+                      loading={busyKey === `register:${s.store_id}:${m}`}
+                      disabled={busyKey !== null}
+                    >
+                      {needsRegistration ? `Register ${m === 'vpa' ? 'UPI' : 'bank'}${a ? ' again' : ''}` : `Switch to ${m === 'vpa' ? 'UPI' : 'bank'}`}
+                    </Button>
+                  ));
                   return (
                     <Tr key={s.store_id}>
                       <Td className="font-medium text-gray-900">{s.store_name ?? '—'}</Td>
@@ -406,21 +441,23 @@ const StorePayoutsPage = () => {
                         {a ? (
                           <>
                             <div className="text-gray-900">{a.holder_name}</div>
-                            <div className="font-mono text-xs text-gray-500">••••{a.account_last4} · {a.ifsc}</div>
+                            <div className="font-mono text-xs text-gray-500">{accountLabel(a)}</div>
                           </>
-                        ) : ready ? (
-                          <span className="text-gray-500">Details approved, not registered yet</span>
+                        ) : methods.length ? (
+                          <span className="text-gray-500">
+                            Approved {methods.map((m) => (m === 'vpa' && s.upi_id ? `UPI ID (${s.upi_id})` : METHOD_LABEL[m])).join(' and ')}, not registered yet
+                          </span>
                         ) : (
-                          <span className="text-gray-500">Missing: {s.missing_bank_fields.join(', ')}</span>
+                          <span className="text-gray-500">Missing: {s.missing_payout_fields.join(', ')}</span>
                         )}
                       </Td>
                       <Td>
                         {a ? (
                           <>
-                            <Badge tone={a.bank_changed ? 'warning' : ACCOUNT_BADGE[a.status].tone}>
-                              {a.bank_changed ? 'Bank details changed' : ACCOUNT_BADGE[a.status].label}
+                            <Badge tone={a.details_changed ? 'warning' : ACCOUNT_BADGE[a.status].tone}>
+                              {a.details_changed ? `${a.method === 'vpa' ? 'UPI ID' : 'Bank details'} changed` : ACCOUNT_BADGE[a.status].label}
                             </Badge>
-                            {a.failure_reason && !a.bank_changed ? <div className="mt-1 max-w-xs text-xs text-gray-500">{a.failure_reason}</div> : null}
+                            {a.failure_reason && !a.details_changed ? <div className="mt-1 max-w-xs text-xs text-gray-500">{a.failure_reason}</div> : null}
                             {a.name_accepted ? <div className="mt-1 text-xs text-gray-500">Bank name "{a.validated_name}" accepted by an admin</div> : null}
                           </>
                         ) : (
@@ -429,19 +466,19 @@ const StorePayoutsPage = () => {
                       </Td>
                       {actionsOn ? (
                         <Td align="right" nowrap>
-                          {!a || a.status === 'failed' || a.bank_changed ? (
-                            <Button size="sm" variant={a ? 'secondary' : 'primary'} leftIcon={<Landmark />} onClick={() => registerAccount(s)} loading={busyKey === `register:${s.store_id}`} disabled={!ready || busyKey !== null}>
-                              {a ? 'Register again' : 'Register & verify'}
-                            </Button>
-                          ) : a.status === 'pending' ? (
-                            <Button size="sm" variant="secondary" leftIcon={<RefreshCw />} onClick={() => refreshAccount(s)} loading={busyKey === `check:${s.store_id}`} disabled={busyKey !== null}>
-                              Check status
-                            </Button>
-                          ) : a.status === 'name_mismatch' ? (
-                            <Button size="sm" variant="secondary" leftIcon={<CheckCircle />} onClick={() => acceptName(s)} loading={busyKey === `accept:${s.store_id}`} disabled={busyKey !== null}>
-                              Accept name
-                            </Button>
-                          ) : null}
+                          <div className="flex justify-end gap-2">
+                            {a && !needsRegistration && a.status === 'pending' ? (
+                              <Button size="sm" variant="secondary" leftIcon={<RefreshCw />} onClick={() => refreshAccount(s)} loading={busyKey === `check:${s.store_id}`} disabled={busyKey !== null}>
+                                Check status
+                              </Button>
+                            ) : null}
+                            {a && !needsRegistration && a.status === 'name_mismatch' ? (
+                              <Button size="sm" variant="secondary" leftIcon={<CheckCircle />} onClick={() => acceptName(s)} loading={busyKey === `accept:${s.store_id}`} disabled={busyKey !== null}>
+                                Accept name
+                              </Button>
+                            ) : null}
+                            {registerButtons}
+                          </div>
                         </Td>
                       ) : null}
                     </Tr>

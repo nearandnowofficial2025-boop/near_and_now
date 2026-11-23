@@ -5,8 +5,9 @@ import { RazorpayApiError } from './payment.service.js';
 import { razorpayEnv, razorpayEnvName, razorpayKeys } from '../config/razorpay.js';
 
 /**
- * Store payouts by bank transfer through RazorpayX (2026-10-28). See
- * supabase/migrations/20261028020000_store_payouts_razorpayx.sql for the
+ * Store payouts through RazorpayX (2026-10-28), to the store's bank account
+ * or — since 2026-11-23 — its UPI ID (20261123000000_store_payout_upi.sql).
+ * See supabase/migrations/20261028020000_store_payouts_razorpayx.sql for the
  * tables and the overall flow. Nothing here runs unless
  * STORE_PAYOUTS_ENABLED=true and RAZORPAYX_ACCOUNT_NUMBER is set, and no
  * money moves without an admin explicitly sending a prepared batch.
@@ -18,7 +19,8 @@ import { razorpayEnv, razorpayEnvName, razorpayKeys } from '../config/razorpay.j
  *   RAZORPAYX_WEBHOOK_SECRET   optional; when RazorpayX webhooks use their own secret
  *   STORE_COMMISSION_PERCENT   platform commission taken off store earnings (default 0)
  *   STORE_PAYOUT_HOLD_HOURS    only orders delivered at least this long ago (default 24)
- *   STORE_PAYOUT_MODE          IMPS (default) | NEFT | RTGS
+ *   STORE_PAYOUT_MODE          IMPS (default) | NEFT | RTGS — bank accounts only;
+ *                              a UPI ID is always paid by UPI
  *
  * With RAZORPAY_MODE=live (config/razorpay.ts) the RazorpayX variables are
  * read from their _LIVE_ names instead (RAZORPAYX_LIVE_ACCOUNT_NUMBER,
@@ -27,8 +29,10 @@ import { razorpayEnv, razorpayEnvName, razorpayKeys } from '../config/razorpay.j
  */
 
 const BASE_URL = 'https://api.razorpay.com/v1';
-const VALIDATION_AMOUNT_PAISE = 100; // penny drop
+const VALIDATION_AMOUNT_PAISE = 100; // penny drop (bank accounts; a UPI ID is validated by lookup)
 const PAYOUT_MODES = new Set(['IMPS', 'NEFT', 'RTGS']);
+// RazorpayX's per-payout UPI limit; a bigger payout has to go to a bank account.
+const UPI_PAYOUT_LIMIT_RUPEES = 100_000;
 
 export function storePayoutsConfig() {
   const commission = Number(process.env.STORE_COMMISSION_PERCENT);
@@ -84,15 +88,21 @@ function razorpayX(method: string, path: string, body?: object, idempotencyKey?:
   });
 }
 
-// ── Bank account registration + penny-drop validation ─────────────────────
+// ── Payout account registration + validation ───────────────────────────────
+
+/** Where a store's payouts go: its bank account, or its UPI ID ('vpa' in RazorpayX). */
+export type PayoutMethod = 'bank_account' | 'vpa';
 
 export type PayoutAccount = {
   store_id: string;
   razorpayx_contact_id: string;
   razorpayx_fund_account_id: string;
+  /** Absent on rows read before migration 20261123000000 — those are bank accounts. */
+  method?: PayoutMethod;
+  vpa?: string | null;
   bank_fingerprint: string;
-  account_last4: string;
-  ifsc: string;
+  account_last4: string | null;
+  ifsc: string | null;
   holder_name: string;
   validation_id: string | null;
   validation_status: 'pending' | 'verified' | 'name_mismatch' | 'failed';
@@ -110,19 +120,68 @@ type StoreBank = {
   bank_account_number: string | null;
   bank_ifsc_code: string | null;
   bank_account_holder_name: string | null;
+  payout_upi_id?: string | null;
 };
+
+type StorePayoutDetails = Pick<StoreBank, 'bank_account_number' | 'bank_ifsc_code' | 'bank_account_holder_name' | 'payout_upi_id'>;
 
 export function bankFingerprint(accountNumber: string, ifsc: string, holderName: string): string {
   return crypto.createHash('sha256').update(`${accountNumber.trim()}|${ifsc.trim().toUpperCase()}|${holderName.trim().toUpperCase()}`).digest('hex');
 }
 
-/** The approved bank fields still missing before a store can be registered. */
+export function upiFingerprint(upiId: string, holderName: string): string {
+  return crypto.createHash('sha256').update(`vpa|${upiId.trim().toLowerCase()}|${holderName.trim().toUpperCase()}`).digest('hex');
+}
+
+/** The registered method of an account (rows from before UPI support are bank accounts). */
+export function methodOf(account: Pick<PayoutAccount, 'method'>): PayoutMethod {
+  return account.method === 'vpa' ? 'vpa' : 'bank_account';
+}
+
+/** The approved bank fields still missing before a store's bank account can be registered. */
 export function missingBankFields(store: Pick<StoreBank, 'bank_account_number' | 'bank_ifsc_code' | 'bank_account_holder_name'>): string[] {
   const missing: string[] = [];
   if (!store.bank_account_holder_name) missing.push('account holder name');
   if (!store.bank_account_number) missing.push('account number');
   if (!store.bank_ifsc_code) missing.push('IFSC');
   return missing;
+}
+
+/** The payout methods a store's approved details allow. The holder name is needed for both. */
+export function availablePayoutMethods(store: StorePayoutDetails): PayoutMethod[] {
+  if (!store.bank_account_holder_name) return [];
+  const methods: PayoutMethod[] = [];
+  if (store.bank_account_number && store.bank_ifsc_code) methods.push('bank_account');
+  if (store.payout_upi_id) methods.push('vpa');
+  return methods;
+}
+
+/** What a store still has to give before any payout method can be registered. */
+export function missingPayoutFields(store: StorePayoutDetails): string[] {
+  const missing: string[] = [];
+  if (!store.bank_account_holder_name) missing.push('account holder name');
+  if (!(store.bank_account_number && store.bank_ifsc_code) && !store.payout_upi_id) {
+    if (store.bank_account_number) missing.push('IFSC (or a UPI ID)');
+    else if (store.bank_ifsc_code) missing.push('account number (or a UPI ID)');
+    else missing.push('bank account or UPI ID');
+  }
+  return missing;
+}
+
+/** Fingerprint of the store's current approved details for `method`; null when they are incomplete. */
+export function currentFingerprint(store: StorePayoutDetails, method: PayoutMethod): string | null {
+  const holder = store.bank_account_holder_name;
+  if (!holder) return null;
+  if (method === 'vpa') return store.payout_upi_id ? upiFingerprint(store.payout_upi_id, holder) : null;
+  return store.bank_account_number && store.bank_ifsc_code ? bankFingerprint(store.bank_account_number, store.bank_ifsc_code, holder) : null;
+}
+
+/** "ramesh.das@okhdfcbank" → "ra•••@okhdfcbank" for screens that only need to recognise it. */
+export function maskUpiId(upiId: string | null | undefined): string | null {
+  if (!upiId) return null;
+  const at = upiId.lastIndexOf('@');
+  if (at <= 0) return '•••';
+  return `${upiId.slice(0, Math.min(2, at))}•••${upiId.slice(at)}`;
 }
 
 const NAME_TITLES = new Set(['MR', 'MRS', 'MS', 'MISS', 'DR', 'SHRI', 'SRI', 'SMT', 'KUMARI', 'M', 'S']);
@@ -150,12 +209,29 @@ export function namesMatch(a: string, b: string): boolean {
   });
 }
 
+const MISSING_COLUMN_CODES = new Set(['42703', 'PGRST204']);
+
+/**
+ * Runs a `stores` read with payout_upi_id, retrying without it while migration
+ * 20261123000000 isn't applied yet (the column doesn't exist and the read
+ * would fail, taking the admin Store payouts page down). Without the column
+ * every store simply has no UPI ID. Safe to deploy before or after it.
+ */
+async function withUpiColumn(read: (upiColumn: string) => PromiseLike<{ data: unknown; error: unknown }>): Promise<{ data: unknown; error: unknown }> {
+  const first = await read(', payout_upi_id');
+  if (!first.error || !MISSING_COLUMN_CODES.has(String((first.error as { code?: string }).code))) return first;
+  console.warn('[PAYOUTS] stores.payout_upi_id is missing — apply migration 20261123000000');
+  return read('');
+}
+
 async function loadStoreBank(storeId: string): Promise<StoreBank> {
-  const { data, error } = await supabaseAdmin
-    .from('stores')
-    .select('id, name, phone, owner_id, bank_account_number, bank_ifsc_code, bank_account_holder_name')
-    .eq('id', storeId)
-    .maybeSingle();
+  const { data, error } = await withUpiColumn((upi) =>
+    supabaseAdmin
+      .from('stores')
+      .select(`id, name, phone, owner_id, bank_account_number, bank_ifsc_code, bank_account_holder_name${upi}`)
+      .eq('id', storeId)
+      .maybeSingle()
+  );
   if (error) throw error;
   if (!data) throw new PayoutError('Store not found', 404);
   return data as StoreBank;
@@ -168,22 +244,42 @@ export async function getPayoutAccount(storeId: string): Promise<PayoutAccount |
 }
 
 /**
- * Registers the store's approved bank details with RazorpayX (contact + bank
- * fund account) and starts a penny-drop validation. Re-registering after the
- * details changed creates a new fund account and retires the old one.
+ * Registers the store's approved bank account or UPI ID with RazorpayX
+ * (contact + fund account) and starts its validation: a ₹1 penny drop for a
+ * bank account, a lookup for a UPI ID (no money moves). Both return the name
+ * the bank has, which is compared with the holder name.
+ *
+ * `requested` picks the method; without it the store keeps its registered
+ * method while that is still available, else the bank account, else UPI.
+ * Re-registering (details changed, or a different method) creates a new fund
+ * account and retires the old one.
  */
-export async function registerStoreBankAccount(storeId: string, adminId: string | undefined): Promise<PayoutAccount> {
+export async function registerStorePayoutAccount(
+  storeId: string,
+  adminId: string | undefined,
+  requested?: PayoutMethod
+): Promise<PayoutAccount> {
   assertReady();
   const store = await loadStoreBank(storeId);
-  const missing = missingBankFields(store);
-  if (missing.length) throw new PayoutError(`The store's approved bank details are missing: ${missing.join(', ')}.`, 400);
+  const available = availablePayoutMethods(store);
+  if (!available.length) {
+    throw new PayoutError(`The store's approved payout details are missing: ${missingPayoutFields(store).join(', ')}.`, 400);
+  }
+  if (requested && !available.includes(requested)) {
+    throw new PayoutError(
+      requested === 'vpa'
+        ? 'The store has no approved UPI ID.'
+        : `The store's approved bank details are missing: ${missingBankFields(store).join(', ')}.`,
+      400
+    );
+  }
 
-  const account = store.bank_account_number!.trim();
-  const ifsc = store.bank_ifsc_code!.trim().toUpperCase();
-  const holder = store.bank_account_holder_name!.trim();
-  const fingerprint = bankFingerprint(account, ifsc, holder);
   const existing = await getPayoutAccount(storeId);
-  if (existing && existing.bank_fingerprint === fingerprint && existing.validation_status !== 'failed') {
+  const method: PayoutMethod =
+    requested ?? (existing && available.includes(methodOf(existing)) ? methodOf(existing) : available[0]);
+  const holder = store.bank_account_holder_name!.trim();
+  const fingerprint = currentFingerprint(store, method)!;
+  if (existing && methodOf(existing) === method && existing.bank_fingerprint === fingerprint && existing.validation_status !== 'failed') {
     return existing; // already registered with these exact details
   }
 
@@ -203,11 +299,13 @@ export async function registerStoreBankAccount(storeId: string, adminId: string 
     contactId = String(contact.id);
   }
 
-  const fundAccount = await razorpayX('POST', '/fund_accounts', {
-    contact_id: contactId,
-    account_type: 'bank_account',
-    bank_account: { name: holder, ifsc, account_number: account },
-  });
+  const account = method === 'bank_account' ? store.bank_account_number!.trim() : null;
+  const ifsc = method === 'bank_account' ? store.bank_ifsc_code!.trim().toUpperCase() : null;
+  const upiId = method === 'vpa' ? store.payout_upi_id!.trim().toLowerCase() : null;
+
+  const fundAccount = await razorpayX('POST', '/fund_accounts', method === 'vpa'
+    ? { contact_id: contactId, account_type: 'vpa', vpa: { address: upiId } }
+    : { contact_id: contactId, account_type: 'bank_account', bank_account: { name: holder, ifsc, account_number: account } });
   const fundAccountId = String(fundAccount.id);
   if (existing?.razorpayx_fund_account_id && existing.razorpayx_fund_account_id !== fundAccountId) {
     try {
@@ -220,8 +318,8 @@ export async function registerStoreBankAccount(storeId: string, adminId: string 
   const validation = await razorpayX('POST', '/fund_accounts/validations', {
     account_number: storePayoutsConfig().accountNumber,
     fund_account: { id: fundAccountId },
-    amount: VALIDATION_AMOUNT_PAISE,
-    currency: 'INR',
+    // The penny drop is for bank accounts; a UPI ID validation takes no amount.
+    ...(method === 'bank_account' ? { amount: VALIDATION_AMOUNT_PAISE, currency: 'INR' } : {}),
     notes: { store_id: storeId },
   });
 
@@ -230,8 +328,10 @@ export async function registerStoreBankAccount(storeId: string, adminId: string 
     store_id: storeId,
     razorpayx_contact_id: contactId,
     razorpayx_fund_account_id: fundAccountId,
+    method,
+    vpa: upiId,
     bank_fingerprint: fingerprint,
-    account_last4: account.slice(-4),
+    account_last4: account ? account.slice(-4) : null,
     ifsc,
     holder_name: holder,
     validation_id: String(validation.id),
@@ -419,11 +519,18 @@ export async function sendBatch(batchId: string, adminId: string | undefined): P
 
   const [account, store] = await Promise.all([getPayoutAccount(batch.store_id), loadStoreBank(batch.store_id)]);
   if (!account || account.validation_status !== 'verified') {
-    throw new PayoutError("The store's bank account is not verified yet.");
+    throw new PayoutError("The store's payout account is not verified yet.");
   }
-  if (missingBankFields(store).length || bankFingerprint(store.bank_account_number!, store.bank_ifsc_code!, store.bank_account_holder_name!) !== account.bank_fingerprint) {
-    throw new PayoutError("The store's bank details changed since they were verified — register them again first.");
+  const method = methodOf(account);
+  if (currentFingerprint(store, method) !== account.bank_fingerprint) {
+    throw new PayoutError(`The store's ${method === 'vpa' ? 'UPI ID' : 'bank details'} changed since they were verified — register them again first.`);
   }
+  if (method === 'vpa' && Number(batch.amount) > UPI_PAYOUT_LIMIT_RUPEES) {
+    throw new PayoutError(
+      `UPI payouts are limited to ₹${UPI_PAYOUT_LIMIT_RUPEES.toLocaleString('en-IN')} each and this one is ₹${Number(batch.amount).toLocaleString('en-IN')}. Register the store's bank account instead.`
+    );
+  }
+  const mode = method === 'vpa' ? 'UPI' : cfg.mode;
 
   // Claim the draft (two admins clicking Send at once: exactly one wins).
   const { data: claimed, error: claimErr } = await supabaseAdmin
@@ -433,7 +540,7 @@ export async function sendBatch(batchId: string, adminId: string | undefined): P
       approved_by: adminId ?? null,
       approved_at: new Date().toISOString(),
       razorpayx_fund_account_id: account.razorpayx_fund_account_id,
-      mode: cfg.mode,
+      mode,
       send_attempts: batch.send_attempts + 1,
       failure_reason: null,
       updated_at: new Date().toISOString(),
@@ -452,7 +559,7 @@ export async function sendBatch(batchId: string, adminId: string | undefined): P
       fund_account_id: account.razorpayx_fund_account_id,
       amount: Math.round(Number(batch.amount) * 100),
       currency: 'INR',
-      mode: cfg.mode,
+      mode,
       purpose: 'payout',
       queue_if_low_balance: true,
       reference_id: batchId,
@@ -620,12 +727,14 @@ export async function handleRazorpayXWebhook(event: any, eventId: string): Promi
 export async function listForAdmin() {
   const cfg = storePayoutsConfig();
   const [{ data: stores, error: storesErr }, { data: accounts, error: accErr }, { data: batches, error: batchErr }] = await Promise.all([
-    supabaseAdmin
-      .from('stores')
-      .select('id, name, bank_account_number, bank_ifsc_code, bank_account_holder_name')
-      .eq('is_approved', true)
-      .is('deleted_at', null)
-      .order('name', { ascending: true }),
+    withUpiColumn((upi) =>
+      supabaseAdmin
+        .from('stores')
+        .select(`id, name, bank_account_number, bank_ifsc_code, bank_account_holder_name${upi}`)
+        .eq('is_approved', true)
+        .is('deleted_at', null)
+        .order('name', { ascending: true })
+    ),
     supabaseAdmin.from('store_payout_accounts').select('*'),
     supabaseAdmin.from('store_payout_batches')
       .select('id, store_id, amount, gross_amount, commission_amount, line_count, status, razorpayx_status, mode, utr, failure_reason, send_attempts, created_at, approved_at, processed_at')
@@ -644,21 +753,26 @@ export async function listForAdmin() {
     config: { commission_percent: cfg.commissionPercent, hold_hours: cfg.holdHours, mode: cfg.mode },
     stores: ((stores || []) as StoreBank[]).map((s) => {
       const a = accountByStore.get(s.id);
-      const missing = missingBankFields(s);
       return {
         store_id: s.id,
         store_name: s.name,
-        missing_bank_fields: missing,
+        // Approved methods the admin can register; empty → missing_payout_fields says why.
+        available_methods: availablePayoutMethods(s),
+        missing_payout_fields: missingPayoutFields(s),
+        upi_id: maskUpiId(s.payout_upi_id),
         account: a
           ? {
               status: a.validation_status,
+              method: methodOf(a),
               account_last4: a.account_last4,
               ifsc: a.ifsc,
+              upi_id: maskUpiId(a.vpa),
               holder_name: a.holder_name,
               validated_name: a.validated_name,
               failure_reason: a.failure_reason,
               name_accepted: !!a.name_accepted_by,
-              bank_changed: !missing.length && bankFingerprint(s.bank_account_number!, s.bank_ifsc_code!, s.bank_account_holder_name!) !== a.bank_fingerprint,
+              // The approved details for the registered method changed (or were removed) since registering.
+              details_changed: currentFingerprint(s, methodOf(a)) !== a.bank_fingerprint,
             }
           : null,
       };
@@ -667,10 +781,10 @@ export async function listForAdmin() {
   };
 }
 
-/** Shopkeeper app: this store's bank-transfer history. */
+/** Shopkeeper app: this store's payout history. */
 export async function listForStore(storeId: string) {
   const [{ data: account }, { data: batches, error }] = await Promise.all([
-    supabaseAdmin.from('store_payout_accounts').select('validation_status, account_last4').eq('store_id', storeId).maybeSingle(),
+    supabaseAdmin.from('store_payout_accounts').select('*').eq('store_id', storeId).maybeSingle(),
     supabaseAdmin.from('store_payout_batches')
       .select('id, amount, line_count, status, utr, created_at, processed_at')
       .eq('store_id', storeId)
@@ -681,7 +795,14 @@ export async function listForStore(storeId: string) {
   if (error) throw error;
   return {
     enabled: storePayoutsConfig().enabled,
-    account: account ? { status: (account as any).validation_status, account_last4: (account as any).account_last4 } : null,
+    account: account
+      ? {
+          status: (account as PayoutAccount).validation_status,
+          method: methodOf(account as PayoutAccount),
+          account_last4: (account as PayoutAccount).account_last4,
+          upi_id: maskUpiId((account as PayoutAccount).vpa),
+        }
+      : null,
     payouts: (batches || []).map((b: any) => ({
       id: b.id,
       amount: Number(b.amount),

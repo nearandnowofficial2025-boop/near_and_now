@@ -7,11 +7,13 @@ import {
   cancelBatch,
   getBatch,
   listForAdmin,
+  maskUpiId,
   prepareBatches,
   refreshBatch,
   refreshValidation,
-  registerStoreBankAccount,
+  registerStorePayoutAccount,
   sendBatch,
+  type PayoutMethod,
 } from '../services/storePayouts.service.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
@@ -53,11 +55,17 @@ export async function getStorePayouts(_req: Request, res: Response) {
 
 export async function registerAccount(req: Request, res: Response) {
   try {
-    const account = await registerStoreBankAccount(req.params.storeId, req.adminId);
-    audit(req, 'store_payout_account', 'registered', `${await storeName(req.params.storeId)} — bank ••••${account.account_last4}`);
+    // Optional: 'bank_account' | 'vpa' (UPI ID). Omitted → the service picks.
+    const raw = req.body?.method;
+    if (raw !== undefined && raw !== 'bank_account' && raw !== 'vpa') {
+      return res.status(400).json({ success: false, error: "method must be 'bank_account' or 'vpa'" });
+    }
+    const account = await registerStorePayoutAccount(req.params.storeId, req.adminId, raw as PayoutMethod | undefined);
+    const label = account.method === 'vpa' ? `UPI ${maskUpiId(account.vpa)}` : `bank ••••${account.account_last4}`;
+    audit(req, 'store_payout_account', 'registered', `${await storeName(req.params.storeId)} — ${label}`);
     res.json({ success: true, account });
   } catch (error) {
-    return answer(res, 'adminStorePayouts.registerAccount', 'Could not register the bank account', error);
+    return answer(res, 'adminStorePayouts.registerAccount', 'Could not register the payout account', error);
   }
 }
 

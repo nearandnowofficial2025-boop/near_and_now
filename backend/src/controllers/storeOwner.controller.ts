@@ -688,7 +688,7 @@ export async function updateStore(req: Request, res: Response) {
 
 const PROFILE_CHANGE_FIELDS = ['name', 'address', 'phone'] as const;
 type ProfileChangeField = typeof PROFILE_CHANGE_FIELDS[number];
-const BILLING_CHANGE_FIELDS = ['bank_account_number', 'bank_ifsc_code', 'bank_branch_name', 'bank_account_holder_name', 'bank_passbook_storage_path'] as const;
+const BILLING_CHANGE_FIELDS = ['bank_account_number', 'bank_ifsc_code', 'bank_branch_name', 'bank_account_holder_name', 'bank_passbook_storage_path', 'payout_upi_id'] as const;
 
 type ProfileChangeSubmitResult =
   | { saved: Record<string, unknown>; cancelled: false }
@@ -1560,6 +1560,7 @@ export async function getBillingInfo(req: Request, res: Response) {
         bankIfscCode: store.bank_ifsc_code ?? null,
         bankBranchName: store.bank_branch_name ?? null,
         bankAccountHolderName: store.bank_account_holder_name ?? null,
+        payoutUpiId: store.payout_upi_id ?? null,
         passbookUrl,
       },
     });
@@ -1590,6 +1591,8 @@ export async function getStorePayoutHistory(req: Request, res: Response) {
 
 const IFSC_PATTERN = /^[A-Z]{4}0[A-Z0-9]{6}$/;
 const ACCOUNT_HOLDER_PATTERN = /^[A-Za-z][A-Za-z .'&-]{2,119}$/;
+// name@handle, e.g. ramesh.das@okhdfcbank or 9876543210@ybl (stored lowercased).
+const UPI_ID_PATTERN = /^[a-z0-9][a-z0-9._-]{1,255}@[a-z][a-z0-9.-]{1,63}$/;
 
 /**
  * Submit a change to the store's bank/payout details for admin review — does
@@ -1621,6 +1624,8 @@ export async function saveBillingInfo(req: Request, res: Response) {
     const bankAccountHolderName = typeof req.body?.bank_account_holder_name === 'string'
       ? req.body.bank_account_holder_name.trim().replace(/\s+/g, ' ')
       : undefined;
+    // UPI ID: an alternative (or addition) to the bank account for payouts.
+    const payoutUpiId = typeof req.body?.payout_upi_id === 'string' ? req.body.payout_upi_id.trim().toLowerCase() : undefined;
     const file = (req as Request & { file?: UploadedFile }).file;
 
     // Unlike the IFSC check right below (which has a `&& bankIfscCode` truthy
@@ -1636,6 +1641,9 @@ export async function saveBillingInfo(req: Request, res: Response) {
     }
     if (bankAccountHolderName !== undefined && bankAccountHolderName && !ACCOUNT_HOLDER_PATTERN.test(bankAccountHolderName)) {
       return res.status(400).json({ success: false, error: 'Account holder name must be 3-120 letters, spaces or . \' & -' });
+    }
+    if (payoutUpiId !== undefined && payoutUpiId && !UPI_ID_PATTERN.test(payoutUpiId)) {
+      return res.status(400).json({ success: false, error: 'Invalid UPI ID — expected format e.g. name@okhdfcbank' });
     }
 
     const { data: store } = await selectStoreBillingRow(
@@ -1656,6 +1664,9 @@ export async function saveBillingInfo(req: Request, res: Response) {
     }
     if (bankAccountHolderName !== undefined && bankAccountHolderName !== (store.bank_account_holder_name ?? '')) {
       changes.bank_account_holder_name = { old: store.bank_account_holder_name ?? null, new: bankAccountHolderName };
+    }
+    if (payoutUpiId !== undefined && payoutUpiId !== (store.payout_upi_id ?? '')) {
+      changes.payout_upi_id = { old: store.payout_upi_id ?? null, new: payoutUpiId };
     }
 
     if (file) {
