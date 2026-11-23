@@ -3,11 +3,21 @@ import { supabaseAdmin } from '../config/database.js';
 import { databaseService } from './database.service.js';
 import { fetchJsonWithTimeout, UPSTREAM_TIMEOUTS_MS } from '../utils/fetchWithTimeout.js';
 import { runInBackground } from '../utils/background.js';
+import { razorpayEnv, razorpayEnvName, razorpayKeys } from '../config/razorpay.js';
 
-const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID || '';
-const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET || '';
-const RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || '';
+// Test or live keys, picked by RAZORPAY_MODE (config/razorpay.ts).
+const {
+  mode: RAZORPAY_MODE,
+  keyId: RAZORPAY_KEY_ID,
+  keySecret: RAZORPAY_KEY_SECRET,
+  webhookSecret: RAZORPAY_WEBHOOK_SECRET,
+} = razorpayKeys();
 const RAZORPAY_BASE_URL = 'https://api.razorpay.com/v1';
+// A key from the other mode pasted into the wrong variable is easy to miss
+// until money moves (or doesn't), so say so at startup.
+if (RAZORPAY_KEY_ID && RAZORPAY_KEY_ID.startsWith('rzp_test_') !== (RAZORPAY_MODE === 'test')) {
+  console.error(`[PAYMENT] RAZORPAY_MODE is "${RAZORPAY_MODE}" but the key id in use starts with "${RAZORPAY_KEY_ID.slice(0, 9)}"`);
+}
 
 export class RazorpayApiError extends Error {
   constructor(message: string) {
@@ -571,12 +581,16 @@ export class PaymentService {
   // (registered via express.raw() on /api/payment/webhook in server.ts).
   // RazorpayX (store payouts) webhooks are set up in the RazorpayX dashboard
   // and may carry their own secret (RAZORPAYX_WEBHOOK_SECRET); either secret
-  // signing the exact bytes is accepted.
+  // signing the exact bytes is accepted. Only the current mode's secrets
+  // (RAZORPAY_MODE, config/razorpay.ts) count: in live mode a test-mode
+  // webhook is rejected.
   async verifyWebhook(headers: Record<string, any>, body: Buffer | string): Promise<boolean> {
-    const secrets = [process.env.RAZORPAY_WEBHOOK_SECRET || RAZORPAY_WEBHOOK_SECRET, process.env.RAZORPAYX_WEBHOOK_SECRET]
-      .filter((s): s is string => !!s);
+    const secrets = [
+      razorpayKeys().webhookSecret || RAZORPAY_WEBHOOK_SECRET,
+      razorpayEnv('RAZORPAYX_WEBHOOK_SECRET', 'RAZORPAYX_LIVE_WEBHOOK_SECRET'),
+    ].filter((s): s is string => !!s);
     if (!secrets.length) {
-      console.error('[WEBHOOK] RAZORPAY_WEBHOOK_SECRET is not set — rejecting all webhooks');
+      console.error(`[WEBHOOK] ${razorpayEnvName('RAZORPAY_WEBHOOK_SECRET', 'RAZORPAY_LIVE_WEBHOOK_SECRET')} is not set — rejecting all webhooks`);
       return false;
     }
     const signature = headers['x-razorpay-signature'];

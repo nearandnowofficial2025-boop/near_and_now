@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { supabaseAdmin } from '../config/database.js';
 import { fetchJsonWithTimeout, UPSTREAM_TIMEOUTS_MS } from '../utils/fetchWithTimeout.js';
 import { RazorpayApiError } from './payment.service.js';
+import { razorpayEnv, razorpayEnvName, razorpayKeys } from '../config/razorpay.js';
 
 /**
  * Store payouts by bank transfer through RazorpayX (2026-10-28). See
@@ -18,6 +19,11 @@ import { RazorpayApiError } from './payment.service.js';
  *   STORE_COMMISSION_PERCENT   platform commission taken off store earnings (default 0)
  *   STORE_PAYOUT_HOLD_HOURS    only orders delivered at least this long ago (default 24)
  *   STORE_PAYOUT_MODE          IMPS (default) | NEFT | RTGS
+ *
+ * With RAZORPAY_MODE=live (config/razorpay.ts) the RazorpayX variables are
+ * read from their _LIVE_ names instead (RAZORPAYX_LIVE_ACCOUNT_NUMBER,
+ * RAZORPAYX_LIVE_KEY_ID/SECRET, RAZORPAYX_LIVE_WEBHOOK_SECRET), and the key
+ * fallback is RAZORPAY_LIVE_KEY_ID/SECRET.
  */
 
 const BASE_URL = 'https://api.razorpay.com/v1';
@@ -30,9 +36,9 @@ export function storePayoutsConfig() {
   const mode = String(process.env.STORE_PAYOUT_MODE || 'IMPS').toUpperCase();
   return {
     enabled: process.env.STORE_PAYOUTS_ENABLED === 'true',
-    accountNumber: process.env.RAZORPAYX_ACCOUNT_NUMBER || '',
-    keyId: process.env.RAZORPAYX_KEY_ID || process.env.RAZORPAY_KEY_ID || '',
-    keySecret: process.env.RAZORPAYX_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET || '',
+    accountNumber: razorpayEnv('RAZORPAYX_ACCOUNT_NUMBER', 'RAZORPAYX_LIVE_ACCOUNT_NUMBER'),
+    keyId: razorpayEnv('RAZORPAYX_KEY_ID', 'RAZORPAYX_LIVE_KEY_ID') || razorpayKeys().keyId,
+    keySecret: razorpayEnv('RAZORPAYX_KEY_SECRET', 'RAZORPAYX_LIVE_KEY_SECRET') || razorpayKeys().keySecret,
     commissionPercent: Number.isFinite(commission) && commission >= 0 && commission < 100 ? commission : 0,
     holdHours: Number.isFinite(hold) && hold >= 0 ? hold : 24,
     mode: PAYOUT_MODES.has(mode) ? mode : 'IMPS',
@@ -43,7 +49,7 @@ export function storePayoutsConfig() {
 export function payoutsBlockedReason(): string | null {
   const cfg = storePayoutsConfig();
   if (!cfg.enabled) return 'Store payouts are not enabled (STORE_PAYOUTS_ENABLED).';
-  if (!cfg.accountNumber) return 'RAZORPAYX_ACCOUNT_NUMBER is not set.';
+  if (!cfg.accountNumber) return `${razorpayEnvName('RAZORPAYX_ACCOUNT_NUMBER', 'RAZORPAYX_LIVE_ACCOUNT_NUMBER')} is not set.`;
   if (!cfg.keyId || !cfg.keySecret) return 'RazorpayX API keys are not set.';
   return null;
 }
