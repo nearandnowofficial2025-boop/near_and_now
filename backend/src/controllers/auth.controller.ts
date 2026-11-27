@@ -8,6 +8,8 @@ import { createSignupTicket } from '../utils/signupTicket.js';
 import { mintRiderRealtimeSession } from '../services/riderAuthBridge.service.js';
 import { sendError } from '../utils/httpError.js';
 import { runInBackground } from '../utils/background.js';
+import { isReviewPhone, isValidReviewOtp } from '../utils/reviewLogin.js';
+import { ensureReviewRiderAccount } from '../services/reviewAccount.service.js';
 
 function extractErrorMessage(err: any, fallback: string): string {
   if (!err) return fallback;
@@ -80,6 +82,13 @@ export class AuthController {
 
       console.log('📱 Sending OTP to:', phone);
 
+      // App-store review account (utils/reviewLogin.ts): no SMS, the reviewer
+      // uses the fixed code from the Play Console sign-in details.
+      if (isReviewPhone(String(phone))) {
+        console.info('[review-login] send-otp for review account, SMS skipped');
+        return res.json({ success: true, message: 'OTP sent successfully', status: 'pending' });
+      }
+
       // Check if Twilio is configured
       if (!client) {
         return res.status(503).json({
@@ -127,29 +136,48 @@ export class AuthController {
       const isRoleScopedFlow = requestedRole === 'shopkeeper' || requestedRole === 'delivery_partner';
       console.log('🔐 Verifying OTP for:', phone, `(${requestedRole})`);
 
-      if (!client) {
-        return res.status(503).json({
-          error: 'OTP service not configured',
-          message: 'SMS OTP verification is currently unavailable.'
-        });
+      let verificationStatus: string;
+      if (isReviewPhone(String(phone))) {
+        // App-store review account: fixed code instead of Twilio (utils/reviewLogin.ts).
+        verificationStatus = isValidReviewOtp(String(phone), String(otp)) ? 'approved' : 'pending';
+        console.info(`[review-login] verify-otp for review account: ${verificationStatus}`);
+      } else {
+        if (!client) {
+          return res.status(503).json({
+            error: 'OTP service not configured',
+            message: 'SMS OTP verification is currently unavailable.'
+          });
+        }
+
+        const verificationCheck = await client.verify.v2
+          .services(serviceSid!)
+          .verificationChecks.create({
+            to: String(phone),
+            code: String(otp)
+          });
+        verificationStatus = verificationCheck.status;
       }
 
-      const verificationCheck = await client.verify.v2
-        .services(serviceSid!)
-        .verificationChecks.create({
-          to: String(phone),
-          code: String(otp)
-        });
-
-      if (verificationCheck.status !== 'approved') {
+      if (verificationStatus !== 'approved') {
         console.log('❌ Invalid OTP');
         return res.status(400).json({
           error: 'Invalid OTP',
-          status: verificationCheck.status
+          status: verificationStatus
         });
       }
 
       console.log('✅ OTP verified successfully');
+
+      // Review rider (utils/reviewLogin.ts): make sure it is a fully approved
+      // account before the normal lookup below logs it in. Only this exact
+      // phone, and only after its fixed code was accepted above.
+      if (requestedRole === 'delivery_partner' && isReviewPhone(String(phone))) {
+        try {
+          await ensureReviewRiderAccount(String(phone));
+        } catch (provisionError) {
+          return sendError(res, 'AuthController.verifyOTP', 'Could not prepare the review account', provisionError);
+        }
+      }
 
       // Role-scoped flows: look up by phone AND requested role (shopkeeper / delivery_partner)
       if (isRoleScopedFlow) {
